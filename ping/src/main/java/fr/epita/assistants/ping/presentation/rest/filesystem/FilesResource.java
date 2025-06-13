@@ -62,7 +62,6 @@ public class FilesResource {
         }
         catch (NotAuthorizedException e) { // 401
             //FIXME: LOGGER
-
             return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("Not Authorized")).build();
         }
         catch (PathException | IOException e) { // 400
