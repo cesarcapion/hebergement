@@ -20,9 +20,14 @@ public class UserModel {
     @Column(nullable = false)
     private String password;
 
+    @Column(name="display_name")
     private String displayName = "";
-    private String avatar = "";
+    @Column(name="is_admin")
     private Boolean isAdmin = false;
+
+    private String avatar = "";
+
+
 
     public UUID getUuid() { return uuid; }
     public void setUuid(UUID uuid) { this.uuid = uuid; }
