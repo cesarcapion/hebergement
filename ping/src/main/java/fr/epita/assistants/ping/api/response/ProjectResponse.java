@@ -5,12 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @With
-public class GetProjectResponse {
+public class ProjectResponse {
     public String id;
     public String name;
 
