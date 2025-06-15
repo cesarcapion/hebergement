@@ -1,9 +1,8 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
-import fr.epita.assistants.ping.common.MoveFileRequest;
-import fr.epita.assistants.ping.common.RelativePathRequest;
+import fr.epita.assistants.ping.common.Request.MoveFileRequest;
+import fr.epita.assistants.ping.common.Request.RelativePathRequest;
 import fr.epita.assistants.ping.errors.Exceptions.*;
-import fr.epita.assistants.ping.errors.Exceptions.NotAuthorizedException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -85,7 +84,7 @@ public class FilesResource {
             boolean isAdmin = identity.getRoles().contains("admin");
             fileService.deleteFile(projectId, userId, request.relativePath, isAdmin);
 
-            return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The file was deleted")).build(); // 202
+            return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The file was deleted")).build(); // 204
         }
         catch (InvalidException e) { // 404
             //FIXME: LOGGER

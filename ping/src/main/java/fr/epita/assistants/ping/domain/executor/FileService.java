@@ -89,7 +89,7 @@ public class FileService {
         if (!Files.exists(requestedPath))
             throw new InvalidException("Fichier non trouvé"); // 404
 
-        if (basePath == requestedPath) {
+        if (basePath.equals(requestedPath)) {
             File[] directory = requestedPath.toFile().listFiles();
             if (directory == null)
                 return;
