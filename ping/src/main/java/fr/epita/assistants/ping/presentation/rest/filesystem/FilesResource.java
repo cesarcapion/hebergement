@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
 import fr.epita.assistants.ping.common.Request.MoveFileRequest;
+import fr.epita.assistants.ping.utils.Logger;
 import fr.epita.assistants.ping.common.Request.RelativePathRequest;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.annotation.security.RolesAllowed;
@@ -17,6 +18,7 @@ import fr.epita.assistants.ping.domain.executor.FileService;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.identity.SecurityIdentity;
 
+import static fr.epita.assistants.ping.utils.Logger.*;
 
 
 @Path("/api/projects/{projectId}")
@@ -41,26 +43,26 @@ public class FilesResource {
     */
     public Response getFiles(@PathParam("projectId") UUID projectId,
                              @QueryParam("path") String path) {
-        //FIXME: LOGGER
+        logInfo("The user request file at " + path);
         try {
-            //FIXME: LOGGER
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
 
             byte[] data = fileService.file_data(projectId, path, userId, isAdmin);
+            logSuccess("The operation was successful");
             return Response.ok(data, MediaType.APPLICATION_OCTET_STREAM_TYPE).build();
         }
         catch (InvalidException e) { // 404
-            //FIXME: LOGGER
+            logError("Error 404: The project or the path could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project or the relative path could not be found")).build();
         }
         catch (UserException e) { // 403
-            //FIXME: LOGGER
+            logError("Error 403: The user is not allowed to access the project or a path traversal attack was detected");
 
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).build();
         }
         catch (PathException | IOException e) { // 400
-            //FIXME: LOGGER
+            logError("Error 400: The relative path is invalid (null or empty for example)");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The relative path is invalid (null or empty for example)")).build();
         }
@@ -77,26 +79,27 @@ public class FilesResource {
         Any member of the project or an admin can access this endpoint.
     */
     public Response deleteFiles(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
-        //FIXME: LOGGER
+        logInfo("The user request to delete a file at " + request.relativePath);
+
         try {
-            //FIXME: LOGGER
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
             fileService.deleteFile(projectId, userId, request.relativePath, isAdmin);
+            logSuccess("The operation was successful");
 
             return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The file was deleted")).build(); // 204
         }
         catch (InvalidException e) { // 404
-            //FIXME: LOGGER
+            logError("Error 404: The project or the path could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project or the file could not be found")).build();
         }
         catch (UserException e) { // 403
-            //FIXME: LOGGER
+            logError("Error 403: The user is not allowed to access the project or a path traversal attack was detected");
 
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).build();
         }
         catch (PathException e) { // 400
-            //FIXME: LOGGER
+            logError("Error 400: The relative path is invalid (null or empty for example)");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The source or destination path is invalid (null or empty for example)")).build();
         }
@@ -113,33 +116,35 @@ public class FilesResource {
         Any member of the project or an admin can access this endpoint.
      */
     public Response postFiles(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
-        //FIXME: LOGGER
+        logInfo("The user request to create a file at " + request.relativePath);
+
         try {
-            //FIXME: LOGGER
 
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
             fileService.createFile(projectId, userId, request.relativePath, isAdmin);
+            logSuccess("The operation was successful");
 
             return Response.status(Response.Status.CREATED).entity(new ErrorInfo("The file was created")).build(); // 201
         }
         catch (InvalidException e) { // 404
-            //FIXME: LOGGER
+            logError("Error 404: The project or the path could not be found");
+
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project could not be found")).build();
         }
         catch (UserException e) { // 403
-            //FIXME: LOGGER
+            logError("Error 403: The user is not allowed to access the project or a path traversal attack was detected");
 
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).build();
         }
         catch (PathException | IOException e) { // 400
-            //FIXME: LOGGER
+            logError("Error 400: The relative path is invalid (null or empty for example)");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The source or destination path is invalid (null or empty for example)")).build();
         }
         catch (AlreadyExistException e) // 409
         {
-            //FIXME: LOGGER
+            logError("Error 409: The file already exists");
 
             return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The file already exists")).build();
         }
@@ -157,35 +162,36 @@ public class FilesResource {
      */
     public Response putFilesMove(@PathParam("projectId") UUID projectId,
                                  MoveFileRequest request) {
-        //FIXME: LOGGER
+        logInfo("The user request to move a file from " + request.src + " to " + request.dst);
+
         try {
-            //FIXME: LOGGER
 
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
             fileService.moveFile(projectId, userId, request.src,request.dst, isAdmin);
+            logSuccess("The operation was successful");
 
-            return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The file was renamed")).build(); // 201
+            return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The file was renamed")).build(); // 204
         }
         catch (PathException | IOException e) { // 400
-            //FIXME: LOGGER
+            logError("Error 400: The relative path is invalid (null or empty for example)");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The source or destination path is invalid (null or empty for example)")).build();
         }
 
         catch (UserException e) { // 403
-            //FIXME: LOGGER
+            logError("Error 403: The user is not allowed to access the project or a path traversal attack was detected");
 
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).build();
         }
         catch (InvalidException e) { // 404
-            //FIXME: LOGGER
+            logError("Error 404: The project or the path could not be found");
 
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project could not be found")).build();
         }
         catch (AlreadyExistException e) // 409
         {
-            //FIXME: LOGGER
+            logError("Error 409: The file already exists");
 
             return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The file already exists")).build();
         }
@@ -209,27 +215,28 @@ public class FilesResource {
     public Response postFilesUpload(@PathParam("projectId") UUID projectId,
                                     @QueryParam("path") String path,
                                     InputStream inputStream) {
-        //FIXME: LOGGER
+        logInfo("The user request to upload a file at " + path);
         try {
-            //FIXME: LOGGER
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
             fileService.uploadFile(projectId, userId, path, inputStream, isAdmin);
+            logSuccess("The operation was successful");
 
-            return Response.status(Response.Status.CREATED).entity(new ErrorInfo("The file was created")).build(); // 202
+            return Response.status(Response.Status.CREATED).entity(new ErrorInfo("The file was created")).build(); // 201
         }
         catch (InvalidException e) { // 404
-            //FIXME: LOGGER
+            logError("Error 404: The project or the path could not be found");
+
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project could not be found")).build();
         }
         catch (UserException e) { // 403
-            //FIXME: LOGGER
+            logError("Error 403: The user is not allowed to access the project or a path traversal attack was detected");
 
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access the project or a path traversal attack was detected")).build();
         }
 
         catch (PathException | IOException e) { // 400
-            //FIXME: LOGGER
+            logError("Error 400: The relative path is invalid (null or empty for example)");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The relative path is invalid (null or empty for example)")).build();
         }

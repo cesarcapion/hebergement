@@ -158,7 +158,7 @@ public class FileService {
     }
 
     /*
-        upload a file
+        uplod a file
      */
     public void uploadFile(UUID projectID, String userId, String path, InputStream inputStream, boolean isAdmin) throws PathException, UserException, InvalidException, IOException {
         Path basePath = Paths.get("/var/www/projects", projectID.toString());

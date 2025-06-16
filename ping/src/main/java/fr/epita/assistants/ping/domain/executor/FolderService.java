@@ -64,6 +64,7 @@ public class FolderService {
         if (allContents != null) {
             for (File file : allContents) {
                 GetFolderResponse element = new GetFolderResponse(file.getName(),basePath.relativize(file.toPath()).toString(),file.isDirectory());
+
                 response.add(element);
             }
         }
@@ -133,5 +134,36 @@ public class FolderService {
         if (Files.exists(requestedPath))
             throw  new AlreadyExistException("le fichier existe deja"); // 409
         Files.createDirectories(requestedPath);
+    }
+
+    /*
+        move a directory
+    */
+    public void moveFolder(UUID projectID, String userId, String src, String dst, boolean isAdmin) throws PathException, UserException, InvalidException, AlreadyExistException, IOException {
+        if (isInvalidPath(projectID, src) || src.isBlank())
+            throw new PathException("Chemin invalide"); // 400
+
+        if (isInvalidPath(projectID, dst) || dst.isBlank())
+            throw new PathException("Chemin invalide"); // 400
+
+        if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(src, projectID) || isPathTraversal(dst,projectID))
+            throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
+
+        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path srcRequestedPath = basePath.resolve(src).normalize();
+        Path dstRequestedPath = basePath.resolve(dst).normalize();
+
+        if (!Files.exists(basePath))
+            throw new InvalidException("Le projet est introuvable"); // 404
+
+        if (!Files.exists(srcRequestedPath)) {
+            throw new InvalidException("Le fichier source est introuvable"); // 404
+        }
+
+        if (Files.exists(dstRequestedPath))
+            throw  new AlreadyExistException("le fichier existe deja"); // 409
+
+        Files.createDirectories(dstRequestedPath.getParent());
+        Files.move(srcRequestedPath, dstRequestedPath);
     }
 }
