@@ -1,7 +1,6 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
 import fr.epita.assistants.ping.common.Request.MoveFileRequest;
-import fr.epita.assistants.ping.utils.Logger;
 import fr.epita.assistants.ping.common.Request.RelativePathRequest;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.annotation.security.RolesAllowed;
@@ -14,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-import fr.epita.assistants.ping.domain.executor.FileService;
+import fr.epita.assistants.ping.domain.service.FileService;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.identity.SecurityIdentity;
 
