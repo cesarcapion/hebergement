@@ -21,7 +21,6 @@ import static fr.epita.assistants.ping.utils.Logger.*;
 
 
 @Path("/api/projects/{projectId}")
-@Produces(MediaType.APPLICATION_JSON)
 public class FilesResource {
 
 

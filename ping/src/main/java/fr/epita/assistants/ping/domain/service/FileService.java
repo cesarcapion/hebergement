@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.domain.service;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,9 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FileService {
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/var/www/projects/") String defaultPath;
+
+
     private boolean isMember(String userId, UUID projectID)
     {
         // FIXME:Doit check que le user est membre du projet
@@ -29,11 +33,10 @@ public class FileService {
 
     boolean isPathTraversal(String path, UUID projectID)
     {
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
         return !requestedPath.startsWith(basePath);
     }
-
 
 
     /*
@@ -48,7 +51,7 @@ public class FileService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(requestedPath))
@@ -82,7 +85,7 @@ public class FileService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(requestedPath))
@@ -112,7 +115,7 @@ public class FileService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(basePath))
@@ -137,7 +140,7 @@ public class FileService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(src, projectID) || isPathTraversal(dst,projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path srcRequestedPath = basePath.resolve(src).normalize();
         Path dstRequestedPath = basePath.resolve(dst).normalize();
 
@@ -160,7 +163,7 @@ public class FileService {
         uplod a file
      */
     public void uploadFile(UUID projectID, String userId, String path, InputStream inputStream, boolean isAdmin) throws PathException, UserException, InvalidException, IOException {
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
         try {
             createFile(projectID,userId,path,isAdmin);

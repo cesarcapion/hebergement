@@ -23,7 +23,6 @@ import static fr.epita.assistants.ping.utils.Logger.*;
 
 
 @Path("/api/projects/{projectId}")
-@Produces(MediaType.APPLICATION_JSON)
 public class FoldersResource {
 
 
@@ -35,6 +34,7 @@ public class FoldersResource {
     @GET
     @Path("/folders")
     @RolesAllowed({"user", "admin"})
+    @Produces(MediaType.APPLICATION_JSON)
     /* List the content of the folder located at the given path in the project with the given id. By default it lists the root folder.
 
         It is NOT a recursive listing, it only lists the immediate children of the folder.

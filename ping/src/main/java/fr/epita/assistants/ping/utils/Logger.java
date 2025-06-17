@@ -1,22 +1,23 @@
 package fr.epita.assistants.ping.utils;
 
-import jakarta.resource.spi.ConfigProperty;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 public class Logger {
     private static final String RESET_TEXT = "\u001B[0m";
     private static final String RED_TEXT = "\u001B[31m";
     private static final String GREEN_TEXT = "\u001B[32m";
-    static String logPath = System.getenv().getOrDefault("LOG_FILE", "resources/logs/logs.txt");
-    static String errorPath = System.getenv().getOrDefault("ERROR_LOG_FILE", "resources/logs/error.txt");
+
+    @ConfigProperty(name= "LOG_FILE", defaultValue = "resources/logs/logs.txt") static String logPath;
+    @ConfigProperty(name= "ERROR_LOG_FILE", defaultValue = "resources/logs/error.txt") static String errorPath;
+
 
 
     private static String timestamp() {

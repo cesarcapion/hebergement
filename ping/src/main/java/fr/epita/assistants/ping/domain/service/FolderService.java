@@ -6,6 +6,7 @@ import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
 import fr.epita.assistants.ping.errors.Exceptions.PathException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FolderService {
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/var/www/projects/") String defaultPath;
+
     private boolean isMember(String userId, UUID projectID)
     {
         // FIXME:Doit check que le user est membre du projet
@@ -33,7 +36,7 @@ public class FolderService {
 
     boolean isPathTraversal(String path, UUID projectID)
     {
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
         return !requestedPath.startsWith(basePath);
     }
@@ -47,7 +50,7 @@ public class FolderService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(requestedPath))
@@ -91,7 +94,7 @@ public class FolderService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(requestedPath) || !Files.isDirectory(requestedPath))
@@ -121,7 +124,7 @@ public class FolderService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(basePath))
@@ -145,7 +148,7 @@ public class FolderService {
         if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(src, projectID) || isPathTraversal(dst,projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
-        Path basePath = Paths.get("/var/www/projects", projectID.toString());
+        Path basePath = Paths.get(defaultPath, projectID.toString());
         Path srcRequestedPath = basePath.resolve(src).normalize();
         Path dstRequestedPath = basePath.resolve(dst).normalize();
 
