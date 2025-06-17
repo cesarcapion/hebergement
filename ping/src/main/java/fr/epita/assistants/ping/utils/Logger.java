@@ -34,7 +34,7 @@ public class Logger {
     }
     public static void logError(String message) {
         String logMessage = RED_TEXT + "[" + timestamp() + "]" + " " + message + RESET_TEXT;
-        log(System.getenv(errorPath), logMessage, true);
+        log(errorPath, logMessage, true);
     }
 
     private static void log(String path, String message, boolean err) {

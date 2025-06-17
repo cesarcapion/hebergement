@@ -1,10 +1,7 @@
 package fr.epita.assistants.ping.common.Request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-
-public class loginRequest {
+public class LoginRequest {
     public String login;
     public String password;
 }

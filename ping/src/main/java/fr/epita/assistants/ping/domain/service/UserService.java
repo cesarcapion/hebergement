@@ -5,7 +5,7 @@ import java.util.*;
 
 import fr.epita.assistants.ping.api.request.CreateUserRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
-import fr.epita.assistants.ping.api.response.loginResponse;
+import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
@@ -16,12 +16,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import io.smallrye.jwt.build.Jwt;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import java.time.Duration;
 
 @ApplicationScoped
 public class UserService {
     @Inject
     UserRepository repository;
+    @ConfigProperty(name= "KEY", defaultValue = "remy") static String key;
 
 
     private boolean checkLogin(String login, String password) {
@@ -30,7 +33,12 @@ public class UserService {
     }
 
     public static String generateToken(String userId, boolean isAdmin) {
-        return Jwt.claim("sub", userId).claim("groups", isAdmin ? "admin" : "user").claim("iat", Instant.now()).expiresIn(Duration.ofHours(1)).sign();
+        return Jwt.claims()
+                .issuer("https://mon-app")
+                .subject("user123")
+                .groups(Set.of("user", "admin")) // rôles
+                .claim("email", "user@example.com")
+                .signWithSecret("ma-super-cle-ultra-secrète-12345678901234567890");
     }
 
     public String loginToName(String login) {
@@ -88,7 +96,7 @@ public class UserService {
         return response.toArray(new UserResponse[0]); // 200
     }
 
-    public loginResponse loginUser(String login, String password) throws InvalidException, BadInfosException {
+    public LoginResponse loginUser(String login, String password) throws InvalidException, BadInfosException {
         if (login == null || password==null)
         {
             throw new InvalidException("login or password is null");
@@ -97,16 +105,16 @@ public class UserService {
         {
             throw new BadInfosException("password or login invalid");
         }
-        return new loginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
     }
 
-    public loginResponse refreshToken(String login) throws UserException {
+    public LoginResponse refreshToken(String login) throws UserException {
 
         if (repository.findByLogin(login) == null)
         {
             throw new UserException("login invalid");
         }
-        return new loginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
     }
 
 
