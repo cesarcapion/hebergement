@@ -1,6 +1,5 @@
 package fr.epita.assistants.ping.data.converter;
 
-import fr.epita.assistants.ping.data.model.ProjectMembersModel;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.domain.entity.ProjectEntity;
 import fr.epita.assistants.ping.utils.IConverter;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 public class ProjectModelConverter implements IConverter<ProjectModel, ProjectEntity> {
     @Override
     public ProjectEntity convert(ProjectModel projectModel) {
-        return new ProjectEntity(projectModel.uuid.toString(), projectModel.ownerId, "", "", new ArrayList<>());
+        return new ProjectEntity(projectModel.uuid.toString(), projectModel.owner, "", "", new ArrayList<>());
         // FIXME fill avatar and displayName and avatar by using UserModel
         // FIXME same for the memberlist use the UserModel
     }

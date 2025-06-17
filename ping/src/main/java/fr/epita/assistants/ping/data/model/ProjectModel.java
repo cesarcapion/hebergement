@@ -1,12 +1,8 @@
 package fr.epita.assistants.ping.data.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.With;
+import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,6 +10,7 @@ import java.util.UUID;
 @Table(name = "projects")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Setter
 @With
 public class ProjectModel {
@@ -21,7 +18,7 @@ public class ProjectModel {
     public UUID uuid;
 
     @Column(name="owner_id")
-    public UUID ownerId;
+    public UUID owner;
 
     public String name;
     public String path;

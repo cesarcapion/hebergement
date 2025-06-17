@@ -14,7 +14,7 @@ import java.util.*;
 @ApplicationScoped
 public class ProjectRepository implements PanacheRepository<ProjectModel> {
     // FIXME remove or let the default value? idk
-    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "caca") String defaultPath;
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     /// returns all the projects owned by userUUID
     public List<ProjectModel> getOwnedProjects(String userUUID)
@@ -42,7 +42,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
                 .withProjectUUID(projectUUID)
                 .withMemberUUID(user.getUuid()));
         ProjectModel createdProject = new ProjectModel()
-            .withOwnerId(user.getUuid())
+            .withOwner(user.getUuid())
             .withUuid(projectUUID)
             .withMembers(members)
             .withName(projectName)
@@ -68,7 +68,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         {
             return UserStatus.ERROR;
         }
-        boolean isOwner = projectModel.ownerId.equals(userUUID);
+        boolean isOwner = projectModel.owner.equals(userUUID);
         if (isOwner)
         {
             return UserStatus.OWNER;
@@ -91,9 +91,9 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     {
         ProjectModel projectModel = find("uuid", projectUUID).firstResult();
 
-        if (newOwnerUUID != null && !newOwnerUUID.equals(projectModel.ownerId))
+        if (newOwnerUUID != null && !newOwnerUUID.equals(projectModel.owner))
         {
-            projectModel.setOwnerId(newOwnerUUID);
+            projectModel.setOwner(newOwnerUUID);
         }
         if (newName != null && !newName.equals(projectModel.name))
         {
