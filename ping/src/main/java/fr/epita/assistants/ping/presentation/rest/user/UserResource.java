@@ -57,7 +57,7 @@ public class UserResource {
 
     @GET
     @Path("/all")
-    @RolesAllowed("admin")
+    @RolesAllowed({"admin"})
     public Response listUsers() {
         logInfo("Trying to get all users");
         UserResponse[] response = userService.getAllUsers();

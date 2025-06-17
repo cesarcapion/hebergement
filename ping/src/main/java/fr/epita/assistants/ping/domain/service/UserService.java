@@ -1,5 +1,6 @@
 package fr.epita.assistants.ping.domain.service;
 
+import java.io.Console;
 import java.time.Instant;
 import java.util.*;
 
@@ -32,14 +33,13 @@ public class UserService {
 
     }
 
-    public static String generateToken(String userId, boolean isAdmin) {
-        return Jwt.claims()
-                .issuer("https://mon-app")
-                .subject("user123")
-                .groups(Set.of("user", "admin")) // rôles
-                .claim("email", "user@example.com")
-                .signWithSecret("ma-super-cle-ultra-secrète-12345678901234567890");
-    }
+    public static String generateToken(UUID userId, boolean isAdmin) {
+        System.out.println(userId + " : " + isAdmin);
+        return Jwt.claim("sub", userId)
+                .claim("groups", isAdmin ? "admin" : "user")
+                .claim("iat", Instant.now().getEpochSecond())
+                .expiresIn(Duration.ofHours(1))
+                .signWithSecret("ma-super-cle-ultra-secrète-12345678901234567890");    }
 
     public String loginToName(String login) {
         String[] parts = login.split("[._]");
@@ -105,7 +105,7 @@ public class UserService {
         {
             throw new BadInfosException("password or login invalid");
         }
-        return new LoginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
     }
 
     public LoginResponse refreshToken(String login) throws UserException {
@@ -114,7 +114,7 @@ public class UserService {
         {
             throw new UserException("login invalid");
         }
-        return new LoginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
     }
 
 
