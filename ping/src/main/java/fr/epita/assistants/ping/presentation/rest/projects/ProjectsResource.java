@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.presentation.rest;
+package fr.epita.assistants.ping.presentation.rest.projects;
 
 import fr.epita.assistants.ping.api.request.ExecFeatureRequest;
 import fr.epita.assistants.ping.api.request.NewProjectRequest;
@@ -13,8 +13,6 @@ import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Feature;
 import fr.epita.assistants.ping.utils.RequestVerifyer;
 import fr.epita.assistants.ping.utils.UserStatus;
-import io.quarkus.security.Authenticated;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -109,7 +107,7 @@ public class ProjectsResource {
 
         // FIXME get the user
         UserModel currentUser = new UserModel(UUID.fromString("eb07e67e-7115-418d-9b30-84b89e0d8840"), "", "", "", true, "");
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getUuid(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
 
         if (userStatus == UserStatus.NOT_A_MEMBER) {
             return Response.status(Response.Status.FORBIDDEN)
@@ -147,7 +145,7 @@ public class ProjectsResource {
         }
 
         // FIXME get the user
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getUuid(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
         if (userStatus == UserStatus.NOT_A_MEMBER && !currentUser.getIsAdmin()) {
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to update this project as you are not member")).build();
         }
@@ -171,7 +169,7 @@ public class ProjectsResource {
         }
 
         // FIXME get the user
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getUuid(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
         if (userStatus == UserStatus.NOT_A_MEMBER) {
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to delete this project as you are not member")).build();
         }
@@ -206,7 +204,7 @@ public class ProjectsResource {
         if (!userExists) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User not found")).build();
         }
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getUuid(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
@@ -243,7 +241,7 @@ public class ProjectsResource {
         if (!userExist) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User not found")).build();
         }
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getUuid(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
@@ -281,7 +279,7 @@ public class ProjectsResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Invalid request")).build();
         }
 
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getUuid(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }

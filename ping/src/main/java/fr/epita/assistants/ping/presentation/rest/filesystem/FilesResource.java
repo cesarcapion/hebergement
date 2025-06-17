@@ -1,7 +1,7 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
-import fr.epita.assistants.ping.common.Request.MoveFileRequest;
-import fr.epita.assistants.ping.common.Request.RelativePathRequest;
+import fr.epita.assistants.ping.api.request.MoveFileRequest;
+import fr.epita.assistants.ping.api.request.RelativePathRequest;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;

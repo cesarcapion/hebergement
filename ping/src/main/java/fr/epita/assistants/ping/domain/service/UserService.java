@@ -3,17 +3,15 @@ package fr.epita.assistants.ping.domain.service;
 import java.time.Instant;
 import java.util.*;
 
-import fr.epita.assistants.ping.common.Request.CreateUserRequest;
-import fr.epita.assistants.ping.common.Response.UserResponse;
-import fr.epita.assistants.ping.common.Response.GetFolderResponse;
-import fr.epita.assistants.ping.common.Response.loginResponse;
+import fr.epita.assistants.ping.api.request.CreateUserRequest;
+import fr.epita.assistants.ping.api.response.UserResponse;
+import fr.epita.assistants.ping.api.response.loginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
-import io.smallrye.jwt.algorithm.SignatureAlgorithm;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -73,7 +71,7 @@ public class UserService {
         newUser.setPassword(input.password);
 
         repository.persist(newUser);
-        return new UserResponse(newUser.getUuid(),newUser.getLogin(),newUser.getDisplayName(),newUser.getIsAdmin(),newUser.getAvatar());
+        return new UserResponse(newUser.getId(),newUser.getLogin(),newUser.getDisplayName(),newUser.getIsAdmin(),newUser.getAvatar());
     }
 
     /*
@@ -84,7 +82,7 @@ public class UserService {
         List<UserModel> list = repository.listAll();
         List<UserResponse> response = new ArrayList<>();
         for (UserModel user : list) {
-            UserResponse element = new UserResponse(user.getUuid(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+            UserResponse element = new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
             response.add(element);
         }
         return response.toArray(new UserResponse[0]); // 200

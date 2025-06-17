@@ -40,9 +40,9 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         UUID projectUUID = UUID.randomUUID();
         members.add(new ProjectMembersModel()
                 .withProjectUUID(projectUUID)
-                .withMemberUUID(user.getUuid()));
+                .withMemberUUID(user.getId()));
         ProjectModel createdProject = new ProjectModel()
-            .withOwner(user.getUuid())
+            .withOwner(user.getId())
             .withUuid(projectUUID)
             .withMembers(members)
             .withName(projectName)

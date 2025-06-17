@@ -92,13 +92,14 @@ public class ProjectService {
 
     public ProjectResponse buildCreateProjectResponse(String projectName, UserModel user) {
         ProjectModel createdProject = projectRepository.createNewProject(projectName, user);
-        System.out.println("created ? -> " + createProjectFolder(createdProject));
+        createProjectFolder(createdProject);
+//        System.out.println("created ? -> " + createProjectFolder(createdProject));
 
         UserInfoResponse owner = userModelToUserInfoConverter.convert(user);
 
         ArrayList<UserInfoResponse> members = new ArrayList<>();
         members.add(owner);
-        projectMembersService.addMemberToProject(user.getUuid(), createdProject.uuid);
+        projectMembersService.addMemberToProject(user.getId(), createdProject.uuid);
 
         return new ProjectResponse()
                 .withId(createdProject.uuid.toString())

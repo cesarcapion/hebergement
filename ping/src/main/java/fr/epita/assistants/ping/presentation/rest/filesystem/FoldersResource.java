@@ -1,8 +1,8 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
-import fr.epita.assistants.ping.common.Request.MoveFileRequest;
-import fr.epita.assistants.ping.common.Request.RelativePathRequest;
-import fr.epita.assistants.ping.common.Response.GetFolderResponse;
+import fr.epita.assistants.ping.api.request.MoveFileRequest;
+import fr.epita.assistants.ping.api.request.RelativePathRequest;
+import fr.epita.assistants.ping.api.response.GetFolderResponse;
 import fr.epita.assistants.ping.domain.service.FolderService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
