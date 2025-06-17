@@ -70,7 +70,7 @@ public class UserService {
         newUser.setLogin(input.login);
         newUser.setPassword(input.password);
 
-        repository.persist(newUser);
+        repository.addUser(newUser);
         return new UserResponse(newUser.getId(),newUser.getLogin(),newUser.getDisplayName(),newUser.getIsAdmin(),newUser.getAvatar());
     }
 

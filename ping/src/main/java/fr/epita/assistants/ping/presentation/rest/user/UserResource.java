@@ -68,13 +68,15 @@ public class UserResource {
     //login a user
     @POST
     @Path("/login")
-    @RolesAllowed("admin")
+//    @RolesAllowed("admin")
     public Response loginUser(loginRequest request) {
         try
         {
         logInfo("Trying to connect a user");
+        System.out.println("Trying to connect a user");
         loginResponse response = userService.loginUser(request.login,request.password);
         logSuccess("The operation was successful");
+        System.out.println("The operation was successful");
         return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (InvalidException e) { // 400
@@ -84,6 +86,7 @@ public class UserResource {
         }
         catch (BadInfosException e) // 401
         {
+            System.out.println("NIMPORT QUOI FRERE T CON OU QUOIIII");
             logError("Error 401: The login/password combination is invalid");
             return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("The login or the password is invalid")).build();
         }

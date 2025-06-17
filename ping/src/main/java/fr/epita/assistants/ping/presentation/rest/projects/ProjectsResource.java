@@ -13,6 +13,9 @@ import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Feature;
 import fr.epita.assistants.ping.utils.RequestVerifyer;
 import fr.epita.assistants.ping.utils.UserStatus;
+import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -28,29 +31,29 @@ public class ProjectsResource {
     @Inject
     ProjectMembersService projectMembersService;
 
+    @Inject public SecurityIdentity identity;
+
+
     @GET
     @Path("")
     @QueryParam("onlyOwned")
 //    @Authenticated
+//    @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProjects(@DefaultValue("false") @QueryParam("onlyOwned") boolean onlyOwned) {
-
-        boolean isAuthorized = true; // FIXME change implementation when user logged implemented
-
-        if (!isAuthorized) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("Not authorized")).build();
-//            System.out.println(">>>> onlyowned: " + onlyOwned);
-        }
-        ArrayList<ProjectResponse> projectResponse = projectService.buildGetProjectsResponse(onlyOwned);
+        System.out.println("uid " + identity.getAttribute("sub"));
+        ArrayList<ProjectResponse> projectResponse = projectService.buildGetProjectsResponse("", onlyOwned);
         return Response.status(200).entity(projectResponse).build();
     }
 
     @POST
     @Path("")
 //    @Authenticated
+//    @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createProject(NewProjectRequest newProjectRequest) {
+        System.out.println("anonymous? -> " + identity.isAnonymous());
         boolean isAuthorized = true;
 
         if (!isAuthorized) {
@@ -88,7 +91,7 @@ public class ProjectsResource {
     @PUT
     @Path("/{id}")
 //    @Authenticated
-//    @RolesAllowed({"admin", "owner"})
+//    @RolesAllowed("admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateProject(@PathParam("id") UUID projectId, UpdateProjectRequest updateProjectRequest) {
@@ -134,6 +137,7 @@ public class ProjectsResource {
 
     @GET
 //    @Authenticated
+//    @RolesAllowed({"admin", "user"})
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProject(@PathParam("id") UUID projectId) {
@@ -158,7 +162,7 @@ public class ProjectsResource {
 
     @DELETE
 //    @Authenticated
-//    @RolesAllowed({"admin", "owner"})
+//    @RolesAllowed({"admin"})
     @Path("/{id}")
     public Response deleteProject(@PathParam("id") UUID projectId) {
         boolean isAuthorized = true;
@@ -186,7 +190,7 @@ public class ProjectsResource {
     @POST
     @Path("/{id}/add-user")
 //    @Authenticated
-//    @RolesAllowed({"member", "admin", "owner"})
+//    @RolesAllowed({"user", "admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUserToProject(@PathParam("id") UUID projectId, UserProjectRequest userProjectRequest) {
         boolean isAuthorized = true;
@@ -226,7 +230,7 @@ public class ProjectsResource {
     @POST
     @Path("/{id}/remove-user")
 //    @Authenticated
-//    @RolesAllowed({"member", "admin", "owner"})
+    @RolesAllowed({"user", "admin"})
     public Response removeUserFromProject(@PathParam("id") UUID projectId, UserProjectRequest userProjectRequest) {
         boolean isAuthorized = true;
         UserModel currentUser = new UserModel(UUID.randomUUID(), "", "", "", false, "");

@@ -35,7 +35,7 @@ public class ProjectService {
 
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
-    public ArrayList<ProjectResponse> buildGetProjectsResponse(boolean onlyOwned) {
+    public ArrayList<ProjectResponse> buildGetProjectsResponse(String userUUID, boolean onlyOwned) {
         ArrayList<ProjectResponse> responses = new ArrayList<>();
 
         if (onlyOwned) {

@@ -36,7 +36,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     @Transactional
     public ProjectModel createNewProject(String projectName, UserModel user)
     {
-        Set<ProjectMembersModel> members = new HashSet<>();
+        List<ProjectMembersModel> members = new ArrayList<>();
         UUID projectUUID = UUID.randomUUID();
         members.add(new ProjectMembersModel()
                 .withProjectUUID(projectUUID)
