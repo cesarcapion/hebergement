@@ -71,7 +71,7 @@ public class UserResource {
     //login a user
     @POST
     @Path("/login")
-    @RolesAllowed("admin")
+//    @RolesAllowed("admin")
     public Response loginUser(loginRequest request) {
         try
         {
