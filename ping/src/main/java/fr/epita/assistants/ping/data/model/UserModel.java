@@ -2,9 +2,7 @@ package fr.epita.assistants.ping.data.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.UUID;
 
@@ -16,7 +14,7 @@ public class UserModel {
 
     @Id
     @GeneratedValue
-    private UUID uuid;
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String login;
@@ -33,8 +31,8 @@ public class UserModel {
 
 
 
-    public UUID getUuid() { return uuid; }
-    public void setUuid(UUID uuid) { this.uuid = uuid; }
+    public UUID getId() { return id; }
+    public void setId(UUID uuid) { this.id = uuid; }
 
     public String getLogin() { return login; }
     public void setLogin(String login) { this.login = login; }
