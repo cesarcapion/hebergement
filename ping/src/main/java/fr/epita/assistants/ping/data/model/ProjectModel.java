@@ -1,24 +1,29 @@
 package fr.epita.assistants.ping.data.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "projects")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@With
 public class ProjectModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer uuid;
+    public UUID uuid;
 
     @Column(name="owner_id")
-    public String owner;
+    public UUID owner;
 
     public String name;
     public String path;
 
-//     TODO handle links between project and members
-//    @OneToMany(mappedBy = "projects")
-//    public Set<String> members;
+
+    @OneToMany(mappedBy = "projectUUID", fetch = FetchType.EAGER)
+    public Set<ProjectMembersModel> members;
 }
