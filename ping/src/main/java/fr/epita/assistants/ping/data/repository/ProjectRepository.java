@@ -19,7 +19,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     /// returns all the projects owned by userUUID
     public List<ProjectModel> getOwnedProjects(String userUUID)
     {
-        return find("ownerId", userUUID).stream().toList();
+        return find("owner", UUID.fromString(userUUID)).stream().toList();
     }
 
     /// returns all the projects where there is a member with userUUID

@@ -26,7 +26,7 @@ import jakarta.ws.rs.core.Response;
 import static fr.epita.assistants.ping.utils.Logger.*;
 import static fr.epita.assistants.ping.utils.Logger.logError;
 
-@Path("/api/users")
+@Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
