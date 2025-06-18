@@ -15,8 +15,8 @@ public class Logger {
     private static final String RED_TEXT = "\u001B[31m";
     private static final String GREEN_TEXT = "\u001B[32m";
 
-    @ConfigProperty(name= "LOG_FILE", defaultValue = "resources/logs/logs.txt") static String logPath;
-    @ConfigProperty(name= "ERROR_LOG_FILE", defaultValue = "resources/logs/error.txt") static String errorPath;
+    @ConfigProperty(name= "LOG_FILE", defaultValue = "logs.txt") static String logPath;
+    @ConfigProperty(name= "ERROR_LOG_FILE", defaultValue = "error.txt") static String errorPath;
 
 
 

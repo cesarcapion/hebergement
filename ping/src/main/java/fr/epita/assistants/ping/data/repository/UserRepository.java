@@ -6,9 +6,11 @@ import java.util.UUID;
 import fr.epita.assistants.ping.data.model.UserModel;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserRepository  implements PanacheRepository<UserModel> {
+    @Transactional
     public void addUser(UserModel user) {
         persist(user);
     }
@@ -25,6 +27,7 @@ public class UserRepository  implements PanacheRepository<UserModel> {
         return findAll().stream().toList();
     }
 
+    @Transactional
     public void delete(UserModel user) {
         delete(user);
     }

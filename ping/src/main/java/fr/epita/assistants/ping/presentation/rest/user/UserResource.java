@@ -59,8 +59,7 @@ public class UserResource {
 
     @GET
     @Path("/all")
-    @Authenticated
-//    @RolesAllowed("admin")
+    @RolesAllowed("admin")
     public Response listUsers() {
         logInfo("Trying to get all users");
         UserResponse[] response = userService.getAllUsers();
@@ -91,19 +90,19 @@ public class UserResource {
         catch (BadInfosException e) // 401
         {
             logError("Error 401: The login/password combination is invalid");
-            return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("The login or the password is invalid")).build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("The login/password combination is invalid")).build();
         }
     }
 
 
     @GET
-    @Path("/{id}")
+    @Path("/refresh")
     @RolesAllowed({"admin","user"})
     public Response refreshToken() {
         try
         {
             logInfo("Trying to refresh the user token");
-            LoginResponse response = userService.refreshToken(identity.getPrincipal().getName());
+            LoginResponse response = userService.refreshToken(UUID.fromString(identity.getPrincipal().getName()));
             logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
@@ -114,12 +113,6 @@ public class UserResource {
         }
     }
 
-    //get a user
-    @GET
-    @Path("/{id}")
-    public UserModel getUser(@PathParam("id") UUID id) {
-        return userService.get(id);
-    }
 
     /*@DELETE
     @Path("/{id}")

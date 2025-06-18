@@ -110,10 +110,11 @@ public class UserService {
         return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
     }
 
-    public LoginResponse refreshToken(String login) throws UserException {
-
+    public LoginResponse refreshToken(UUID id) throws UserException {
+        String login = repository.findById(id).getLogin();
         if (repository.findByLogin(login) == null)
         {
+            System.out.println(login);
             throw new UserException("login invalid");
         }
         return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
