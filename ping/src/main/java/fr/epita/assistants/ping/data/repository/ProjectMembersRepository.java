@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.data.repository;
 
 import fr.epita.assistants.ping.data.model.ProjectMembersModel;
+import fr.epita.assistants.ping.data.model.UserModel;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,11 @@ public class ProjectMembersRepository implements PanacheRepository<ProjectMember
                 .withProjectUUID(projectUUID)
                 .withMemberUUID(memberUUID));
     }
+
+    public ProjectMembersModel findByMemberId(UUID id) {
+        return find("memberUUID", id).firstResult();
+    }
+
 
     @Transactional
     public void deleteAllMembers(UUID projectUUID)

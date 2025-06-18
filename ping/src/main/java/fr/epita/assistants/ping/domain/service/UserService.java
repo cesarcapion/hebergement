@@ -5,14 +5,13 @@ import java.time.Instant;
 import java.util.*;
 
 import fr.epita.assistants.ping.api.request.CreateUserRequest;
+import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
+import fr.epita.assistants.ping.data.repository.ProjectMembersRepository;
 import fr.epita.assistants.ping.data.repository.UserRepository;
-import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
-import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
-import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
-import fr.epita.assistants.ping.errors.Exceptions.UserException;
+import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -25,6 +24,9 @@ import java.time.Duration;
 public class UserService {
     @Inject
     UserRepository repository;
+
+    @Inject
+    ProjectMembersRepository pmRepository;
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
 
@@ -146,19 +148,35 @@ public class UserService {
 
 
 
-    @Transactional
-    public UserModel update(UUID id, UserModel input) {
-        UserModel user = get(id);
+    public UserResponse update(UUID userId, UUID userToUpdateId, UserUpdateRequest input) throws NotAuthorizedException, UserException {
+        if (repository.findById(userToUpdateId) == null)
+            throw new UserException("utilisateur introuvable"); // 404
+        if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+            throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
+        UserModel user = repository.findById(userToUpdateId);
+        user.setPassword(input.password);
+        user.setAvatar(input.avatar);
+        user.setDisplayName(input.displayName);
+        repository.updateUser(user);
+        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+    }
+    public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
+        if (repository.findById(userToUpdateId) == null)
+            throw new UserException("utilisateur introuvable"); // 404
 
-        user.setAvatar(input.getAvatar());
-        user.setDisplayName(input.getDisplayName());
+        if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+            throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
-        return user;
+        UserModel user = repository.findById(userToUpdateId);
+        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
     }
 
     @Transactional
-    public void delete(UUID id) {
-        UserModel user = get(id);
-        repository.delete(user);
+    public void delete(UUID id) throws UserException, NotAuthorizedException {
+        if (repository.findById(id) == null)
+            throw new UserException("utilisateur introuvable"); //// 404
+        if (pmRepository.findByMemberId(id) != null)
+            throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
+        repository.deleteUser(repository.findById(id));
     }
 }

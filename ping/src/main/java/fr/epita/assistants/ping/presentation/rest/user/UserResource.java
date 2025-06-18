@@ -5,6 +5,7 @@ import java.util.UUID;
 
 
 import fr.epita.assistants.ping.api.request.CreateUserRequest;
+import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 
@@ -13,6 +14,7 @@ import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
+import fr.epita.assistants.ping.errors.Exceptions.NotAuthorizedException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.Authenticated;
@@ -113,12 +115,72 @@ public class UserResource {
         }
     }
 
-
-    /*@DELETE
+    @PUT
     @Path("/{id}")
-    @RolesAllowed("admin")
+    @RolesAllowed({"admin","user"})
+    public Response updateUser(UserUpdateRequest user,@PathParam("id") UUID id) {
+        try
+        {
+            logInfo("Trying to refresh the user token");
+            UserResponse response = userService.update(UUID.fromString(identity.getPrincipal().getName()),id,user);
+            logSuccess("The operation was successful");
+            return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
+        }
+        catch (NotAuthorizedException e) // 403
+        {
+            logError("Error 403: The user is not allowed");
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed")).build();
+        }
+        catch (UserException e) // 404
+        {
+            logError("Error 404: The user could not be found");
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The user could not be found")).build();
+        }
+    }
+
+    @GET
+    @Path("/{id}")
+    @RolesAllowed({"admin","user"})
+    public Response getUser(@PathParam("id") UUID id) {
+        try
+        {
+            logInfo("Trying to refresh the user token");
+            UserResponse response = userService.get(UUID.fromString(identity.getPrincipal().getName()),id);
+            logSuccess("The operation was successful");
+            return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
+        }
+        catch (NotAuthorizedException e) // 403
+        {
+            logError("Error 403: The user is not allowed");
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access this user")).build();
+        }
+        catch (UserException e) // 404
+        {
+            logError("Error 404: The user could not be found");
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User not found")).build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @RolesAllowed({"admin","user"})
     public Response deleteUser(@PathParam("id") UUID id) {
-        service.delete(id);
-        return Response.noContent().build();
-    }*/
+        try
+        {
+            logInfo("Trying to refresh the user token");
+            userService.delete(id);
+            logSuccess("The operation was successful");
+            return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The user was deleted")).build(); // 204
+        }
+        catch (NotAuthorizedException e) // 403
+        {
+            logError("Error 403: The user is not allowed");
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access this endpoint, or the user owns projects")).build();
+        }
+        catch (UserException e) // 404
+        {
+            logError("Error 404: The user could not be found");
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The user could not be found")).build();
+        }
+    }
 }
