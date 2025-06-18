@@ -1,7 +1,7 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
-import fr.epita.assistants.ping.common.Request.MoveFileRequest;
-import fr.epita.assistants.ping.common.Request.RelativePathRequest;
+import fr.epita.assistants.ping.api.request.MoveFileRequest;
+import fr.epita.assistants.ping.api.request.RelativePathRequest;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -20,7 +20,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 import static fr.epita.assistants.ping.utils.Logger.*;
 
 
-@Path("/api/projects/{projectId}")
+@Path("/api")
 public class FilesResource {
 
 
@@ -29,7 +29,7 @@ public class FilesResource {
     FileService fileService;
 
     @GET
-    @Path("/files")
+    @Path("/projects/{projectId}/files")
     @RolesAllowed({"user", "admin"})
     /* Retrieve the content of a file.
 
@@ -68,7 +68,7 @@ public class FilesResource {
 
 
     @DELETE
-    @Path("/files")
+    @Path("/projects/{projectId}/files")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /* Delete a file from the file system and all its content, be careful if the file is the root
@@ -105,7 +105,7 @@ public class FilesResource {
 
 
     @POST
-    @Path("/files")
+    @Path("/projects/{projectId}/files")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*
@@ -150,7 +150,7 @@ public class FilesResource {
 
 
     @PUT
-    @Path("/files/move")
+    @Path("/projects/{projectId}/files/move")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*
@@ -197,7 +197,7 @@ public class FilesResource {
 
 
     @POST
-    @Path("/files/upload")
+    @Path("/projects/{projectId}/files/upload")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @RolesAllowed({"user", "admin"})
     /*

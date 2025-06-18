@@ -19,7 +19,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     /// returns all the projects owned by userUUID
     public List<ProjectModel> getOwnedProjects(String userUUID)
     {
-        return find("ownerId", userUUID).stream().toList();
+        return find("owner", UUID.fromString(userUUID)).stream().toList();
     }
 
     /// returns all the projects where there is a member with userUUID
@@ -27,22 +27,27 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     {
         // No need to add projects where the owner is this user, because owning a project implies
         // that you are member of it too
+        System.out.println("getting member projects for " + userUUID);
+        List<ProjectModel> projects = findAll().stream().toList();
+//        for (ProjectModel project: projects) {
+//            if (project.members.stream().filter(projectMembersModel -> projectMembersModel.memberUUID.equals(userUUID)).count() > 0)
+//        }
         return findAll().stream()
                 .filter(projectModel -> projectModel.members.stream()
-                .filter(projectMembersModel -> projectMembersModel.memberUUID == UUID.fromString(userUUID)).count() == 1)
+                .filter(projectMembersModel -> projectMembersModel.memberUUID.equals(UUID.fromString(userUUID))).count() == 1)
                 .toList();
     }
 
     @Transactional
     public ProjectModel createNewProject(String projectName, UserModel user)
     {
-        Set<ProjectMembersModel> members = new HashSet<>();
+        List<ProjectMembersModel> members = new ArrayList<>();
         UUID projectUUID = UUID.randomUUID();
         members.add(new ProjectMembersModel()
                 .withProjectUUID(projectUUID)
-                .withMemberUUID(user.getUuid()));
+                .withMemberUUID(user.getId()));
         ProjectModel createdProject = new ProjectModel()
-            .withOwner(user.getUuid())
+            .withOwner(user.getId())
             .withUuid(projectUUID)
             .withMembers(members)
             .withName(projectName)

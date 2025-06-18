@@ -1,8 +1,8 @@
 package fr.epita.assistants.ping.presentation.rest.filesystem;
 
-import fr.epita.assistants.ping.common.Request.MoveFileRequest;
-import fr.epita.assistants.ping.common.Request.RelativePathRequest;
-import fr.epita.assistants.ping.common.Response.GetFolderResponse;
+import fr.epita.assistants.ping.api.request.MoveFileRequest;
+import fr.epita.assistants.ping.api.request.RelativePathRequest;
+import fr.epita.assistants.ping.api.response.GetFolderResponse;
 import fr.epita.assistants.ping.domain.service.FolderService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
@@ -22,7 +22,7 @@ import java.util.UUID;
 import static fr.epita.assistants.ping.utils.Logger.*;
 
 
-@Path("/api/projects/{projectId}")
+@Path("/api")
 public class FoldersResource {
 
 
@@ -32,7 +32,7 @@ public class FoldersResource {
     FolderService folderService;
 
     @GET
-    @Path("/folders")
+    @Path("/projects/{projectId}/folders")
     @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
     /* List the content of the folder located at the given path in the project with the given id. By default it lists the root folder.
@@ -65,7 +65,7 @@ public class FoldersResource {
 
 
     @DELETE
-    @Path("/folders")
+    @Path("/projects/{projectId}/folders")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /* Delete a file from the file system and all its content, be careful if the file is the root
@@ -101,7 +101,7 @@ public class FoldersResource {
 
 
     @POST
-    @Path("/folders")
+    @Path("/projects/{projectId}/folders")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*
@@ -141,7 +141,7 @@ public class FoldersResource {
         }
     }
     @PUT
-    @Path("/folders/move")
+    @Path("/projects/{projectId}/folders/move")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*

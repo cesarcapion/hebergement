@@ -4,39 +4,43 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.epita.assistants.ping.data.model.UserModel;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class UserRepository {
-    @Inject
-    EntityManager entityManager;
-
-    public void persist(UserModel user) { 
-        entityManager.persist(user);
+public class UserRepository  implements PanacheRepository<UserModel> {
+    @Transactional
+    public void addUser(UserModel user) {
+        persist(user);
     }
 
     public UserModel findById(UUID id) {
-        return entityManager.find(UserModel.class, id);
+        return find("id", id).firstResult();
     }
 
     public UserModel findByLogin(String login) {
-        
-        TypedQuery<UserModel> query = entityManager.createQuery(
-            "SELECT u FROM UserModel u WHERE u.login = :login", UserModel.class
-        );
-        query.setParameter("login", login);
-        return query.getSingleResult();
+        return find("login", login).firstResult();
     }
 
     public List<UserModel> listAll() {
-        TypedQuery<UserModel> query = entityManager.createQuery("FROM UserModel", UserModel.class);
-        return query.getResultList();
+        return findAll().stream().toList();
     }
 
-    public void delete(UserModel user) {
-        entityManager.remove(user);
+    @Transactional
+    public void deleteUser(UserModel user) {
+        PanacheRepository.super.delete(user);
+    }
+
+    @Transactional
+    public void updateUser(UserModel updatedUser) {
+        UserModel existingUser = findById(updatedUser.getId());
+        if (existingUser != null) {
+            existingUser.setLogin(updatedUser.getLogin());
+            existingUser.setDisplayName(updatedUser.getDisplayName());
+            existingUser.setPassword(updatedUser.getPassword());
+            existingUser.setAvatar(updatedUser.getAvatar());
+            existingUser.setIsAdmin(updatedUser.getIsAdmin());
+        }
     }
 }

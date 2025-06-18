@@ -10,6 +10,6 @@ public class UserModelToUserInfoConverter implements IConverter<UserModel, UserI
 {
     @Override
     public UserInfoResponse convert(UserModel userModel) {
-        return new UserInfoResponse(userModel.getUuid().toString(), userModel.getDisplayName(), userModel.getAvatar());
+        return new UserInfoResponse(userModel.getId().toString(), userModel.getDisplayName(), userModel.getAvatar());
     }
 }

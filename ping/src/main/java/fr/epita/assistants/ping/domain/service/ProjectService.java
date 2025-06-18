@@ -32,19 +32,21 @@ public class ProjectService {
     UserModelToUserInfoConverter userModelToUserInfoConverter;
     @Inject
     ProjectMembersService projectMembersService;
+    @Inject
+    UserService userService;
 
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
-    public ArrayList<ProjectResponse> buildGetProjectsResponse(boolean onlyOwned) {
+    public ArrayList<ProjectResponse> buildGetProjectsResponse(String userUUID, boolean onlyOwned) {
         ArrayList<ProjectResponse> responses = new ArrayList<>();
 
         if (onlyOwned) {
-            List<ProjectModel> projects_owned = projectRepository.getOwnedProjects(""); // FIXME place userUUID in the parameter when user implemented
+            List<ProjectModel> projects_owned = projectRepository.getOwnedProjects(userUUID);
             fillResponses(responses, projects_owned);
         }
         else
         {
-            List<ProjectModel> projects_member = projectRepository.getMemberProjects(""); // FIXME place userUUID in the parameter when user implemented
+            List<ProjectModel> projects_member = projectRepository.getMemberProjects(userUUID);
             fillResponses(responses, projects_member);
         }
         return responses;
@@ -54,15 +56,18 @@ public class ProjectService {
         for (ProjectModel project : projects) {
             ProjectEntity projectEntity = projectModelConverter.convert(project);
             ArrayList<UserInfoResponse> members = new ArrayList<>();
-            UserInfoResponse owner = new UserInfoResponse("", "", "");
+            UserModel owner = userService.get(project.getOwner());
+            UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
             // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then set it above
             project.members.forEach((member) -> {
+                UserModel user = userService.get(member.memberUUID);
+                members.add(userModelToUserInfoConverter.convert(user));
                 // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then add it on the members list
             });
             responses.add(
                     new ProjectResponse()
                             .withId(projectEntity.project_id)
-                            .withOwner(owner)
+                            .withOwner(ownerInfo)
                             .withName(project.name)
                             .withMembers(members)
                             );
@@ -72,15 +77,17 @@ public class ProjectService {
     public ProjectResponse buildGetProjectResponse(ProjectModel project) {
         ProjectEntity projectEntity = projectModelConverter.convert(project);
         ArrayList<UserInfoResponse> members = new ArrayList<>();
-        UserInfoResponse owner = new UserInfoResponse(project.owner.toString(), "", "");
-        // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then set it above
+
+        UserModel owner = userService.get(project.getOwner());
+        UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
+
         project.members.forEach((member) -> {
-            members.add(new UserInfoResponse(member.memberUUID.toString(), "", ""));
-            // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then add it on the members list
+            UserModel user = userService.get(member.memberUUID);
+            members.add(userModelToUserInfoConverter.convert(user));
         });
         return new ProjectResponse()
                         .withId(projectEntity.project_id)
-                        .withOwner(owner)
+                        .withOwner(ownerInfo)
                         .withName(project.name)
                         .withMembers(members);
     }
@@ -92,13 +99,14 @@ public class ProjectService {
 
     public ProjectResponse buildCreateProjectResponse(String projectName, UserModel user) {
         ProjectModel createdProject = projectRepository.createNewProject(projectName, user);
-        System.out.println("created ? -> " + createProjectFolder(createdProject));
+        createProjectFolder(createdProject);
+//        System.out.println("created ? -> " + createProjectFolder(createdProject));
 
         UserInfoResponse owner = userModelToUserInfoConverter.convert(user);
 
         ArrayList<UserInfoResponse> members = new ArrayList<>();
         members.add(owner);
-        projectMembersService.addMemberToProject(user.getUuid(), createdProject.uuid);
+        projectMembersService.addMemberToProject(user.getId(), createdProject.uuid);
 
         return new ProjectResponse()
                 .withId(createdProject.uuid.toString())
@@ -120,7 +128,7 @@ public class ProjectService {
 
     /// returns the updated project if the new owner is member of the project and updates it, null otherwise
     public ProjectModel UpdateProject(UUID projectUUID, UUID newOwnerUUID, String newName) {
-        if (getUserStatus(newOwnerUUID, projectUUID, false) == UserStatus.NOT_A_MEMBER)
+        if (newOwnerUUID != null && getUserStatus(newOwnerUUID, projectUUID, false) == UserStatus.NOT_A_MEMBER)
         {
             return null;
         }

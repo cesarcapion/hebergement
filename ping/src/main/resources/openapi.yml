@@ -8,7 +8,7 @@ paths:
           description: OK
       summary: Error
       tags:
-      - Hello World Resource
+        - Hello World Resource
   /api/hello:
     get:
       responses:
@@ -16,7 +16,7 @@ paths:
           description: OK
       summary: Hello World
       tags:
-      - Hello World Resource
+        - Hello World Resource
   /api/projects:
     get:
       summary: List projects of user
@@ -30,12 +30,12 @@ paths:
 
         Any logged in user can access this endpoint.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: onlyOwned
-        in: query
-        schema:
-          type: boolean
+        - name: onlyOwned
+          in: query
+          schema:
+            type: boolean
       responses:
         "200":
           description: List of the projects
@@ -50,9 +50,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     post:
       summary: Create a project
       description: |
@@ -60,7 +60,7 @@ paths:
 
         Any logged in user can access this endpoint.
       tags:
-      - Project
+        - Project
       requestBody:
         content:
           application/json:
@@ -81,9 +81,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/all:
     get:
       summary: List all the projects
@@ -92,7 +92,7 @@ paths:
 
         Only an admin can access this endpoint.
       tags:
-      - Project
+        - Project
       responses:
         "200":
           description: List of the projects
@@ -107,10 +107,10 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme:
-        - admin
+        - SecurityScheme:
+            - admin
   /api/projects/{id}:
     put:
       summary: Update a project
@@ -126,13 +126,13 @@ paths:
 
         Only the owner of the project or an admin can access this endpoint.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -156,9 +156,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     get:
       summary: Get a project
       description: |-
@@ -168,13 +168,13 @@ paths:
 
         An admin can access this endpoint in any case.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       responses:
         "200":
           description: The project
@@ -189,9 +189,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     delete:
       summary: Delete a project
       description: |
@@ -199,13 +199,13 @@ paths:
 
         Only the owner of the project or an admin can access this endpoint.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       responses:
         "204":
           description: The project was deleted
@@ -216,9 +216,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{id}/add-user:
     post:
       summary: Add a member
@@ -227,13 +227,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -254,9 +254,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{id}/exec:
     post:
       summary: Execute a feature
@@ -274,13 +274,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -300,9 +300,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{id}/remove-user:
     post:
       summary: Remove a member
@@ -311,13 +311,13 @@ paths:
 
         Only the owner of the project or an admin can access this endpoint.
       tags:
-      - Project
+        - Project
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -338,9 +338,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{projectId}/files:
     get:
       summary: Get a file
@@ -353,18 +353,18 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - File
+        - File
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      - name: path
-        in: query
-        schema:
-          type: string
-          default: ""
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: path
+          in: query
+          schema:
+            type: string
+            default: ""
       responses:
         "200":
           description: Content of the file
@@ -378,9 +378,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     delete:
       summary: Delete a file
       description: |
@@ -389,13 +389,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - File
+        - File
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -416,9 +416,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     post:
       summary: Create a file
       description: |
@@ -426,13 +426,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - File
+        - File
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -454,9 +454,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{projectId}/files/move:
     put:
       summary: Move a file
@@ -465,13 +465,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - File
+        - File
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -494,9 +494,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{projectId}/files/upload:
     post:
       summary: Upload a new file
@@ -510,17 +510,17 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - File
+        - File
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      - name: path
-        in: query
-        schema:
-          type: string
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: path
+          in: query
+          schema:
+            type: string
       requestBody:
         content:
           application/octet-stream:
@@ -541,9 +541,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{projectId}/folders:
     get:
       summary: List a folder
@@ -555,18 +555,18 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - Folder
+        - Folder
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
-      - name: path
-        in: query
-        schema:
-          type: string
-          default: ""
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: path
+          in: query
+          schema:
+            type: string
+            default: ""
       responses:
         "200":
           description: List of folder entries
@@ -584,9 +584,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     delete:
       summary: Delete a folder
       description: |
@@ -595,13 +595,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - Folder
+        - Folder
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -621,9 +621,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     post:
       summary: Create a folder
       description: |
@@ -631,13 +631,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - Folder
+        - Folder
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -659,9 +659,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/projects/{projectId}/folders/move:
     put:
       summary: Move a folder
@@ -670,13 +670,13 @@ paths:
 
         Any member of the project or an admin can access this endpoint.
       tags:
-      - Folder
+        - Folder
       parameters:
-      - name: projectId
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -700,9 +700,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/user:
     post:
       summary: Create a user
@@ -712,7 +712,7 @@ paths:
 
         Only an admin can access this endpoint.
       tags:
-      - User
+        - User
       requestBody:
         content:
           application/json:
@@ -735,10 +735,10 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme:
-        - admin
+        - SecurityScheme:
+            - admin
   /api/user/all:
     get:
       summary: List all the users
@@ -748,7 +748,7 @@ paths:
 
         Only an admin can access this endpoint.
       tags:
-      - User
+        - User
       responses:
         "200":
           description: List of the users
@@ -763,10 +763,10 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme:
-        - admin
+        - SecurityScheme:
+            - admin
   /api/user/login:
     post:
       summary: Login a user
@@ -775,7 +775,7 @@ paths:
 
         It should return a token if the login/password combination is valid.
       tags:
-      - User
+        - User
       requestBody:
         content:
           application/json:
@@ -794,7 +794,7 @@ paths:
         "400":
           description: The login or the password is null
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
   /api/user/refresh:
     get:
       summary: Refresh a token
@@ -803,7 +803,7 @@ paths:
 
         Only a logged in user can access this endpoint.
       tags:
-      - User
+        - User
       responses:
         "200":
           description: The new token
@@ -818,9 +818,9 @@ paths:
         "403":
           description: Not Allowed
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
   /api/user/{id}:
     put:
       summary: Update a user
@@ -833,13 +833,13 @@ paths:
 
         Only the same user or an admin can access this endpoint.
       tags:
-      - User
+        - User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       requestBody:
         content:
           application/json:
@@ -860,9 +860,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     get:
       summary: Get a user
       description: |
@@ -870,13 +870,13 @@ paths:
 
         A user can only access its data while an admin can access any user data.
       tags:
-      - User
+        - User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       responses:
         "200":
           description: The user
@@ -891,9 +891,9 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme: []
+        - SecurityScheme: []
     delete:
       summary: Delete a user
       description: |
@@ -903,13 +903,13 @@ paths:
 
         Only an admin can access this endpoint.
       tags:
-      - User
+        - User
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UUID'
       responses:
         "204":
           description: The user was deleted
@@ -921,10 +921,10 @@ paths:
         "401":
           description: Not Authorized
       servers:
-      - url: http://localhost:8080
+        - url: http://localhost:8080
       security:
-      - SecurityScheme:
-        - admin
+        - SecurityScheme:
+            - admin
 components:
   schemas:
     ExecFeatureRequest:
@@ -1052,14 +1052,14 @@ components:
       bearerFormat: JWT
       description: Authentication
 tags:
-- name: File
-  description: File API
-- name: Folder
-  description: Folder API
-- name: Project
-  description: Project API
-- name: User
-  description: User API
+  - name: File
+    description: File API
+  - name: Folder
+    description: Folder API
+  - name: Project
+    description: Project API
+  - name: User
+    description: User API
 info:
   title: ping API
   version: "1.0"

@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.data.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,5 +26,5 @@ public class ProjectModel {
 
 
     @OneToMany(mappedBy = "projectUUID", fetch = FetchType.EAGER)
-    public Set<ProjectMembersModel> members;
+    public List<ProjectMembersModel> members;
 }

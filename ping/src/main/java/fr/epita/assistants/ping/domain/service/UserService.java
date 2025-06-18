@@ -1,23 +1,23 @@
 package fr.epita.assistants.ping.domain.service;
 
+import java.io.Console;
 import java.time.Instant;
 import java.util.*;
 
-import fr.epita.assistants.ping.common.Request.CreateUserRequest;
-import fr.epita.assistants.ping.common.Response.UserResponse;
-import fr.epita.assistants.ping.common.Response.GetFolderResponse;
-import fr.epita.assistants.ping.common.Response.loginResponse;
+import fr.epita.assistants.ping.api.request.CreateUserRequest;
+import fr.epita.assistants.ping.api.request.UserUpdateRequest;
+import fr.epita.assistants.ping.api.response.UserResponse;
+import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
+import fr.epita.assistants.ping.data.repository.ProjectMembersRepository;
 import fr.epita.assistants.ping.data.repository.UserRepository;
-import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
-import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
-import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
-import fr.epita.assistants.ping.errors.Exceptions.UserException;
-import io.smallrye.jwt.algorithm.SignatureAlgorithm;
+import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import io.smallrye.jwt.build.Jwt;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import java.time.Duration;
 
 @ApplicationScoped
@@ -25,14 +25,24 @@ public class UserService {
     @Inject
     UserRepository repository;
 
+    @Inject
+    ProjectMembersRepository pmRepository;
+    @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
+
 
     private boolean checkLogin(String login, String password) {
         return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") && password.matches("[a-zA-Z]+");
 
     }
 
-    public static String generateToken(String userId, boolean isAdmin) {
-        return Jwt.claim("sub", userId).claim("groups", isAdmin ? "admin" : "user").claim("iat", Instant.now()).expiresIn(Duration.ofHours(1)).sign();
+    public static String generateToken(UUID userId, boolean isAdmin) {
+        System.out.println(userId + " : " + isAdmin);
+        return Jwt.claim("sub", userId.toString())
+                .claim("groups", isAdmin ? "admin" : "user")
+                .claim("iat", Instant.now().getEpochSecond())
+                .issuer("http://mon-app.epita.fr")
+                .expiresIn(Duration.ofHours(1))
+                .sign();
     }
 
     public String loginToName(String login) {
@@ -72,8 +82,8 @@ public class UserService {
         newUser.setLogin(input.login);
         newUser.setPassword(input.password);
 
-        repository.persist(newUser);
-        return new UserResponse(newUser.getUuid(),newUser.getLogin(),newUser.getDisplayName(),newUser.getIsAdmin(),newUser.getAvatar());
+        repository.addUser(newUser);
+        return new UserResponse(newUser.getId(),newUser.getLogin(),newUser.getDisplayName(),newUser.getIsAdmin(),newUser.getAvatar());
     }
 
     /*
@@ -84,13 +94,13 @@ public class UserService {
         List<UserModel> list = repository.listAll();
         List<UserResponse> response = new ArrayList<>();
         for (UserModel user : list) {
-            UserResponse element = new UserResponse(user.getUuid(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+            UserResponse element = new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
             response.add(element);
         }
         return response.toArray(new UserResponse[0]); // 200
     }
 
-    public loginResponse loginUser(String login, String password) throws InvalidException, BadInfosException {
+    public LoginResponse loginUser(String login, String password) throws InvalidException, BadInfosException {
         if (login == null || password==null)
         {
             throw new InvalidException("login or password is null");
@@ -99,16 +109,17 @@ public class UserService {
         {
             throw new BadInfosException("password or login invalid");
         }
-        return new loginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
     }
 
-    public loginResponse refreshToken(String login) throws UserException {
-
+    public LoginResponse refreshToken(UUID id) throws UserException {
+        String login = repository.findById(id).getLogin();
         if (repository.findByLogin(login) == null)
         {
+            System.out.println(login);
             throw new UserException("login invalid");
         }
-        return new loginResponse(generateToken(login,repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
     }
 
 
@@ -137,19 +148,35 @@ public class UserService {
 
 
 
-    @Transactional
-    public UserModel update(UUID id, UserModel input) {
-        UserModel user = get(id);
+    public UserResponse update(UUID userId, UUID userToUpdateId, UserUpdateRequest input) throws NotAuthorizedException, UserException {
+        if (repository.findById(userToUpdateId) == null)
+            throw new UserException("utilisateur introuvable"); // 404
+        if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+            throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
+        UserModel user = repository.findById(userToUpdateId);
+        user.setPassword(input.password);
+        user.setAvatar(input.avatar);
+        user.setDisplayName(input.displayName);
+        repository.updateUser(user);
+        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+    }
+    public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
+        if (repository.findById(userToUpdateId) == null)
+            throw new UserException("utilisateur introuvable"); // 404
 
-        user.setAvatar(input.getAvatar());
-        user.setDisplayName(input.getDisplayName());
+        if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+            throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
-        return user;
+        UserModel user = repository.findById(userToUpdateId);
+        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
     }
 
     @Transactional
-    public void delete(UUID id) {
-        UserModel user = get(id);
-        repository.delete(user);
+    public void delete(UUID id) throws UserException, NotAuthorizedException {
+        if (repository.findById(id) == null)
+            throw new UserException("utilisateur introuvable"); //// 404
+        if (pmRepository.findByMemberId(id) != null)
+            throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
+        repository.deleteUser(repository.findById(id));
     }
 }
