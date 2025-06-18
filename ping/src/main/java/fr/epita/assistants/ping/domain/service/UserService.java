@@ -25,7 +25,7 @@ import java.time.Duration;
 public class UserService {
     @Inject
     UserRepository repository;
-    @ConfigProperty(name= "KEY", defaultValue = "remy") static String key;
+    @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
 
     private boolean checkLogin(String login, String password) {
@@ -35,11 +35,13 @@ public class UserService {
 
     public static String generateToken(UUID userId, boolean isAdmin) {
         System.out.println(userId + " : " + isAdmin);
-        return Jwt.claim("sub", userId)
+        return Jwt.upn(userId.toString())
                 .claim("groups", isAdmin ? "admin" : "user")
                 .claim("iat", Instant.now().getEpochSecond())
+                .issuer("http://mon-app.epita.fr")
                 .expiresIn(Duration.ofHours(1))
-                .signWithSecret("ma-super-cle-ultra-secrète-12345678901234567890");    }
+                .sign();
+    }
 
     public String loginToName(String login) {
         String[] parts = login.split("[._]");

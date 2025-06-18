@@ -1,5 +1,6 @@
 package fr.epita.assistants.ping.presentation.rest.user;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 
@@ -14,6 +15,7 @@ import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import fr.epita.assistants.ping.utils.ErrorInfo;
+import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -57,7 +59,8 @@ public class UserResource {
 
     @GET
     @Path("/all")
-    @RolesAllowed({"admin"})
+    @Authenticated
+//    @RolesAllowed("admin")
     public Response listUsers() {
         logInfo("Trying to get all users");
         UserResponse[] response = userService.getAllUsers();
@@ -73,10 +76,12 @@ public class UserResource {
     public Response loginUser(fr.epita.assistants.ping.common.Request.LoginRequest request) {
         try
         {
-        logInfo("Trying to connect a user");
-        LoginResponse response = userService.loginUser(request.login,request.password);
-        logSuccess("The operation was successful");
-        return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
+            System.out.println("Key found? " + (is != null));
+            logInfo("Trying to connect a user");
+            LoginResponse response = userService.loginUser(request.login,request.password);
+            logSuccess("The operation was successful");
+            return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (InvalidException e) { // 400
             logError("Error 400: The login or the password is invalid");
