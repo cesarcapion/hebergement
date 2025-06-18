@@ -78,15 +78,16 @@ public class ProjectService {
         ProjectEntity projectEntity = projectModelConverter.convert(project);
         ArrayList<UserInfoResponse> members = new ArrayList<>();
 
-        UserInfoResponse owner = new UserInfoResponse(project.owner.toString(), "", "");
-        // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then set it above
+        UserModel owner = userService.get(project.getOwner());
+        UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
+
         project.members.forEach((member) -> {
-            members.add(new UserInfoResponse(member.memberUUID.toString(), "", ""));
-            // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then add it on the members list
+            UserModel user = userService.get(member.memberUUID);
+            members.add(userModelToUserInfoConverter.convert(user));
         });
         return new ProjectResponse()
                         .withId(projectEntity.project_id)
-                        .withOwner(owner)
+                        .withOwner(ownerInfo)
                         .withName(project.name)
                         .withMembers(members);
     }
@@ -127,7 +128,7 @@ public class ProjectService {
 
     /// returns the updated project if the new owner is member of the project and updates it, null otherwise
     public ProjectModel UpdateProject(UUID projectUUID, UUID newOwnerUUID, String newName) {
-        if (getUserStatus(newOwnerUUID, projectUUID, false) == UserStatus.NOT_A_MEMBER)
+        if (newOwnerUUID != null && getUserStatus(newOwnerUUID, projectUUID, false) == UserStatus.NOT_A_MEMBER)
         {
             return null;
         }

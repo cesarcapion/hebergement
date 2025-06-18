@@ -27,9 +27,14 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     {
         // No need to add projects where the owner is this user, because owning a project implies
         // that you are member of it too
+        System.out.println("getting member projects for " + userUUID);
+        List<ProjectModel> projects = findAll().stream().toList();
+//        for (ProjectModel project: projects) {
+//            if (project.members.stream().filter(projectMembersModel -> projectMembersModel.memberUUID.equals(userUUID)).count() > 0)
+//        }
         return findAll().stream()
                 .filter(projectModel -> projectModel.members.stream()
-                .filter(projectMembersModel -> projectMembersModel.memberUUID == UUID.fromString(userUUID)).count() == 1)
+                .filter(projectMembersModel -> projectMembersModel.memberUUID.equals(UUID.fromString(userUUID))).count() == 1)
                 .toList();
     }
 

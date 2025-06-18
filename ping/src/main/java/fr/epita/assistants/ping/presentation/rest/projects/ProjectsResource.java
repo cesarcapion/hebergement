@@ -1,10 +1,16 @@
 package fr.epita.assistants.ping.presentation.rest.projects;
 
+
+import java.util.ArrayList;
+import java.util.UUID;
+
+
 import fr.epita.assistants.ping.api.request.ExecFeatureRequest;
 import fr.epita.assistants.ping.api.request.NewProjectRequest;
 import fr.epita.assistants.ping.api.request.UpdateProjectRequest;
 import fr.epita.assistants.ping.api.request.UserProjectRequest;
 import fr.epita.assistants.ping.api.response.ProjectResponse;
+
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.domain.service.ProjectMembersService;
@@ -14,7 +20,6 @@ import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Feature;
 import fr.epita.assistants.ping.utils.RequestVerifyer;
 import fr.epita.assistants.ping.utils.UserStatus;
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -22,10 +27,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
-@Path("/api/projects")
+@Path("/api/pute")
 public class ProjectsResource {
     @Inject
     ProjectService projectService;
@@ -70,6 +72,7 @@ public class ProjectsResource {
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllProjects() {
+        System.out.println(">>> getAllProjects() called");
         return Response.status(200).entity(projectService.buildGetAllProjectsResponse()).build();
     }
 
@@ -105,8 +108,8 @@ public class ProjectsResource {
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project does not exist")).build();
         }
-
-        ProjectModel updatedProject = projectService.UpdateProject(projectId, UUID.fromString(updateProjectRequest.newOwnerId), updateProjectRequest.name);
+        UUID newOwnerId = updateProjectRequest.newOwnerId != null ? UUID.fromString(updateProjectRequest.newOwnerId) : null;
+        ProjectModel updatedProject = projectService.UpdateProject(projectId, newOwnerId, updateProjectRequest.name);
         if (updatedProject == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The new owner is not a member of this project")).build();
         }
