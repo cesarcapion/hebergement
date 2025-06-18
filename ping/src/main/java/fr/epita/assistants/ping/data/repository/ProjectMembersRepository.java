@@ -22,6 +22,11 @@ public class ProjectMembersRepository implements PanacheRepository<ProjectMember
         return find("memberUUID", id).firstResult();
     }
 
+    public boolean isUserInProject(UUID userUUID, UUID projectUUID) {
+        return find("projectUUID = ?1 and memberUUID = ?2", projectUUID, userUUID)
+                .firstResult() != null;
+    }
+
 
     @Transactional
     public void deleteAllMembers(UUID projectUUID)
