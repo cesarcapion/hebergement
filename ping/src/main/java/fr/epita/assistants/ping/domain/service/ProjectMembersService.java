@@ -31,4 +31,8 @@ public class ProjectMembersService {
     public boolean deleteUserFromProject(UUID userUUID, UUID projectUUID) {
         return projectMembersRepository.deleteUserFromProject(userUUID, projectUUID);
     }
+
+    public void deleteFromAllProjects(UUID userUUID) {
+        projectMembersRepository.deleteUserFromAllProjects(userUUID);
+    }
 }
