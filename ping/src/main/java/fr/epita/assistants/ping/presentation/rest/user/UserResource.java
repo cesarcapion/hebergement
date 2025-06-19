@@ -164,7 +164,7 @@ public class UserResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({"admin","user"})
+    @RolesAllowed({"user","admin"})
     public Response deleteUser(@PathParam("id") UUID id) {
         try
         {
