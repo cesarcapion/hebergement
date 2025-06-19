@@ -46,7 +46,7 @@ public class RequestVerifyer {
     }
 
     public static boolean isInvalid(UpdateProjectRequest request) {
-        return request == null || (request.name == null && request.newOwnerId == null) || isUUIDInvalid(request.newOwnerId);
+        return request == null || (request.name == null && request.newOwnerId == null) || (request.newOwnerId != null && isUUIDInvalid(request.newOwnerId));
     }
 
 
