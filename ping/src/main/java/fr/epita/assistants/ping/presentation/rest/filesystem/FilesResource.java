@@ -249,8 +249,7 @@ public class FilesResource {
 
     /**************************************** FOLDER PART ****************************************/
 
-    @Inject
-    FolderService folderService;
+    @Inject FolderService folderService;
 
     @GET
     @Path("/projects/{projectId}/folders")
