@@ -121,10 +121,9 @@ public class ProjectsResource {
 
         UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
         if (userStatus == UserStatus.NOT_A_MEMBER && !currentUser.getIsAdmin()) {
-            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to update this project as you are not member")).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to get this project as you are not member")).build();
         }
         if (userStatus == UserStatus.ERROR) {
-            System.out.println("le project existe pas wtf");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project does not exist")).build();
         }
         // else the user is either MEMBER, OWNER or ADMIN so he can access the project
@@ -194,23 +193,22 @@ public class ProjectsResource {
     @Path("/{id}/remove-user")
     @RolesAllowed({"user", "admin"})
     public Response removeUserFromProject(@PathParam("id") UUID projectId, UserProjectRequest userProjectRequest) {
-        UserModel currentUser = new UserModel(UUID.randomUUID(), "", "", "", false, "");
-//        if (userProjectRequest == null || userProjectRequest.userId == null || userProjectRequest.userId.isEmpty()) {
+        //        if (userProjectRequest == null || userProjectRequest.userId == null || userProjectRequest.userId.isEmpty()) {
         if (RequestVerifyer.isInvalid(userProjectRequest)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Null request, null userId, empty userId or invalid uuid for userId")).build();
         }
         UserModel targetedUser = userService.get(UUID.fromString(userProjectRequest.userId));
         boolean userExist = targetedUser != null;
         if (!userExist) {
-            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User not found")).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User to remove not found")).build();
         }
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(UUID.fromString(identity.getPrincipal().getName()), projectId, false);
 
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
         if (userStatus == UserStatus.NOT_A_MEMBER) {
-            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to remove this project as you are not member")).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to remove this user from the project as you are not member")).build();
         }
         if (userStatus == UserStatus.MEMBER) {
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to remove this user as you are only a member, not an admin nor the owner")).build();
@@ -232,17 +230,15 @@ public class ProjectsResource {
     }
 
     @POST
-//    @Authenticated
     @Path("/{id}/exec")
-//    @RolesAllowed({"member", "admin", "owner"})
+    @RolesAllowed({"admin", "user"})
     public Response execFeatureFromProject(@PathParam("id") UUID projectId, ExecFeatureRequest execFeatureRequest) {
-        UserModel currentUser = new UserModel(UUID.randomUUID(), "", "", "", false, "");
 
         if (RequestVerifyer.isInvalid(execFeatureRequest)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Invalid request")).build();
         }
 
-        UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
+        UserStatus userStatus = projectService.getUserStatus(UUID.fromString(identity.getPrincipal().getName()), projectId, false);
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
