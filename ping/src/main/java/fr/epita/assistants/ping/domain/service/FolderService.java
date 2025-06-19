@@ -20,7 +20,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FolderService {
-    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/var/www/projects/") String defaultPath;
+
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     private boolean isMember(String userId, UUID projectID)
     {

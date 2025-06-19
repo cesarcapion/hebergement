@@ -57,4 +57,10 @@ public class ProjectMembersRepository implements PanacheRepository<ProjectMember
         delete(memberInProject);
         return true;
     }
+
+    @Transactional
+    public void deleteUserFromAllProjects(UUID userUUID)
+    {
+        find("memberUUID", userUUID).stream().forEach(this::delete);
+    }
 }
