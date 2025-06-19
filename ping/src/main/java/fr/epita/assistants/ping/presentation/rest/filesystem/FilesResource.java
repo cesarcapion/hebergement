@@ -29,8 +29,7 @@ public class FilesResource {
     Logger logger;
 
     @Inject public SecurityIdentity identity;
-    @Inject 
-    FileService fileService;
+    @Inject FileService fileService;
 
 
     /**************************************** FILE PART ****************************************/
