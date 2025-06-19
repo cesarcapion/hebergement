@@ -75,12 +75,9 @@ public class UserResource {
     //login a user
     @POST
     @Path("/login")
-<<<<<<< HEAD
     //@RolesAllowed("admin")
     public Response loginUser(LoginRequest request) {
-=======
-    public Response loginUser(fr.epita.assistants.ping.common.Request.LoginRequest request) {
->>>>>>> 69234ed (a)
+
         try
         {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
