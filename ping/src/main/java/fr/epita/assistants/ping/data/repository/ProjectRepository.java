@@ -17,9 +17,9 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     /// returns all the projects owned by userUUID
-    public List<ProjectModel> getOwnedProjects(String userUUID)
+    public List<ProjectModel> getOwnedProjects(UserModel user)
     {
-        return find("owner", UUID.fromString(userUUID)).stream().toList();
+        return find("owner", user).stream().toList();
     }
 
     /// returns all the projects where there is a member with userUUID
@@ -47,7 +47,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
                 .withProjectUUID(projectUUID)
                 .withMemberUUID(user.getId()));
         ProjectModel createdProject = new ProjectModel()
-            .withOwner(user.getId())
+            .withOwner(user)
             .withUuid(projectUUID)
             .withMembers(members)
             .withName(projectName)
@@ -73,7 +73,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         {
             return UserStatus.ERROR;
         }
-        boolean isOwner = projectModel.owner.equals(userUUID);
+        boolean isOwner = projectModel.owner.getId().equals(userUUID);
         if (isOwner)
         {
             return UserStatus.OWNER;
@@ -92,15 +92,15 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     }
 
     @Transactional
-    public ProjectModel updateProject(UUID projectUUID, UUID newOwnerUUID, String newName)
+    public ProjectModel updateProject(UUID projectUUID, UserModel newOwner, String newName)
     {
         ProjectModel projectModel = find("uuid", projectUUID).firstResult();
 
-        if (newOwnerUUID != null && !newOwnerUUID.equals(projectModel.owner))
+        if (newOwner != null && !newOwner.getId().equals(projectModel.getOwner().getId()))
         {
-            projectModel.setOwner(newOwnerUUID);
+            projectModel.setOwner(newOwner);
         }
-        if (newName != null && !newName.equals(projectModel.name))
+        if (newName != null && !newName.equals(projectModel.getName()))
         {
             projectModel.setName(newName);
         }

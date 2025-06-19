@@ -59,8 +59,6 @@ public class ProjectsResource {
         if (RequestVerifyer.isInvalid(newProjectRequest)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The project name is invalid")).build();
         } else {
-            // FIXME get the user
-//            UserModel user = new UserModel(UUID.randomUUID(), "", "", "", false, "");
             UserModel user = userService.get(UUID.fromString(identity.getPrincipal().getName()));
             return Response.status(Response.Status.OK).entity(projectService.buildCreateProjectResponse(newProjectRequest.name, user)).build();
         }
@@ -88,8 +86,6 @@ public class ProjectsResource {
                     .build();
         }
 
-//         FIXME get the user
-//        UserModel currentUser = new UserModel(UUID.fromString("eb07e67e-7115-418d-9b30-84b89e0d8840"), "", "", "", true, "");
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
         UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
 
@@ -121,8 +117,6 @@ public class ProjectsResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProject(@PathParam("id") UUID projectId) {
-        // FIXME get the user
-//        UserModel currentUser = new UserModel(UUID.fromString("eb07e67e-7115-418d-9b30-84b89e0d8840"), "", "", "", false, "");
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
 
         UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
@@ -141,21 +135,22 @@ public class ProjectsResource {
     @RolesAllowed({"admin", "user"})
     @Path("/{id}")
     public Response deleteProject(@PathParam("id") UUID projectId) {
-        boolean isAuthorized = true;
 
-        // FIXME get the user
-//        UserModel currentUser = new UserModel(UUID.randomUUID(), "", "", "", false, "");
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
 
         UserStatus userStatus = projectService.getUserStatus(currentUser.getId(), projectId, currentUser.getIsAdmin());
-        // FIXME the user has to be either owner or admin to delete the project!
-        if (userStatus == UserStatus.NOT_A_MEMBER) {
-            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to delete this project as you are not member")).build();
+        if (!currentUser.getIsAdmin()) {
+            if (userStatus == UserStatus.NOT_A_MEMBER) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to delete this project as you are not member")).build();
+            }
+            if (userStatus == UserStatus.MEMBER) {
+                return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to delete this project as you are only a member")).build();
+            }
         }
         if (userStatus == UserStatus.ERROR) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The project does not exist")).build();
         }
-        // else the user is either MEMBER, OWNER or ADMIN so he can delete the project
+        // else the user is either OWNER or ADMIN so he can delete the project
         projectService.deleteProjectById(projectId);
         projectMembersService.deleteAllMembers(projectId);
         // when deleting the project make sure to remove all its members as well from the ProjectMembers database
@@ -167,14 +162,11 @@ public class ProjectsResource {
     @RolesAllowed({"user", "admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUserToProject(@PathParam("id") UUID projectId, UserProjectRequest userProjectRequest) {
-        System.out.println("hello from addUserToProject");
         if (RequestVerifyer.isInvalid(userProjectRequest)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Null request, null userId or empty userId")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Null request, null userId, empty userId or invalid uuid for userId")).build();
         }
-//        UserModel currentUser = new UserModel(UUID.randomUUID(), "", "", "", false, "");
-        // FIXME get the current user
+
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
-        // FIXME check that the user exists in the database
         boolean userExists = userService.get(UUID.fromString(userProjectRequest.userId)) != null;
         if (!userExists) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User to add not found")).build();
@@ -205,7 +197,7 @@ public class ProjectsResource {
         UserModel currentUser = new UserModel(UUID.randomUUID(), "", "", "", false, "");
 //        if (userProjectRequest == null || userProjectRequest.userId == null || userProjectRequest.userId.isEmpty()) {
         if (RequestVerifyer.isInvalid(userProjectRequest)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Null request, null userId or empty userId")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Null request, null userId, empty userId or invalid uuid for userId")).build();
         }
         UserModel targetedUser = userService.get(UUID.fromString(userProjectRequest.userId));
         boolean userExist = targetedUser != null;
@@ -225,7 +217,6 @@ public class ProjectsResource {
         }
 
         // the current user is now either admin or owner so he can remove user
-        // FIXME get the admin status of this userId by collecting it from the UserModel db
         UserStatus userToRemoveStatus = projectService.getUserStatus(targetedUser.getId(), projectId, targetedUser.getIsAdmin());
 
         if (userToRemoveStatus == UserStatus.OWNER) {
