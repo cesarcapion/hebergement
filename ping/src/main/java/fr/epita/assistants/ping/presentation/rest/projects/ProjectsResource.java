@@ -233,6 +233,7 @@ public class ProjectsResource {
     @Path("/{id}/exec")
     @RolesAllowed({"admin", "user"})
     public Response execFeatureFromProject(@PathParam("id") UUID projectId, ExecFeatureRequest execFeatureRequest) {
+        boolean isAdmin = userService.get(UUID.fromString(identity.getPrincipal().getName())).getIsAdmin();
 
         if (RequestVerifyer.isInvalid(execFeatureRequest)) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Invalid request")).build();
@@ -243,10 +244,10 @@ public class ProjectsResource {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
 
-        if (userStatus == UserStatus.NOT_A_MEMBER) {
+        if (userStatus == UserStatus.NOT_A_MEMBER && !isAdmin) {
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not member of this project, cannot exec feature")).build();
         }
-
+        // member, owner or admin
         boolean succeeded = projectService.execFeature(projectId, Feature.valueOfLabel(execFeatureRequest.feature)
                 , execFeatureRequest.command, execFeatureRequest.params);
         if (!succeeded) {

@@ -13,7 +13,6 @@ import java.util.*;
 
 @ApplicationScoped
 public class ProjectRepository implements PanacheRepository<ProjectModel> {
-    // FIXME remove or let the default value? idk
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     /// returns all the projects owned by userUUID
@@ -42,7 +41,14 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     public ProjectModel createNewProject(String projectName, UserModel user)
     {
         List<ProjectMembersModel> members = new ArrayList<>();
+        String path = defaultPath;
+        if (!path.endsWith("/"))
+        {
+            path += "/";
+        }
         UUID projectUUID = UUID.randomUUID();
+        path += projectUUID;
+
         members.add(new ProjectMembersModel()
                 .withProjectUUID(projectUUID)
                 .withMemberUUID(user.getId()));
@@ -51,7 +57,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
             .withUuid(projectUUID)
             .withMembers(members)
             .withName(projectName)
-            .withPath(defaultPath+projectUUID.toString());
+            .withPath(path);
         persist(createdProject);
         return createdProject;
     }

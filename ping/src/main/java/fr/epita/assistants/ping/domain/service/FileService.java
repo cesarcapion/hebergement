@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FileService {
-    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/var/www/projects/") String defaultPath;
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
     @Inject
     ProjectRepository projectRepo;
     ProjectMembersRepository pmRepository;
