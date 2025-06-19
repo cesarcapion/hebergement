@@ -22,7 +22,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 
 import  fr.epita.assistants.ping.utils.Logger.*;
 
-@Path("/api")
+@Path("/api/projects")
 public class FilesResource {
 
     @Inject
@@ -36,7 +36,7 @@ public class FilesResource {
     /**************************************** FILE PART ****************************************/
 
     @GET
-    @Path("/projects/{projectId}/files")
+    @Path("/{projectId}/files")
     @RolesAllowed({"user", "admin"})
     /* Retrieve the content of a file.
 
@@ -75,7 +75,7 @@ public class FilesResource {
 
 
     @DELETE
-    @Path("/projects/{projectId}/files")
+    @Path("/{projectId}/files")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /* Delete a file from the file system and all its content, be careful if the file is the root
@@ -112,7 +112,7 @@ public class FilesResource {
 
 
     @POST
-    @Path("/projects/{projectId}/files")
+    @Path("/{projectId}/files")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*
@@ -157,7 +157,7 @@ public class FilesResource {
 
 
     @PUT
-    @Path("/projects/{projectId}/files/move")
+    @Path("/{projectId}/files/move")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*
@@ -204,7 +204,7 @@ public class FilesResource {
 
 
     @POST
-    @Path("/projects/{projectId}/files/upload")
+    @Path("/{projectId}/files/upload")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @RolesAllowed({"user", "admin"})
     /*
@@ -252,7 +252,7 @@ public class FilesResource {
     @Inject FolderService folderService;
 
     @GET
-    @Path("/projects/{projectId}/folders")
+    @Path("/{projectId}/folders")
     @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
     /* List the content of the folder located at the given path in the project with the given id. By default it lists the root folder.
@@ -285,7 +285,7 @@ public class FilesResource {
 
 
     @DELETE
-    @Path("/projects/{projectId}/folders")
+    @Path("/{projectId}/folders")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /* Delete a file from the file system and all its content, be careful if the file is the root
@@ -321,7 +321,7 @@ public class FilesResource {
 
 
     @POST
-    @Path("/projects/{projectId}/folders")
+    @Path("/{projectId}/folders")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*
@@ -361,7 +361,7 @@ public class FilesResource {
         }
     }
     @PUT
-    @Path("/projects/{projectId}/folders/move")
+    @Path("/{projectId}/folders/move")
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     /*

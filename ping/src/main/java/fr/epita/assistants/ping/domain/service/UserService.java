@@ -25,8 +25,8 @@ public class UserService {
     @Inject
     UserRepository repository;
 
-    @Inject
-    ProjectMembersRepository pmRepository;
+
+    @Inject ProjectMembersService pmService;
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
     @Inject ProjectService projectService;
@@ -181,5 +181,6 @@ public class UserService {
         if (!projectService.buildGetProjectsResponse(userToRemoveid.toString(),true).isEmpty() || !repository.findById(userRemoverID).getIsAdmin())
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
         repository.deleteUser(repository.findById(userToRemoveid));
+        pmService.deleteFromAllProjects(userToRemoveid);
     }
 }
