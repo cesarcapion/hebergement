@@ -10,6 +10,7 @@ import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 
 import fr.epita.assistants.ping.data.model.UserModel;
+import fr.epita.assistants.ping.api.request.LoginRequest;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
@@ -74,7 +75,7 @@ public class UserResource {
     @POST
     @Path("/login")
     //@RolesAllowed("admin")
-    public Response loginUser(fr.epita.assistants.ping.common.Request.LoginRequest request) {
+    public Response loginUser(LoginRequest request) {
         try
         {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
