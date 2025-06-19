@@ -29,6 +29,7 @@ public class UserService {
     ProjectMembersRepository pmRepository;
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
+    @Inject ProjectService projectService;
 
     private boolean checkLogin(String login, String password) {
         return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") /*&& password.matches("[a-zA-Z]+")*/;
@@ -174,11 +175,11 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(UUID id, UUID userID) throws UserException, NotAuthorizedException {
-        if (repository.findById(id) == null)
+    public void delete(UUID userToRemoveid, UUID userRemoverID) throws UserException, NotAuthorizedException {
+        if (repository.findById(userToRemoveid) == null)
             throw new UserException("utilisateur introuvable"); // 404
-        if (pmRepository.findByMemberId(id) != null || !repository.findById(userID).getIsAdmin())
+        if (!projectService.buildGetProjectsResponse(userToRemoveid.toString(),true).isEmpty() || !repository.findById(userRemoverID).getIsAdmin())
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
-        repository.deleteUser(repository.findById(id));
+        repository.deleteUser(repository.findById(userToRemoveid));
     }
 }
