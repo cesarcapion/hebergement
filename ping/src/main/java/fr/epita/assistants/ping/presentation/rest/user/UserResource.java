@@ -18,6 +18,7 @@ import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
 import fr.epita.assistants.ping.errors.Exceptions.NotAuthorizedException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import fr.epita.assistants.ping.utils.ErrorInfo;
+import fr.epita.assistants.ping.utils.Logger;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,7 +28,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import static fr.epita.assistants.ping.utils.Logger.*;
-import static fr.epita.assistants.ping.utils.Logger.logError;
 
 @Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,24 +36,25 @@ public class UserResource {
     @Inject
     UserService userService;
     @Inject public SecurityIdentity identity;
-
+    @Inject
+    Logger logger;
 
     @POST
     @RolesAllowed("admin")
     public Response createUser(CreateUserRequest user) {
 
-        logInfo("Trying to create the user " + user.login);
+        logger.logInfo("Trying to create the user " + user.login);
 
         try {
-            logSuccess("The operation was successful");
+            logger.logSuccess("The operation was successful");
             UserResponse response = userService.create(user);
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         } catch (InvalidException e) { // 400
-            logError("Error 400: The login or the password is invalid");
+            logger.logError("Error 400: The login or the password is invalid");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The login or the password is invalid")).build();
         }catch (AlreadyExistException e) { // 409
-            logError("Error 409: The login is already taken");
+            logger.logError("Error 409: The login is already taken");
 
             return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The login is already taken")).build();
         }
@@ -64,9 +65,9 @@ public class UserResource {
     @Path("/all")
     @RolesAllowed("admin")
     public Response listUsers() {
-        logInfo("Trying to get all users");
+        logger.logInfo("Trying to get all users");
         UserResponse[] response = userService.getAllUsers();
-        logSuccess("The operation was successful");
+        logger.logSuccess("The operation was successful");
         return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
     }
 
@@ -76,23 +77,24 @@ public class UserResource {
     @Path("/login")
     //@RolesAllowed("admin")
     public Response loginUser(LoginRequest request) {
+
         try
         {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
             System.out.println("Key found? " + (is != null));
-            logInfo("Trying to connect a user");
+            logger.logInfo("Trying to connect a user");
             LoginResponse response = userService.loginUser(request.login,request.password);
-            logSuccess("The operation was successful");
+            logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (InvalidException e) { // 400
-            logError("Error 400: The login or the password is invalid");
+            logger.logError("Error 400: The login or the password is invalid");
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The login or the password is invalid")).build();
         }
         catch (BadInfosException e) // 401
         {
-            logError("Error 401: The login/password combination is invalid");
+            logger.logError("Error 401: The login/password combination is invalid");
             return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("The login/password combination is invalid")).build();
         }
     }
@@ -104,14 +106,14 @@ public class UserResource {
     public Response refreshToken() {
         try
         {
-            logInfo("Trying to refresh the user token");
+            logger.logInfo("Trying to refresh the user token");
             LoginResponse response = userService.refreshToken(UUID.fromString(identity.getPrincipal().getName()));
-            logSuccess("The operation was successful");
+            logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (UserException e) // 404
         {
-            logError("Error 404: The user could not be found");
+            logger.logError("Error 404: The user could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The user could not be found")).build();
         }
     }
@@ -122,19 +124,19 @@ public class UserResource {
     public Response updateUser(UserUpdateRequest user,@PathParam("id") UUID id) {
         try
         {
-            logInfo("Trying to refresh the user token");
+            logger.logInfo("Trying to refresh the user token");
             UserResponse response = userService.update(UUID.fromString(identity.getPrincipal().getName()),id,user);
-            logSuccess("The operation was successful");
+            logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (NotAuthorizedException e) // 403
         {
-            logError("Error 403: The user is not allowed");
+            logger.logError("Error 403: The user is not allowed");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed")).build();
         }
         catch (UserException e) // 404
         {
-            logError("Error 404: The user could not be found");
+            logger.logError("Error 404: The user could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The user could not be found")).build();
         }
     }
@@ -145,19 +147,19 @@ public class UserResource {
     public Response getUser(@PathParam("id") UUID id) {
         try
         {
-            logInfo("Trying to refresh the user token");
+            logger.logInfo("Trying to refresh the user token");
             UserResponse response = userService.get(UUID.fromString(identity.getPrincipal().getName()),id);
-            logSuccess("The operation was successful");
+            logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (NotAuthorizedException e) // 403
         {
-            logError("Error 403: The user is not allowed");
+            logger.logError("Error 403: The user is not allowed");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access this user")).build();
         }
         catch (UserException e) // 404
         {
-            logError("Error 404: The user could not be found");
+            logger.logError("Error 404: The user could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("User not found")).build();
         }
     }
@@ -168,19 +170,19 @@ public class UserResource {
     public Response deleteUser(@PathParam("id") UUID id) {
         try
         {
-            logInfo("Trying to refresh the user token");
-            userService.delete(id);
-            logSuccess("The operation was successful");
+            logger.logInfo("Trying to refresh the user token");
+            userService.delete(id,UUID.fromString(identity.getPrincipal().getName()));
+            logger.logSuccess("The operation was successful");
             return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The user was deleted")).build(); // 204
         }
         catch (NotAuthorizedException e) // 403
         {
-            logError("Error 403: The user is not allowed");
+            logger.logError("Error 403: The user is not allowed");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("The user is not allowed to access this endpoint, or the user owns projects")).build();
         }
-        catch (UserException e) // 404
+        catch (UserException  | IllegalArgumentException e) // 404
         {
-            logError("Error 404: The user could not be found");
+            logger.logError("Error 404: The user could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The user could not be found")).build();
         }
     }
