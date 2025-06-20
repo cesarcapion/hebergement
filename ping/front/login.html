@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Tick-E Taka</title>
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icônes (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="background-color: #384454" class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div style="background-color: #384454" class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <img src="White-Logo-without-bg.png"/>
+    <!-- <h1 style="color: white" class="text-2xl font-bold text-center mb-6">Connexion</h1>-->
+
+    <!-- Formulaire -->
+    <form style="background-color: #384454" id="loginForm" class="space-y-4">
+        <!-- Champ Email -->
+        <div>
+            <!-- <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label> -->
+            <input
+                    style="background-color: #d3d4dc"
+                    type="email"
+                    id="email"
+                    required
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="votre@email.com"
+            >
+        </div>
+
+        <!-- Champ Mot de passe -->
+        <div>
+            <!-- <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label> -->
+            <div class="relative mt-1">
+                <input
+                        style="background-color: #d3d4dc"
+                        type="password"
+                        id="password"
+                        required
+                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="••••••••"
+                >
+                <!-- Icône œil pour afficher/masquer le mot de passe -->
+                <button
+                        type="button"
+                        id="togglePassword"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            <a style="color: #EA508E" href="reset-password.html" class="text-sm text-blue-600 hover:underline mt-1 block">Mot de passe oublié ?</a>
+        </div>
+
+        <!-- Bouton de connexion -->
+        <button
+                style="background-color: #E1A624"
+                type="submit"
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+            <b> Se connecter </b>
+        </button>
+    </form>
+
+    <!-- Lien vers l'inscription -->
+    <div class="mt-4 text-center">
+        <p style="color: #d3d4dc" class="text-sm text-gray-600">
+            Pas de compte ?
+            <a style="color: #EA508E" href="signup.html" class="text-blue-600 hover:underline">Créer un compte</a>
+    </p>
+    </div>
+</div>
+
+<!-- Script JavaScript -->
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Exemple de validation basique
+        if (!email || !password) {
+            alert('Veuillez remplir tous les champs.');
+            return;
+        }
+
+        // Simuler une connexion (à remplacer par un appel API réel)
+        console.log('Tentative de connexion avec :', { email, password });
+        alert('Connexion simulée ! En production, reliez ceci à votre backend.');
+    });
+
+    // Afficher/masquer le mot de passe
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordField = document.getElementById('password');
+        const icon = this.querySelector('i');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+</script>
+</body>
+</html>

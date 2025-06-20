@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q&A - Tick-E Taka</title>
+  <style>
+    :root {
+      --primary-color: #3a86ff;
+      --text-color: #333333;
+      --light-gray: #f5f5f5;
+      --border-color: #e0e0e0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: white;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+      color: var(--primary-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-icon {
+      margin-right: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .nav-link.active {
+      color: var(--primary-color);
+    }
+
+    .account-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--light-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    /* FAQ Sections */
+    .faq-section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .faq-item {
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 15px 20px;
+      background-color: var(--light-gray);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-answer {
+      padding: 20px;
+      display: none;
+      background-color: white;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    .chevron {
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .chevron {
+      transform: rotate(180deg);
+    }
+
+    .create-ticket {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .create-ticket a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body style="background-color: #384454">
+<!-- Navigation Bar -->
+<nav style="background-color: #E1A624" class="navbar">
+  <a href="index.html" class="logo">
+    <span class="logo-icon">
+          <img src="White-Logo-without-bg.png" height="40" width="50"/>
+    </span>
+    <span style="color: white">Tick-E Taka</span>
+  </a>
+
+  <div class="nav-links">
+    <button
+            style="background-color: #F89BEB"
+            type="submit"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    >
+      <a style="color: white" href="q&A.html" class="nav-link"><b> Q&A </b></a>
+    </button>
+    <button
+            style="background-color: #F89BEB"
+            type="submit"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    >
+      <a style="color: white" href="q&A.html" class="nav-link"><b> My tickets </b></a>
+    </button>
+
+  </div>
+
+  <div class="account-icon" onclick="location.href='account.html'">
+    👤
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div style="background-color: #384454" class="container">
+  <h1 style="color: white" style="text-align:center" >Q&A</h1>
+
+  <!-- FAQ Sections -->
+  <div class="faq-section">
+
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>How do I create an account?</span>
+        <span style="color: #EA508E" class="chevron">▼</span>
+      </div>
+      <div class="faq-answer">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>I forgot my password, what should I do?</span>
+        <span style="color: #EA508E" class="chevron">▼</span>
+      </div>
+      <div class="faq-answer">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+    </div>
+
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>How can I purchase tickets?</span>
+        <span style="color: #EA508E" class="chevron">▼</span>
+      </div>
+      <div class="faq-answer">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Can I get a refund for my ticket?</span>
+        <span style="color: #EA508E" class="chevron">▼</span>
+      </div>
+      <div class="faq-answer">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="create-ticket">
+    <p style="color: #d3d4dc" class="text-sm text-gray-600">
+    You didn't find your answer? <a style="color: #EA508E" href="create-ticket.html">Create a ticket</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  // FAQ Accordion functionality
+  document.querySelectorAll('.faq-question').forEach(question => {
+    question.addEventListener('click', () => {
+      const item = question.parentNode;
+      item.classList.toggle('active');
+
+      // Close other open items
+      document.querySelectorAll('.faq-item').forEach(otherItem => {
+        if (otherItem !== item && otherItem.classList.contains('active')) {
+          otherItem.classList.remove('active');
+        }
+      });
+    });
+  });
+
+  // Make the entire question div clickable for better UX
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (e.target.classList.contains('faq-question') || e.target.classList.contains('faq-answer')) return;
+      const question = item.querySelector('.faq-question');
+      question.click();
+    });
+  });
+</script>
+</body>
+</html>
