@@ -47,7 +47,7 @@ public class FilesResource {
     */
     public Response getFiles(@PathParam("projectId") UUID projectId,
                              @QueryParam("path") String path) {
-        logger.logInfo("The user request file at " + path);
+        logger.logInfo(identity.getPrincipal().getName() + " request file at "+ projectId + "/" + path);
         try {
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
@@ -83,7 +83,7 @@ public class FilesResource {
         Any member of the project or an admin can access this endpoint.
     */
     public Response deleteFiles(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
-        logger.logInfo("The user request to delete a file at " + request.relativePath);
+        logger.logInfo(identity.getPrincipal().getName() + " request to delete a file at " + projectId + "/" + request.relativePath);
 
         try {
             String userId = identity.getPrincipal().getName();
@@ -120,7 +120,7 @@ public class FilesResource {
         Any member of the project or an admin can access this endpoint.
      */
     public Response postFiles(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
-        logger.logInfo("The user request to create a file at " + request.relativePath);
+        logger.logInfo(identity.getPrincipal().getName() + " request to create a file at " + projectId + "/" + request.relativePath);
 
         try {
 
@@ -166,7 +166,7 @@ public class FilesResource {
      */
     public Response putFilesMove(@PathParam("projectId") UUID projectId,
                                  MoveFileRequest request) {
-        logger.logInfo("The user request to move a file from " + request.src + " to " + request.dst);
+        logger.logInfo(identity.getPrincipal().getName() + " request to move a file from " + request.src + " to " + request.dst);
 
         try {
 
@@ -219,7 +219,7 @@ public class FilesResource {
     public Response postFilesUpload(@PathParam("projectId") UUID projectId,
                                     @QueryParam("path") String path,
                                     InputStream inputStream) {
-        logger.logInfo("The user request to upload a file at " + path);
+        logger.logInfo(identity.getPrincipal().getName() + " request to upload a file at " + projectId + "/" + path);
         try {
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
@@ -262,7 +262,7 @@ public class FilesResource {
     */
     public Response getFolders(@PathParam("projectId") UUID projectId,
                                @QueryParam("path") String path) {
-        logger.logInfo("The user request data of a folder at " + path);
+        logger.logInfo(identity.getPrincipal().getName() + " request data of a folder at " + projectId + "/" + path);
 
         try {
             String userId = identity.getPrincipal().getName();
@@ -293,7 +293,7 @@ public class FilesResource {
         Any member of the project or an admin can access this endpoint.
     */
     public Response deleteFolders(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
-        logger.logInfo("The user request to delete a folder at " + request.relativePath);
+        logger.logInfo(identity.getPrincipal().getName() + " request to delete a folder at " + projectId + "/" + request.relativePath);
         try {
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
@@ -329,7 +329,7 @@ public class FilesResource {
         Any member of the project or an admin can access this endpoint.
      */
     public Response postFolders(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
-        logger.logInfo("The user request to create a folder at " + request.relativePath);
+        logger.logInfo(identity.getPrincipal().getName() + " request to create a folder at " + projectId + "/" + request.relativePath);
         try {
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
@@ -369,7 +369,7 @@ public class FilesResource {
      */
     public Response putFolderMove(@PathParam("projectId") UUID projectId,
                                   MoveFileRequest request) {
-        logger.logInfo("The user request to move a folder from " + request.src + " to " + request.dst);
+        logger.logInfo(identity.getPrincipal().getName() + " request to move a folder from " + projectId + "/" + request.src + " to " + projectId + "/" +request.dst);
         try {
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");

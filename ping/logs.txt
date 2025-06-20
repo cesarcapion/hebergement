@@ -1,4 +1,4 @@
-[19/06/25 - 14:24:58] Trying to connect a user[0m
+    [19/06/25 - 14:24:58] Trying to connect a user[0m
 
 [32m[19/06/25 - 14:24:58] The operation was successful[0m
 
@@ -13,4 +13,28 @@
 [19/06/25 - 17:16:21] The user request file at mama[0m
 
 [32m[19/06/25 - 17:16:21] The operation was successful[0m
+
+[20/06/25 - 15:32:01] Trying to connect a user[0m
+
+[20/06/25 - 15:35:06] Trying to connect a user[0m
+
+[20/06/25 - 15:36:25] Trying to connect a user[0m
+
+[20/06/25 - 18:45:29] Trying to connect a user[0m
+
+[20/06/25 - 20:10:42]  is trying to connect a user[0m
+
+[32m[20/06/25 - 20:10:42]  successfully logged in : token : eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJlM2IwYzQ0Mi05OGZjLTFjMTQtOWFmYy00YzNiM2Y1ZGI4YTUiLCJncm91cHMiOiJhZG1pbiIsImlhdCI6MTc1MDQ0MzA0MiwiaXNzIjoiaHR0cDovL21vbi1hcHAuZXBpdGEuZnIiLCJleHAiOjE3NTA0NDY2NDIsImp0aSI6ImJlOTZjNWE3LTZiY2EtNDFjNi1iYWI3LTEzYjUyYWQ5MTZmNCJ9.Yghu8IAayTniR0q7y_DBdN9hV-NW1l5EnKYHYjiWbWOf8tjQ4-KNhwCVpBDhRvrfQnMoUMd2Lqj_WLJa5DPuQCVuhhzDxWz1fM2M6HpCcNJs1CL8Ikx37rLpzSsyFeuT-IUGvOonkCEhsnfKKzf5FAAjO1gS5JPs_zLVeSigKNzYq2V3lSlYbe4sCrc-EvalhJtfDi8u0f2XBQPZWES0j4sfe-O49X39HgFkPuF3dKF3atorCxbs4bP09XtiYio_gL4zQbTcZIDYsG6M7eaDMrrA1g6VdBdqD7IZkNa70b9-z3UWBoPjdv55kQSs4eHAk-_gWEZBMoWyHr30xbJJ5w[0m
+
+[20/06/25 - 20:11:03] e3b0c442-98fc-1c14-9afc-4c3b3f5db8a5 is trying to get all users[0m
+
+[32m[20/06/25 - 20:11:03] The operation was successful[0m
+
+[20/06/25 - 20:21:59] e3b0c442-98fc-1c14-9afc-4c3b3f5db8a5is trying to gete3b0c442-98fc-1c14-9afc-4c3b3f5db8a5 infos[0m
+
+[32m[20/06/25 - 20:21:59] The operation was successful[0m
+
+[20/06/25 - 20:38:17] e3b0c442-98fc-1c14-9afc-4c3b3f5db8a5 request file at 9a7309a2-096b-49d8-a3c0-e802e494a05d/mama[0m
+
+[32m[20/06/25 - 20:38:17] The operation was successful[0m
 
