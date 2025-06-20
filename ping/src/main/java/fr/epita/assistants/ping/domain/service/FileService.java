@@ -23,6 +23,7 @@ public class FileService {
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
     @Inject
     ProjectRepository projectRepo;
+    @Inject
     ProjectMembersRepository pmRepository;
     private boolean isMember(String userId, UUID projectID)
     {

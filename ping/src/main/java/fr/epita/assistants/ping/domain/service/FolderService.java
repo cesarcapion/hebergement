@@ -1,11 +1,14 @@
 package fr.epita.assistants.ping.domain.service;
 
 import fr.epita.assistants.ping.api.response.GetFolderResponse;
+import fr.epita.assistants.ping.data.repository.ProjectMembersRepository;
+import fr.epita.assistants.ping.data.repository.ProjectRepository;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
 import fr.epita.assistants.ping.errors.Exceptions.PathException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.File;
@@ -22,17 +25,18 @@ import java.util.UUID;
 public class FolderService {
 
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
-
+    @Inject
+    ProjectRepository projectRepo;
+    @Inject
+    ProjectMembersRepository pmRepository;
     private boolean isMember(String userId, UUID projectID)
     {
-        // FIXME:Doit check que le user est membre du projet
-        return true;
+        return pmRepository.isUserInProject(UUID.fromString(userId),projectID);
     }
 
     private boolean isInvalidPath(UUID projectID, String path)
     {
-        // FIXME: Doit check si le project ID existe
-        return path == null ;
+        return path == null || projectRepo.findProjectByUUID(projectID) == null;
     }
 
     boolean isPathTraversal(String path, UUID projectID)
