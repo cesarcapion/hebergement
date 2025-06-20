@@ -67,7 +67,7 @@ public class ProjectService {
 
             responses.add(
                     new ProjectResponse()
-                            .withId(project.getUuid().toString())
+                            .withId(project.getId().toString())
                             .withOwner(ownerInfo)
                             .withName(project.getName())
                             .withMembers(members)
@@ -82,7 +82,7 @@ public class ProjectService {
 
         ArrayList<UserInfoResponse> members = getMembersInfo(project);
         return new ProjectResponse()
-                        .withId(project.getUuid().toString())
+                        .withId(project.getId().toString())
                         .withOwner(ownerInfo)
                         .withName(project.getName())
                         .withMembers(members);
@@ -102,10 +102,10 @@ public class ProjectService {
 
         ArrayList<UserInfoResponse> members = new ArrayList<>();
         members.add(owner);
-        projectMembersService.addMemberToProject(user.getId(), createdProject.uuid);
+        projectMembersService.addMemberToProject(user.getId(), createdProject.id);
 
         return new ProjectResponse()
-                .withId(createdProject.uuid.toString())
+                .withId(createdProject.id.toString())
                 .withName(projectName)
                 .withMembers(members)
                 .withOwner(owner);
@@ -163,7 +163,7 @@ public class ProjectService {
                         params.forEach(filePattern -> {
                             try {
                                 git.add().addFilepattern(filePattern).call();
-                            } catch (GitAPIException e) {
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         });

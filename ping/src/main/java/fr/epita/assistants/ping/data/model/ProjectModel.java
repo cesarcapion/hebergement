@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +15,8 @@ import java.util.UUID;
 @With
 public class ProjectModel {
     @Id
-    public UUID uuid;
+    @GeneratedValue
+    public UUID id;
 
 //    @Column(name="owner_id")
 //    public UUID ownerId;
