@@ -9,16 +9,24 @@
         padding: 0%;
     }
 
-.account-icon {
-width: 32px;
-height: 32px;
-border-radius: 50%;
-background-color: var(--light-gray);
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-}
+    .account-icon {
+        right: 25px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: var(--light-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .image_pos {
+        position: absolute;
+        top : 150px;
+        right: 200px;
+    }
+
 </style>
 
     <div class="account-icon" onclick="location.href='account.html'">
@@ -26,7 +34,7 @@ cursor: pointer;
     </div>
 <body style="background: linear-gradient(to bottom,#E1A624, #D4D3DC)" class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-<img width ="400" src="White-Logo-without-bg.png"/>
+<img width ="400" src="White-Logo-without-bg.png" class="image_pos"/>
 
 </body>
 
