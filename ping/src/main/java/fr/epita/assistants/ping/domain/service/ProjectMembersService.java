@@ -22,13 +22,14 @@ public class ProjectMembersService {
 
     /// return true if the user was added to the project, otherwise the user was already present in the project and it returns false
     public boolean addUserToProject(UUID userUUID, UUID projectUUID) {
-        // FIXME retrieve the user from the database
-        UserModel userToAdd = new UserModel(userUUID, "", "", "", false, "");
-
         return projectMembersRepository.addUserToProject(userUUID, projectUUID);
     }
 
     public boolean deleteUserFromProject(UUID userUUID, UUID projectUUID) {
         return projectMembersRepository.deleteUserFromProject(userUUID, projectUUID);
+    }
+
+    public void deleteFromAllProjects(UUID userUUID) {
+        projectMembersRepository.deleteUserFromAllProjects(userUUID);
     }
 }

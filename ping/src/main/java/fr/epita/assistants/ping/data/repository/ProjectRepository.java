@@ -1,6 +1,5 @@
 package fr.epita.assistants.ping.data.repository;
 
-import fr.epita.assistants.ping.data.model.ProjectMembersModel;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.utils.UserStatus;
@@ -13,13 +12,12 @@ import java.util.*;
 
 @ApplicationScoped
 public class ProjectRepository implements PanacheRepository<ProjectModel> {
-    // FIXME remove or let the default value? idk
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     /// returns all the projects owned by userUUID
-    public List<ProjectModel> getOwnedProjects(String userUUID)
+    public List<ProjectModel> getOwnedProjects(UserModel user)
     {
-        return find("owner", UUID.fromString(userUUID)).stream().toList();
+        return find("owner", user).stream().toList();
     }
 
     /// returns all the projects where there is a member with userUUID
@@ -27,11 +25,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     {
         // No need to add projects where the owner is this user, because owning a project implies
         // that you are member of it too
-        System.out.println("getting member projects for " + userUUID);
-        List<ProjectModel> projects = findAll().stream().toList();
-//        for (ProjectModel project: projects) {
-//            if (project.members.stream().filter(projectMembersModel -> projectMembersModel.memberUUID.equals(userUUID)).count() > 0)
-//        }
+
         return findAll().stream()
                 .filter(projectModel -> projectModel.members.stream()
                 .filter(projectMembersModel -> projectMembersModel.memberUUID.equals(UUID.fromString(userUUID))).count() == 1)
@@ -41,24 +35,28 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     @Transactional
     public ProjectModel createNewProject(String projectName, UserModel user)
     {
-        List<ProjectMembersModel> members = new ArrayList<>();
-        UUID projectUUID = UUID.randomUUID();
-        members.add(new ProjectMembersModel()
-                .withProjectUUID(projectUUID)
-                .withMemberUUID(user.getId()));
+//        List<ProjectMembersModel> members = new ArrayList<>();
+        String path = defaultPath;
+        if (!path.endsWith("/"))
+        {
+            path += "/";
+        }
         ProjectModel createdProject = new ProjectModel()
-            .withOwner(user.getId())
-            .withUuid(projectUUID)
-            .withMembers(members)
+            .withOwner(user)
+            .withMembers(new ArrayList<>())
             .withName(projectName)
-            .withPath(defaultPath+projectUUID.toString());
+            .withPath("");
         persist(createdProject);
+        createdProject.setPath(path + createdProject.getId());
+//        members.add(new ProjectMembersModel()
+//                .withProjectUUID(projectUUID)
+//                .withMemberUUID(user.getId()));
         return createdProject;
     }
 
     public ProjectModel findProjectByUUID(UUID projectUUID)
     {
-        return find("uuid", projectUUID).firstResult();
+        return find("id", projectUUID).firstResult();
     }
 
     public List<ProjectModel> getAllProjects()
@@ -68,12 +66,12 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
 
     public UserStatus getUserStatus(UUID userUUID, UUID projectUUID, boolean isAdmin)
     {
-        ProjectModel projectModel = find("uuid", projectUUID).firstResult();
+        ProjectModel projectModel = find("id", projectUUID).firstResult();
         if (projectModel == null)
         {
             return UserStatus.ERROR;
         }
-        boolean isOwner = projectModel.owner.equals(userUUID);
+        boolean isOwner = projectModel.owner.getId().equals(userUUID);
         if (isOwner)
         {
             return UserStatus.OWNER;
@@ -92,15 +90,15 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     }
 
     @Transactional
-    public ProjectModel updateProject(UUID projectUUID, UUID newOwnerUUID, String newName)
+    public ProjectModel updateProject(UUID projectUUID, UserModel newOwner, String newName)
     {
-        ProjectModel projectModel = find("uuid", projectUUID).firstResult();
+        ProjectModel projectModel = find("id", projectUUID).firstResult();
 
-        if (newOwnerUUID != null && !newOwnerUUID.equals(projectModel.owner))
+        if (newOwner != null && !newOwner.getId().equals(projectModel.getOwner().getId()))
         {
-            projectModel.setOwner(newOwnerUUID);
+            projectModel.setOwner(newOwner);
         }
-        if (newName != null && !newName.equals(projectModel.name))
+        if (newName != null && !newName.equals(projectModel.getName()))
         {
             projectModel.setName(newName);
         }
@@ -110,7 +108,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     @Transactional
     public void deleteProjectById(UUID projectUUID)
     {
-        delete("uuid", projectUUID);
+        delete("id", projectUUID);
     }
 
 }

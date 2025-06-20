@@ -2,12 +2,10 @@ package fr.epita.assistants.ping.domain.service;
 
 import fr.epita.assistants.ping.api.response.ProjectResponse;
 import fr.epita.assistants.ping.api.response.UserInfoResponse;
-import fr.epita.assistants.ping.data.converter.ProjectModelConverter;
 import fr.epita.assistants.ping.data.converter.UserModelToUserInfoConverter;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.ProjectRepository;
-import fr.epita.assistants.ping.domain.entity.ProjectEntity;
 import fr.epita.assistants.ping.utils.Feature;
 import fr.epita.assistants.ping.utils.UserStatus;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,21 +25,19 @@ public class ProjectService {
     @Inject
     ProjectRepository projectRepository;
     @Inject
-    ProjectModelConverter projectModelConverter;
-    @Inject
     UserModelToUserInfoConverter userModelToUserInfoConverter;
     @Inject
     ProjectMembersService projectMembersService;
     @Inject
     UserService userService;
 
-    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
+    @ConfigProperty(name="PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     public ArrayList<ProjectResponse> buildGetProjectsResponse(String userUUID, boolean onlyOwned) {
         ArrayList<ProjectResponse> responses = new ArrayList<>();
 
         if (onlyOwned) {
-            List<ProjectModel> projects_owned = projectRepository.getOwnedProjects(userUUID);
+            List<ProjectModel> projects_owned = projectRepository.getOwnedProjects(userService.get(UUID.fromString(userUUID)));
             fillResponses(responses, projects_owned);
         }
         else
@@ -52,43 +48,43 @@ public class ProjectService {
         return responses;
     }
 
+    private ArrayList<UserInfoResponse> getMembersInfo(ProjectModel project) {
+        ArrayList<UserInfoResponse> members = new ArrayList<>();
+
+        project.members.forEach((member) -> {
+            UserModel user = userService.get(member.memberUUID);
+            members.add(userModelToUserInfoConverter.convert(user));
+        });
+        return members;
+    }
+
     private void fillResponses(ArrayList<ProjectResponse> responses, List<ProjectModel> projects) {
         for (ProjectModel project : projects) {
-            ProjectEntity projectEntity = projectModelConverter.convert(project);
-            ArrayList<UserInfoResponse> members = new ArrayList<>();
-            UserModel owner = userService.get(project.getOwner());
+            UserModel owner = project.getOwner();
             UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
-            // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then set it above
-            project.members.forEach((member) -> {
-                UserModel user = userService.get(member.memberUUID);
-                members.add(userModelToUserInfoConverter.convert(user));
-                // FIXME find the user with the member.memberUUID and convert it to a UserInfo, then add it on the members list
-            });
+
+            ArrayList<UserInfoResponse> members = getMembersInfo(project);
+
             responses.add(
                     new ProjectResponse()
-                            .withId(projectEntity.project_id)
+                            .withId(project.getId().toString())
                             .withOwner(ownerInfo)
-                            .withName(project.name)
+                            .withName(project.getName())
                             .withMembers(members)
                             );
         }
     }
 
     public ProjectResponse buildGetProjectResponse(ProjectModel project) {
-        ProjectEntity projectEntity = projectModelConverter.convert(project);
-        ArrayList<UserInfoResponse> members = new ArrayList<>();
 
-        UserModel owner = userService.get(project.getOwner());
+        UserModel owner = project.getOwner();
         UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
 
-        project.members.forEach((member) -> {
-            UserModel user = userService.get(member.memberUUID);
-            members.add(userModelToUserInfoConverter.convert(user));
-        });
+        ArrayList<UserInfoResponse> members = getMembersInfo(project);
         return new ProjectResponse()
-                        .withId(projectEntity.project_id)
+                        .withId(project.getId().toString())
                         .withOwner(ownerInfo)
-                        .withName(project.name)
+                        .withName(project.getName())
                         .withMembers(members);
     }
 
@@ -106,10 +102,10 @@ public class ProjectService {
 
         ArrayList<UserInfoResponse> members = new ArrayList<>();
         members.add(owner);
-        projectMembersService.addMemberToProject(user.getId(), createdProject.uuid);
+        projectMembersService.addMemberToProject(user.getId(), createdProject.id);
 
         return new ProjectResponse()
-                .withId(createdProject.uuid.toString())
+                .withId(createdProject.id.toString())
                 .withName(projectName)
                 .withMembers(members)
                 .withOwner(owner);
@@ -132,7 +128,7 @@ public class ProjectService {
         {
             return null;
         }
-        return projectRepository.updateProject(projectUUID, newOwnerUUID, newName);
+        return projectRepository.updateProject(projectUUID, userService.get(newOwnerUUID), newName);
     }
 
     public ProjectResponse buildGetProjectResponseWithId(UUID projectUUID) {
@@ -154,45 +150,35 @@ public class ProjectService {
         ProjectModel projectModel = projectRepository.findProjectByUUID(projectId);
         if (feature == Feature.GIT)
         {
-            if (command.equals("init"))
-            {
-                try (Git git = Git.init().setDirectory(new File(projectModel.path)).call())
-                {
-                    return true;
+            switch (command) {
+                case "init" -> {
+                    try (Git git = Git.init().setDirectory(new File(projectModel.path)).call()) {
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
                 }
-                catch (Exception e)
-                {
-                    return false;
+                case "add" -> {
+                    try (Git git = Git.open(new File(projectModel.path))) {
+                        params.forEach(filePattern -> {
+                            try {
+                                git.add().addFilepattern(filePattern).call();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
                 }
-            }
-            if (command.equals("add"))
-            {
-                try (Git git = Git.open(new File(projectModel.path)))
-                {
-                    params.forEach(filePattern -> {
-                        try {
-                            git.add().addFilepattern(filePattern).call();
-                        } catch (GitAPIException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
-            }
-            if (command.equals("commit"))
-            {
-                try (Git git = Git.open(new File(projectModel.path)))
-                {
-                    git.commit().setMessage(params.getFirst()).call();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    return false;
+                case "commit" -> {
+                    try (Git git = Git.open(new File(projectModel.path))) {
+                        git.commit().setMessage(params.getFirst()).call();
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
                 }
             }
             return false;

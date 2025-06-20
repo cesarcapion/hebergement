@@ -20,9 +20,10 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class FileService {
-    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/var/www/projects/") String defaultPath;
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
     @Inject
     ProjectRepository projectRepo;
+    @Inject
     ProjectMembersRepository pmRepository;
     private boolean isMember(String userId, UUID projectID)
     {
@@ -121,9 +122,10 @@ public class FileService {
         Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
 
-        if (!Files.exists(basePath))
+        if (!Files.exists(basePath)) {
+            System.out.println(basePath);
             throw new InvalidException("Le projet est introuvable"); // 404
-
+        }
         if (Files.exists(requestedPath))
             throw  new AlreadyExistException("le fichier existe deja"); // 409
         Files.createDirectories(requestedPath.getParent());

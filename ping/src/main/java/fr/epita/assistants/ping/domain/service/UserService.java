@@ -25,13 +25,14 @@ public class UserService {
     @Inject
     UserRepository repository;
 
-    @Inject
-    ProjectMembersRepository pmRepository;
+
+    @Inject ProjectMembersService pmService;
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
+    @Inject ProjectService projectService;
 
     private boolean checkLogin(String login, String password) {
-        return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") && password.matches("[a-zA-Z]+");
+        return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") /*&& password.matches("[a-zA-Z]+")*/;
 
     }
 
@@ -54,7 +55,7 @@ public class UserService {
             displayName.append(
                     Character.toUpperCase(part.charAt(0))
             ).append(
-                    part.substring(1).toLowerCase()
+                    part.substring(1)
             );
             if (i < parts.length - 1) {
                 displayName.append(" ");
@@ -154,9 +155,11 @@ public class UserService {
         if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
         UserModel user = repository.findById(userToUpdateId);
-        user.setPassword(input.password);
+        if (input.password !=null &&!input.password.isBlank())
+            user.setPassword(input.password);
+        if (input.displayName != null && !input.displayName.isBlank())
+            user.setDisplayName(input.displayName);
         user.setAvatar(input.avatar);
-        user.setDisplayName(input.displayName);
         repository.updateUser(user);
         return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
     }
@@ -172,11 +175,12 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(UUID id) throws UserException, NotAuthorizedException {
-        if (repository.findById(id) == null)
-            throw new UserException("utilisateur introuvable"); //// 404
-        if (pmRepository.findByMemberId(id) != null)
+    public void delete(UUID userToRemoveid, UUID userRemoverID) throws UserException, NotAuthorizedException {
+        if (repository.findById(userToRemoveid) == null)
+            throw new UserException("utilisateur introuvable"); // 404
+        if (!projectService.buildGetProjectsResponse(userToRemoveid.toString(),true).isEmpty() || !repository.findById(userRemoverID).getIsAdmin())
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
-        repository.deleteUser(repository.findById(id));
+        repository.deleteUser(repository.findById(userToRemoveid));
+        pmService.deleteFromAllProjects(userToRemoveid);
     }
 }
