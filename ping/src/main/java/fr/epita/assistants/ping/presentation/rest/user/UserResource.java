@@ -43,10 +43,10 @@ public class UserResource {
     @RolesAllowed("admin")
     public Response createUser(CreateUserRequest user) {
 
-        logger.logInfo("Trying to create the user " + user.login);
+        logger.logInfo("User with ID " + identity.getPrincipal().getName() + " is trying to create the user: login: " + user.login + " ,password: " + user.password + " admin: " + user.isAdmin);
 
         try {
-            logger.logSuccess("The operation was successful");
+            logger.logSuccess("The operation was successful : " );
             UserResponse response = userService.create(user);
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         } catch (InvalidException e) { // 400
@@ -65,7 +65,7 @@ public class UserResource {
     @Path("/all")
     @RolesAllowed("admin")
     public Response listUsers() {
-        logger.logInfo("Trying to get all users");
+        logger.logInfo(identity.getPrincipal().getName() + " is trying to get all users");
         UserResponse[] response = userService.getAllUsers();
         logger.logSuccess("The operation was successful");
         return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
@@ -82,9 +82,9 @@ public class UserResource {
         {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
             System.out.println("Key found? " + (is != null));
-            logger.logInfo("Trying to connect a user");
+            logger.logInfo("User is trying to connect as \"" + request.login + "\"");
             LoginResponse response = userService.loginUser(request.login,request.password);
-            logger.logSuccess("The operation was successful");
+            logger.logSuccess(identity.getPrincipal().getName() + " successfully logged in : token : " + response.token);
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (InvalidException e) { // 400
@@ -106,7 +106,7 @@ public class UserResource {
     public Response refreshToken() {
         try
         {
-            logger.logInfo("Trying to refresh the user token");
+            logger.logInfo(identity.getPrincipal().getName() + " is trying to refresh his token");
             LoginResponse response = userService.refreshToken(UUID.fromString(identity.getPrincipal().getName()));
             logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
@@ -124,7 +124,7 @@ public class UserResource {
     public Response updateUser(UserUpdateRequest user,@PathParam("id") UUID id) {
         try
         {
-            logger.logInfo("Trying to refresh the user token");
+            logger.logInfo(identity.getPrincipal().getName() + " is trying to update " + id + " infos : displayName:" + user.displayName + ", password : (tu l'auras pas), avatar : " + user.avatar);
             UserResponse response = userService.update(UUID.fromString(identity.getPrincipal().getName()),id,user);
             logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
@@ -147,7 +147,7 @@ public class UserResource {
     public Response getUser(@PathParam("id") UUID id) {
         try
         {
-            logger.logInfo("Trying to refresh the user token");
+            logger.logInfo(identity.getPrincipal().getName() + " is trying to get " + id + " infos");
             UserResponse response = userService.get(UUID.fromString(identity.getPrincipal().getName()),id);
             logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
@@ -170,7 +170,7 @@ public class UserResource {
     public Response deleteUser(@PathParam("id") UUID id) {
         try
         {
-            logger.logInfo("Trying to refresh the user token");
+            logger.logInfo(identity.getPrincipal().getName() + " is trying to delete " + id);
             userService.delete(id,UUID.fromString(identity.getPrincipal().getName()));
             logger.logSuccess("The operation was successful");
             return Response.status(Response.Status.NO_CONTENT).entity(new ErrorInfo("The user was deleted")).build(); // 204

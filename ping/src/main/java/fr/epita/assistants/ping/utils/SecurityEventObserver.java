@@ -1,15 +1,15 @@
 /*package fr.epita.assistants.ping.utils;
 
+import io.quarkus.security.spi.runtime.AuthorizationFailureEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import io.quarkus.security.identity.event.AuthenticationFailedEvent;
-import io.quarkus.security.identity.event.AuthorizationFailureEvent;
+import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
 
 @ApplicationScoped
 public class SecurityEventObserver {
 
-    public void onAuthFailure(@Observes AuthenticationFailedEvent event) {
-        //log
+    public void onAuthFailure(@Observes BadInfosException event) {
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + event.toString());
     }
 
     public void onAuthorizationFailure(@Observes AuthorizationFailureEvent event) {

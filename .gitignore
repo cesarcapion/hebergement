@@ -1,3 +1,4 @@
 .idea/
 ping/target/
 setup.sh
+ping/logs.txt
