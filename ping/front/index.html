@@ -1,41 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tick-E Taka</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
 
-<style>
+        body {
+            background: linear-gradient(to bottom, #f59e0b, #e5e7eb);
+            position: relative;
+        }
 
-    html, body{
-        height: 100%;
-        margin: 0%;
-        padding: 0%;
-    }
+        /* 👤 Bouton profil avec fond blanc */
+        a.profile-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            color: #f472b6;
+            border-radius: 50%;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: transform 0.2s ease;
+        }
 
-    .account-icon {
-        right: 25px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-color: var(--light-gray);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
+        a.profile-button:hover {
+            transform: scale(1.1);
+        }
 
-    .image_pos {
-        position: absolute;
-        top : 150px;
-        right: 200px;
-    }
+        .header-block {
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 60%;
+        }
 
-</style>
+        .text-block {
+            color: white;
+        }
 
-    <div class="account-icon" onclick="location.href='account.html'">
-        👤
+        .title {
+            font-weight: bold;
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .subtitle {
+            font-style: italic;
+            font-size: 26px;
+            line-height: 1.8;
+        }
+
+        .subtitle u {
+            text-underline-offset: 6px;
+        }
+
+        .logo {
+            width: 500px;
+            height: 350px;
+            object-fit: contain;
+            margin-top: -30px;
+            margin-right: 0;
+        }
+
+        .button-group {
+            position: absolute;
+            bottom: 22%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+        }
+
+        .btn {
+            background-color: #f9a8d4;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 14px;
+            box-shadow: 3px 6px 12px rgba(0,0,0,0.25);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #f472b6;
+        }
+
+        @media (max-width: 768px) {
+            .header-block {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                top: 10%;
+                left: 5%;
+                width: 90%;
+            }
+
+            .logo {
+                width: 180px;
+                height: 160px;
+                margin-top: 40px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 20px;
+                bottom: 10%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 👤 Bouton profil -->
+<a class="profile-button" href="profile.html" title="My Profile">👤</a>
+
+<div class="header-block">
+    <div class="text-block">
+        <div class="title">Tick-E Taka:</div>
+        <div class="subtitle">
+            <u>Every question passes,</u><br />
+            <u>Every answer scores.</u>
+        </div>
     </div>
-<body style="background: linear-gradient(to bottom,#E1A624, #D4D3DC)" class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <img src="White-Logo-without-bg.png" alt="Logo" class="logo" />
+</div>
 
-<img width ="400" src="White-Logo-without-bg.png" class="image_pos"/>
+<div class="button-group">
+    <button class="btn">Q&amp;A</button>
+    <button class="btn">My tickets</button>
+</div>
 
 </body>
-
 </html>
