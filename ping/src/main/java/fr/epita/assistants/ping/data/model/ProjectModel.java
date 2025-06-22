@@ -18,9 +18,6 @@ public class ProjectModel {
     @GeneratedValue
     public UUID id;
 
-//    @Column(name="owner_id")
-//    public UUID ownerId;
-
     public String name;
     public String path;
 
