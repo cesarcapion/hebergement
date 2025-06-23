@@ -26,7 +26,6 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     {
         // No need to add projects where the owner is this user, because owning a project implies
         // that you are member of it too
-        System.out.println(findAll().firstResult().getMembers());
         return findAll().stream()
                 .filter(projectModel -> projectModel.getMembers().stream()
                 .filter(userModel -> userModel.getId().equals(UUID.fromString(userUUID))).count() == 1)
@@ -119,9 +118,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     public void deleteUserFromProject(UUID projectUUID, UserModel user)
     {
         ProjectModel projectModel = find("id", projectUUID).firstResult();
-        System.out.println("there was " + projectModel.getMembers().size() + " members in project");
         projectModel.setMembers(projectModel.getMembers().stream().filter(userModel -> !userModel.getId().equals(user.getId())).collect(Collectors.toList()));
-        System.out.println(projectModel.getMembers().size() + " members in project");
     }
 
     @Transactional
