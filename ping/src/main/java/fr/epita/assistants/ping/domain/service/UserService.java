@@ -1,6 +1,5 @@
 package fr.epita.assistants.ping.domain.service;
 
-import java.io.Console;
 import java.time.Instant;
 import java.util.*;
 
@@ -9,7 +8,6 @@ import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
-import fr.epita.assistants.ping.data.repository.ProjectMembersRepository;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,7 +24,7 @@ public class UserService {
     UserRepository repository;
 
 
-    @Inject ProjectMembersService pmService;
+
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
     @Inject ProjectService projectService;

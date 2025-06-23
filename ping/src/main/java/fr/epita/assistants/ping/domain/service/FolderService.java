@@ -1,8 +1,6 @@
 package fr.epita.assistants.ping.domain.service;
 
 import fr.epita.assistants.ping.api.response.GetFolderResponse;
-import fr.epita.assistants.ping.data.repository.ProjectMembersRepository;
-import fr.epita.assistants.ping.data.repository.ProjectRepository;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
 import fr.epita.assistants.ping.errors.Exceptions.PathException;
@@ -25,18 +23,13 @@ import java.util.UUID;
 public class FolderService {
 
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
+
     @Inject
-    ProjectRepository projectRepo;
-    @Inject
-    ProjectMembersRepository pmRepository;
-    private boolean isMember(String userId, UUID projectID)
-    {
-        return pmRepository.isUserInProject(UUID.fromString(userId),projectID);
-    }
+    ProjectService projectService;
 
     private boolean isInvalidPath(UUID projectID, String path)
     {
-        return path == null || projectRepo.findProjectByUUID(projectID) == null;
+        return path == null || projectService.DoesNotExist(projectID);
     }
 
     boolean isPathTraversal(String path, UUID projectID)
@@ -52,7 +45,7 @@ public class FolderService {
     public GetFolderResponse[] folder_data(UUID projectID, String path, String userId, boolean isAdmin)
             throws UserException, InvalidException {
 
-        if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
+        if ((!isAdmin && !projectService.isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
         Path basePath = Paths.get(defaultPath, projectID.toString());
@@ -96,7 +89,7 @@ public class FolderService {
         if (isInvalidPath(projectID, path))
             throw new PathException("Chemin invalide"); // 400
 
-        if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
+        if ((!isAdmin && !projectService.isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
         Path basePath = Paths.get(defaultPath, projectID.toString());
@@ -126,7 +119,7 @@ public class FolderService {
         if (isInvalidPath(projectID, path) || path.isBlank())
             throw new PathException("Chemin invalide"); // 400
 
-        if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(path, projectID))
+        if ((!isAdmin && !projectService.isMember(userId, projectID)) || isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
         Path basePath = Paths.get(defaultPath, projectID.toString());
@@ -150,7 +143,7 @@ public class FolderService {
         if (isInvalidPath(projectID, dst) || dst.isBlank())
             throw new PathException("Chemin invalide"); // 400
 
-        if ((!isAdmin && !isMember(userId, projectID)) || isPathTraversal(src, projectID) || isPathTraversal(dst,projectID))
+        if ((!isAdmin && !projectService.isMember(userId, projectID)) || isPathTraversal(src, projectID) || isPathTraversal(dst,projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
         Path basePath = Paths.get(defaultPath, projectID.toString());

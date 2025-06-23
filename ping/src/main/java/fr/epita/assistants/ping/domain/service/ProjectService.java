@@ -27,11 +27,19 @@ public class ProjectService {
     @Inject
     UserModelToUserInfoConverter userModelToUserInfoConverter;
     @Inject
-    ProjectMembersService projectMembersService;
-    @Inject
     UserService userService;
 
     @ConfigProperty(name="PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
+
+
+    public boolean DoesNotExist(UUID projectUUID) {
+        return projectRepository.findProjectByUUID(projectUUID) == null;
+    }
+    public boolean isMember(String userId, UUID projectUUID)
+    {
+        ProjectModel project = projectRepository.findProjectByUUID(projectUUID);
+        return project.getMembers().stream().filter(userModel -> userModel.getId().equals(UUID.fromString(userId))).count() == 1;
+    }
 
     public ArrayList<ProjectResponse> buildGetProjectsResponse(String userUUID, boolean onlyOwned) {
         ArrayList<ProjectResponse> responses = new ArrayList<>();

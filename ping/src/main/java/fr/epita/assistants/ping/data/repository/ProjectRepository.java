@@ -1,6 +1,5 @@
 package fr.epita.assistants.ping.data.repository;
 
-import fr.epita.assistants.ping.data.model.ProjectMembersModel;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.utils.UserStatus;
