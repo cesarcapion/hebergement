@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public static String generateToken(UUID userId, boolean isAdmin) {
-        System.out.println(userId + " : " + isAdmin);
+        //System.out.println(userId + " : " + isAdmin);
         return Jwt.claim("sub", userId.toString())
                 .claim("groups", isAdmin ? "admin" : "user")
                 .claim("iat", Instant.now().getEpochSecond())
@@ -115,7 +115,7 @@ public class UserService {
         String login = repository.findById(id).getLogin();
         if (repository.findByLogin(login) == null)
         {
-            System.out.println(login);
+            //System.out.println(login);
             throw new UserException("login invalid");
         }
         return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));

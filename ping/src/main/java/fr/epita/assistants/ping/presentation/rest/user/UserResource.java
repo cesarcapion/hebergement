@@ -81,6 +81,7 @@ public class UserResource {
         try
         {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
+            //System.out.println("Key found? " + (is != null));
             logger.logInfo("User is trying to connect as \"" + request.login + "\"");
             LoginResponse response = userService.loginUser(request.login,request.password);
             logger.logSuccess(identity.getPrincipal().getName() + " successfully logged in : token : " + response.token);
