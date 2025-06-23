@@ -6,6 +6,7 @@ import fr.epita.assistants.ping.api.response.GetFolderResponse;
 import fr.epita.assistants.ping.domain.service.FolderService;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import fr.epita.assistants.ping.utils.Logger;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -36,7 +37,7 @@ public class FilesResource {
 
     @GET
     @Path("/{projectId}/files")
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /* Retrieve the content of a file.
 
         It should return a byte array of the content of the file.
@@ -76,7 +77,7 @@ public class FilesResource {
     @DELETE
     @Path("/{projectId}/files")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /* Delete a file from the file system and all its content, be careful if the file is the root
         you should only empty it and not remove the root file of the project.
 
@@ -113,7 +114,7 @@ public class FilesResource {
     @POST
     @Path("/{projectId}/files")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /*
        Create a new file on the file system.
 
@@ -158,7 +159,7 @@ public class FilesResource {
     @PUT
     @Path("/{projectId}/files/move")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /*
      Move a file to a new location or rename it if the destination is in the same parent directory
 
@@ -205,7 +206,7 @@ public class FilesResource {
     @POST
     @Path("/{projectId}/files/upload")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /*
         Upload data to create or modify a file, it should write the content
         of the body to the file and create it if it does not exist.
@@ -252,7 +253,7 @@ public class FilesResource {
 
     @GET
     @Path("/{projectId}/folders")
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     /* List the content of the folder located at the given path in the project with the given id. By default it lists the root folder.
 
@@ -286,7 +287,7 @@ public class FilesResource {
     @DELETE
     @Path("/{projectId}/folders")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /* Delete a file from the file system and all its content, be careful if the file is the root
         you should only empty it and not remove the root file of the project.
 
@@ -322,7 +323,7 @@ public class FilesResource {
     @POST
     @Path("/{projectId}/folders")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /*
        Create a new file on the file system.
 
@@ -362,7 +363,7 @@ public class FilesResource {
     @PUT
     @Path("/{projectId}/folders/move")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
+    @Authenticated
     /*
      Move a folder to a new location, or rename it if the destination is in the same parent directory.
         Any member of the project or an admin can access this endpoint.

@@ -18,9 +18,6 @@ public class ProjectModel {
     @GeneratedValue
     public UUID id;
 
-//    @Column(name="owner_id")
-//    public UUID ownerId;
-
     public String name;
     public String path;
 
@@ -28,6 +25,11 @@ public class ProjectModel {
     @JoinColumn(name="owner_id")
     public UserModel owner;
 
-    @OneToMany(mappedBy = "projectUUID", fetch = FetchType.EAGER)
-    public List<ProjectMembersModel> members;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name= "project_users",
+            joinColumns = @JoinColumn(name= "project_id"),
+            inverseJoinColumns = @JoinColumn(name= "user_id")
+    )
+    public List<UserModel> members;
 }

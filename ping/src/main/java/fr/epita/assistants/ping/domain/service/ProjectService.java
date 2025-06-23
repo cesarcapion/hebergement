@@ -51,8 +51,8 @@ public class ProjectService {
     private ArrayList<UserInfoResponse> getMembersInfo(ProjectModel project) {
         ArrayList<UserInfoResponse> members = new ArrayList<>();
 
-        project.members.forEach((member) -> {
-            UserModel user = userService.get(member.memberUUID);
+        project.members.forEach((user) -> {
+//            UserModel user = userService.get(member.memberUUID);
             members.add(userModelToUserInfoConverter.convert(user));
         });
         return members;
@@ -102,7 +102,7 @@ public class ProjectService {
 
         ArrayList<UserInfoResponse> members = new ArrayList<>();
         members.add(owner);
-        projectMembersService.addMemberToProject(user.getId(), createdProject.id);
+//        projectMembersService.addMemberToProject(user.getId(), createdProject.id);
 
         return new ProjectResponse()
                 .withId(createdProject.id.toString())
@@ -118,17 +118,17 @@ public class ProjectService {
         return responses;
     }
 
-    public UserStatus getUserStatus(UUID userUUID, UUID projectUUID, boolean isAdmin) {
-        return projectRepository.getUserStatus(userUUID, projectUUID, isAdmin);
+    public UserStatus getUserStatus(UserModel user, UUID projectUUID, boolean isAdmin) {
+        return projectRepository.getUserStatus(user, projectUUID, isAdmin);
     }
 
     /// returns the updated project if the new owner is member of the project and updates it, null otherwise
-    public ProjectModel UpdateProject(UUID projectUUID, UUID newOwnerUUID, String newName) {
-        if (newOwnerUUID != null && getUserStatus(newOwnerUUID, projectUUID, false) == UserStatus.NOT_A_MEMBER)
+    public ProjectModel UpdateProject(UUID projectUUID, UserModel newOwner, String newName) {
+        if (newOwner != null && getUserStatus(newOwner, projectUUID, false) == UserStatus.NOT_A_MEMBER)
         {
             return null;
         }
-        return projectRepository.updateProject(projectUUID, userService.get(newOwnerUUID), newName);
+        return projectRepository.updateProject(projectUUID, newOwner, newName);
     }
 
     public ProjectResponse buildGetProjectResponseWithId(UUID projectUUID) {
@@ -144,6 +144,18 @@ public class ProjectService {
     public void deleteProjectById(UUID projectUUID) {
         projectRepository.deleteProjectById(projectUUID);
         deleteProjectFolder(projectUUID);
+    }
+
+    public boolean addUserToProject(UUID projectUUID, UserModel user) {
+        return projectRepository.addUserToProject(projectUUID, user);
+    }
+
+    public void deleteUserFromProject(UUID projectUUID, UserModel user) {
+        projectRepository.deleteUserFromProject(projectUUID, user);
+    }
+
+    public void deleteFromAllProjects(UUID userUUID) {
+        projectRepository.deleteFromAllProjects(userService.get(userUUID));
     }
 
     public boolean execFeature(UUID projectId, Feature feature, String command, ArrayList<String> params) {
