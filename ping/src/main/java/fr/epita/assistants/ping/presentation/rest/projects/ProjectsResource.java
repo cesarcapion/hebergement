@@ -13,7 +13,7 @@ import fr.epita.assistants.ping.api.response.ProjectResponse;
 
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
-import fr.epita.assistants.ping.domain.service.ProjectMembersService;
+
 import fr.epita.assistants.ping.domain.service.ProjectService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.utils.*;
@@ -30,8 +30,6 @@ public class ProjectsResource {
     Logger logger;
     @Inject
     ProjectService projectService;
-    @Inject
-    ProjectMembersService projectMembersService;
     @Inject
     UserService userService;
 

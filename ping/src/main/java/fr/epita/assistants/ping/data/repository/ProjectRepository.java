@@ -1,6 +1,5 @@
 package fr.epita.assistants.ping.data.repository;
 
-import fr.epita.assistants.ping.data.model.ProjectMembersModel;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.utils.UserStatus;
@@ -108,7 +107,7 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     public boolean addUserToProject(UUID projectUUID, UserModel user)
     {
         ProjectModel projectModel = find("id", projectUUID).firstResult();
-        if (projectModel.getMembers().contains(user))
+        if (projectModel.getMembers().stream().filter(userModel -> userModel.getId().equals(user.getId())).count() == 1)
         {
             return false;
         }
