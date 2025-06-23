@@ -20,7 +20,6 @@ import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Feature;
 import fr.epita.assistants.ping.utils.RequestVerifyer;
 import fr.epita.assistants.ping.utils.UserStatus;
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -43,7 +42,7 @@ public class ProjectsResource {
     @GET
     @Path("")
     @QueryParam("onlyOwned")
-    @Authenticated
+    @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProjects(@DefaultValue("false") @QueryParam("onlyOwned") boolean onlyOwned) {
         ArrayList<ProjectResponse> projectResponse = projectService.buildGetProjectsResponse(identity.getPrincipal().getName(), onlyOwned);
@@ -52,7 +51,7 @@ public class ProjectsResource {
 
     @POST
     @Path("")
-    @Authenticated
+    @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createProject(NewProjectRequest newProjectRequest) {
@@ -77,7 +76,7 @@ public class ProjectsResource {
 
     @PUT
     @Path("/{id}")
-    @Authenticated
+    @RolesAllowed({"admin", "user"})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateProject(@PathParam("id") UUID projectId, UpdateProjectRequest updateProjectRequest) {
@@ -114,7 +113,7 @@ public class ProjectsResource {
     }
 
     @GET
-    @Authenticated
+    @RolesAllowed({"admin", "user"})
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProject(@PathParam("id") UUID projectId) {
@@ -132,7 +131,7 @@ public class ProjectsResource {
     }
 
     @DELETE
-    @Authenticated
+    @RolesAllowed({"admin", "user"})
     @Path("/{id}")
     public Response deleteProject(@PathParam("id") UUID projectId) {
 
@@ -159,7 +158,7 @@ public class ProjectsResource {
 
     @POST
     @Path("/{id}/add-user")
-    @Authenticated
+    @RolesAllowed({"user", "admin"})
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUserToProject(@PathParam("id") UUID projectId, UserProjectRequest userProjectRequest) {
         if (RequestVerifyer.isInvalid(userProjectRequest)) {
@@ -192,7 +191,7 @@ public class ProjectsResource {
 
     @POST
     @Path("/{id}/remove-user")
-    @Authenticated
+    @RolesAllowed({"user", "admin"})
     public Response removeUserFromProject(@PathParam("id") UUID projectId, UserProjectRequest userProjectRequest) {
         //        if (userProjectRequest == null || userProjectRequest.userId == null || userProjectRequest.userId.isEmpty()) {
         if (RequestVerifyer.isInvalid(userProjectRequest)) {
@@ -232,7 +231,7 @@ public class ProjectsResource {
 
     @POST
     @Path("/{id}/exec")
-    @Authenticated
+    @RolesAllowed({"admin", "user"})
     public Response execFeatureFromProject(@PathParam("id") UUID projectId, ExecFeatureRequest execFeatureRequest) {
         boolean isAdmin = userService.get(UUID.fromString(identity.getPrincipal().getName())).getIsAdmin();
 
