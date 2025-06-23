@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -32,4 +33,7 @@ public class UserModel {
     private Boolean isAdmin;
 
     private String avatar;
+
+    @ManyToMany(mappedBy = "members", fetch = FetchType.EAGER)
+    public List<ProjectModel> projects;
 }

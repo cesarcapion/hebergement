@@ -1,5 +1,6 @@
 package fr.epita.assistants.ping.data.repository;
 
+import fr.epita.assistants.ping.data.model.ProjectMembersModel;
 import fr.epita.assistants.ping.data.model.ProjectModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.utils.UserStatus;
@@ -9,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ProjectRepository implements PanacheRepository<ProjectModel> {
@@ -25,17 +27,16 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     {
         // No need to add projects where the owner is this user, because owning a project implies
         // that you are member of it too
-
+        System.out.println(findAll().firstResult().getMembers());
         return findAll().stream()
-                .filter(projectModel -> projectModel.members.stream()
-                .filter(projectMembersModel -> projectMembersModel.memberUUID.equals(UUID.fromString(userUUID))).count() == 1)
+                .filter(projectModel -> projectModel.getMembers().stream()
+                .filter(userModel -> userModel.getId().equals(UUID.fromString(userUUID))).count() == 1)
                 .toList();
     }
 
     @Transactional
     public ProjectModel createNewProject(String projectName, UserModel user)
     {
-//        List<ProjectMembersModel> members = new ArrayList<>();
         String path = defaultPath;
         if (!path.endsWith("/"))
         {
@@ -47,10 +48,9 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
             .withName(projectName)
             .withPath("");
         persist(createdProject);
+
+        createdProject.getMembers().add(user);
         createdProject.setPath(path + createdProject.getId());
-//        members.add(new ProjectMembersModel()
-//                .withProjectUUID(projectUUID)
-//                .withMemberUUID(user.getId()));
         return createdProject;
     }
 
@@ -64,21 +64,20 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
         return findAll().stream().toList();
     }
 
-    public UserStatus getUserStatus(UUID userUUID, UUID projectUUID, boolean isAdmin)
+    public UserStatus getUserStatus(UserModel user, UUID projectUUID, boolean isAdmin)
     {
         ProjectModel projectModel = find("id", projectUUID).firstResult();
         if (projectModel == null)
         {
             return UserStatus.ERROR;
         }
-        boolean isOwner = projectModel.owner.getId().equals(userUUID);
+        boolean isOwner = projectModel.owner.getId().equals(user.getId());
         if (isOwner)
         {
             return UserStatus.OWNER;
         }
-        boolean isMember = projectModel.members.stream()
-                .filter(member -> member.memberUUID.equals(userUUID))
-                .count() == 1;
+
+        boolean isMember = user.getProjects().stream().filter(project -> project.getId().equals(projectUUID)).count() == 1;
         if (isMember)
         {
             return UserStatus.MEMBER;
@@ -106,9 +105,37 @@ public class ProjectRepository implements PanacheRepository<ProjectModel> {
     }
 
     @Transactional
+    public boolean addUserToProject(UUID projectUUID, UserModel user)
+    {
+        ProjectModel projectModel = find("id", projectUUID).firstResult();
+        if (projectModel.getMembers().contains(user))
+        {
+            return false;
+        }
+        projectModel.getMembers().add(user);
+        return true;
+    }
+
+    @Transactional
+    public void deleteUserFromProject(UUID projectUUID, UserModel user)
+    {
+        ProjectModel projectModel = find("id", projectUUID).firstResult();
+        System.out.println("there was " + projectModel.getMembers().size() + " members in project");
+        projectModel.setMembers(projectModel.getMembers().stream().filter(userModel -> !userModel.getId().equals(user.getId())).collect(Collectors.toList()));
+        System.out.println(projectModel.getMembers().size() + " members in project");
+    }
+
+    @Transactional
     public void deleteProjectById(UUID projectUUID)
     {
         delete("id", projectUUID);
     }
 
+    @Transactional
+    public void deleteFromAllProjects(UserModel user)
+    {
+        findAll().stream().forEach(projectModel -> {
+            projectModel.setMembers(projectModel.getMembers().stream().filter(userModel -> !userModel.getId().equals(user.getId())).collect(Collectors.toList()));
+        });
+    }
 }

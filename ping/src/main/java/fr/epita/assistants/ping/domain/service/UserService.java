@@ -180,7 +180,8 @@ public class UserService {
             throw new UserException("utilisateur introuvable"); // 404
         if (!projectService.buildGetProjectsResponse(userToRemoveid.toString(),true).isEmpty() || !repository.findById(userRemoverID).getIsAdmin())
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
+        projectService.deleteFromAllProjects(userToRemoveid);
         repository.deleteUser(repository.findById(userToRemoveid));
-        pmService.deleteFromAllProjects(userToRemoveid);
+//        pmService.deleteFromAllProjects(userToRemoveid);
     }
 }
