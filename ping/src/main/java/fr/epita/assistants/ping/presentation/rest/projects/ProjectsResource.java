@@ -172,7 +172,7 @@ public class ProjectsResource {
         }
         // else the user is either OWNER or ADMIN so he can delete the project
         projectService.deleteProjectById(projectId);
-        projectMembersService.deleteAllMembers(projectId);
+//        projectMembersService.deleteAllMembers(projectId);
         logger.logSuccess("The operation was successful");
         // when deleting the project make sure to remove all its members as well from the ProjectMembers database
         return Response.status(Response.Status.NO_CONTENT).build();
