@@ -12,13 +12,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.util.FileUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @ApplicationScoped
 public class ProjectService {
@@ -145,13 +151,32 @@ public class ProjectService {
     }
 
     private boolean deleteProjectFolder(UUID projectUUID) {
-        File projectDir = new File(defaultPath + projectUUID);
-        return projectDir.delete();
+        ProjectModel projectToDelete = projectRepository.findProjectByUUID(projectUUID);
+//        File projectDir = new File(projectToDelete.getPath());
+//        return projectDir.delete();
+        Path path = Path.of(projectToDelete.getPath());
+        try {
+            Files.walk(path)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path1 ->
+                    {
+                        try {
+                            Files.delete(path1);
+                        }
+                        catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
+    /// order matters in this function because the folder needs the project path to be deleted
     public void deleteProjectById(UUID projectUUID) {
-        projectRepository.deleteProjectById(projectUUID);
         deleteProjectFolder(projectUUID);
+        projectRepository.deleteProjectById(projectUUID);
     }
 
     public boolean addUserToProject(UUID projectUUID, UserModel user) {
