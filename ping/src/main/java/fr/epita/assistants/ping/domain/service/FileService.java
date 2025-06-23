@@ -123,7 +123,7 @@ public class FileService {
         Path requestedPath = basePath.resolve(path).normalize();
 
         if (!Files.exists(basePath)) {
-            System.out.println(basePath);
+            //System.out.println(basePath);
             throw new InvalidException("Le projet est introuvable"); // 404
         }
         if (Files.exists(requestedPath))
