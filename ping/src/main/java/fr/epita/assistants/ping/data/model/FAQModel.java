@@ -20,6 +20,5 @@ public class FAQModel {
     private String answer;
 
     @ManyToOne
-//    @JoinColumn(name= "category_id")
     private CategoryModel category;
 }
