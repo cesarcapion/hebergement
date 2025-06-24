@@ -32,7 +32,6 @@ public class UserService {
 
     private boolean checkLogin(String login, String password) {
         return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") /*&& password.matches("[a-zA-Z]+")*/;
-
     }
 
     public static String generateToken(UUID userId, boolean isAdmin) {
