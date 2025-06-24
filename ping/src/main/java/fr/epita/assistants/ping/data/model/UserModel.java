@@ -35,5 +35,5 @@ public class UserModel {
     private String avatar;
 
     @ManyToMany(mappedBy = "members", fetch = FetchType.EAGER)
-    public List<ProjectModel> projects;
+    public List<TicketModel> tickets;
 }
