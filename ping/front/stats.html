@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stats - Tick-E Taka</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #2f3a48;
+      color: white;
+    }
+
+    header {
+      background-color: #FCD34D;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      height: 40px;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .btn-header {
+      background: linear-gradient(to bottom, #f472b6, #d946ef);
+      color: white;
+      font-weight: bold;
+      padding: 10px 30px;
+      border-radius: 14px;
+      border: none;
+      box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .profile-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(to bottom, #f472b6, #d946ef);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .content {
+      padding: 30px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background-color: #d3d4dc;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    table th,
+    table td {
+      padding: 10px;
+      border: 1px solid #999;
+      background-color: #e0e0e0;
+      color: black;
+      text-align: center;
+    }
+
+    .bottom-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .btn-bottom {
+      background: linear-gradient(to bottom, #f472b6, #d946ef);
+      color: white;
+      font-weight: bold;
+      padding: 10px 30px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .filters, .bottom-section {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-header {
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="White-Logo-without-bg.png" alt="Logo" class="logo" />
+  <div class="header-buttons">
+    <button class="btn-header">Q&A</button>
+    <button class="btn-header">Inbox</button>
+  </div>
+  <div class="profile-icon">👤</div>
+</header>
+
+<div class="content">
+  <h1>Stats</h1>
+
+  <div class="filters">
+    <input type="text" placeholder="Email" />
+    <select>
+      <option>Last 5 days</option>
+      <option>Last 7 days</option>
+      <option>Last 30 days</option>
+    </select>
+  </div>
+
+  <table>
+    <tr>
+      <th>Pending tickets</th>
+      <th>Resolved tickets</th>
+      <th>In progress tickets</th>
+      <th>Average time to answer a ticket</th>
+    </tr>
+    <tr>
+      <td>24</td>
+      <td>53</td>
+      <td>7</td>
+      <td>1d5h9m</td>
+    </tr>
+  </table>
+
+  <div class="bottom-section">
+    <button class="btn-bottom">Show all employees</button>
+    <select>
+      <option>Last 5 days</option>
+      <option>Last 7 days</option>
+      <option>Last 30 days</option>
+    </select>
+  </div>
+</div>
+
+</body>
+</html>
