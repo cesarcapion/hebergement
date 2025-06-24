@@ -1,10 +1,7 @@
 package fr.epita.assistants.ping.utils;
 
 import com.arjuna.ats.jta.exceptions.NotImplementedException;
-import fr.epita.assistants.ping.api.request.ExecFeatureRequest;
-import fr.epita.assistants.ping.api.request.NewTicketRequest;
-import fr.epita.assistants.ping.api.request.UpdateTicketRequest;
-import fr.epita.assistants.ping.api.request.UserTicketRequest;
+import fr.epita.assistants.ping.api.request.*;
 
 import java.util.UUID;
 
@@ -42,7 +39,7 @@ public class RequestVerifyer {
     }
 
     public static boolean isInvalid(NewTicketRequest request) {
-        return request == null || request.name == null || request.name.isEmpty();
+        return request == null || request.subject == null || request.subject.isEmpty();
     }
 
     public static boolean isInvalid(UpdateTicketRequest request) {
@@ -54,5 +51,13 @@ public class RequestVerifyer {
     public static boolean isInvalid(UserTicketRequest request)
     {
         return request == null || request.userId == null || request.userId.isEmpty() || isUUIDInvalid(request.userId);
+    }
+
+    public static boolean isInvalid(NewRoleRequest request) {
+        return request == null || request.name == null || request.name.isEmpty();
+    }
+
+    public static boolean isInvalid(UpdateRoleRequest request) {
+        return request == null || request.newName == null || request.newName.isEmpty();
     }
 }
