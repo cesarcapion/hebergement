@@ -2,12 +2,14 @@ package fr.epita.assistants.ping.data.repository;
 
 import fr.epita.assistants.ping.data.model.TicketModel;
 import fr.epita.assistants.ping.data.model.UserModel;
+import fr.epita.assistants.ping.utils.TicketStatus;
 import fr.epita.assistants.ping.utils.UserStatus;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,8 +46,10 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
         TicketModel createdTicket = new TicketModel()
             .withOwner(user)
             .withMembers(new ArrayList<>())
-            .withName(projectName)
-            .withPath("");
+            .withSubject(projectName)
+            .withPath("")
+            .withTicketStatus(TicketStatus.PENDING)
+            .withCreatedAt(LocalDateTime.now());
         persist(createdTicket);
 
         createdTicket.getMembers().add(user);
@@ -96,10 +100,11 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
         {
             ticketModel.setOwner(newOwner);
         }
-        if (newName != null && !newName.equals(ticketModel.getName()))
+        if (newName != null && !newName.equals(ticketModel.getSubject()))
         {
-            ticketModel.setName(newName);
+            ticketModel.setSubject(newName);
         }
+
         return ticketModel;
     }
 

@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.presentation.rest.filesystem;
+package fr.epita.assistants.ping.presentation.rest;
 
 import fr.epita.assistants.ping.api.request.MoveFileRequest;
 import fr.epita.assistants.ping.api.request.RelativePathRequest;
@@ -7,7 +7,6 @@ import fr.epita.assistants.ping.domain.service.FolderService;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import fr.epita.assistants.ping.utils.Logger;
 import io.quarkus.security.Authenticated;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -20,8 +19,6 @@ import java.util.UUID;
 import fr.epita.assistants.ping.domain.service.FileService;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import io.quarkus.security.identity.SecurityIdentity;
-
-import  fr.epita.assistants.ping.utils.Logger.*;
 
 @Path("/api/tickets")
 public class FilesResource {

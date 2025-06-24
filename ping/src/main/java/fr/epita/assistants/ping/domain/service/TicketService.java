@@ -4,6 +4,7 @@ import fr.epita.assistants.ping.api.response.TicketResponse;
 import fr.epita.assistants.ping.api.response.UserInfoResponse;
 import fr.epita.assistants.ping.data.converter.UserModelToUserInfoConverter;
 import fr.epita.assistants.ping.data.model.TicketModel;
+import fr.epita.assistants.ping.data.model.TopicModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.TicketRepository;
 import fr.epita.assistants.ping.utils.Feature;
@@ -63,7 +64,6 @@ public class TicketService {
         ArrayList<UserInfoResponse> members = new ArrayList<>();
 
         ticket.members.forEach((user) -> {
-//            UserModel user = userService.get(member.memberUUID);
             members.add(userModelToUserInfoConverter.convert(user));
         });
         return members;
@@ -80,8 +80,10 @@ public class TicketService {
                     new TicketResponse()
                             .withId(ticket.getId().toString())
                             .withOwner(ownerInfo)
-                            .withName(ticket.getName())
+                            .withName(ticket.getSubject())
                             .withMembers(members)
+                            .withStatus(ticket.getTicketStatus())
+                            .withLastModified(ticket.getCreatedAt())
                             );
         }
     }
@@ -93,10 +95,12 @@ public class TicketService {
 
         ArrayList<UserInfoResponse> members = getMembersInfo(ticket);
         return new TicketResponse()
-                        .withId(ticket.getId().toString())
-                        .withOwner(ownerInfo)
-                        .withName(ticket.getName())
-                        .withMembers(members);
+                .withId(ticket.getId().toString())
+                .withOwner(ownerInfo)
+                .withName(ticket.getSubject())
+                .withMembers(members)
+                .withStatus(ticket.getTicketStatus())
+                .withLastModified(ticket.getCreatedAt());
     }
 
     private boolean createTicketFolder(TicketModel createdTicket) {
@@ -104,22 +108,23 @@ public class TicketService {
         return ticketDir.mkdirs();
     }
 
-    public TicketResponse buildCreateTicketResponse(String ticketName, UserModel user) {
+    public TicketResponse buildCreateTicketResponse(String ticketName, UserModel user, TopicModel topic) {
+        // FIXME add topic name to the ticketResponse or the topic id whatever fits best
         TicketModel createdTicket = ticketRepository.createNewTicket(ticketName, user);
         createTicketFolder(createdTicket);
-//        System.out.println("created ? -> " + createProjectFolder(createdProject));
 
         UserInfoResponse owner = userModelToUserInfoConverter.convert(user);
 
         ArrayList<UserInfoResponse> members = new ArrayList<>();
         members.add(owner);
-//        projectMembersService.addMemberToProject(user.getId(), createdProject.id);
 
         return new TicketResponse()
                 .withId(createdTicket.id.toString())
                 .withName(ticketName)
                 .withMembers(members)
-                .withOwner(owner);
+                .withOwner(owner)
+                .withStatus(createdTicket.getTicketStatus())
+                .withLastModified(createdTicket.getCreatedAt());
     }
 
     public ArrayList<TicketResponse> buildGetAllTicketsResponse() {
@@ -149,8 +154,7 @@ public class TicketService {
 
     private boolean deleteTicketFolder(UUID ticketUUID) {
         TicketModel ticketToDelete = ticketRepository.findTicketByUUID(ticketUUID);
-//        File projectDir = new File(projectToDelete.getPath());
-//        return projectDir.delete();
+
         Path path = Path.of(ticketToDelete.getPath());
         try {
             Files.walk(path)

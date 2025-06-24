@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.presentation.rest.user;
+package fr.epita.assistants.ping.presentation.rest;
 
 import java.io.InputStream;
 import java.util.UUID;
@@ -9,7 +9,6 @@ import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 
-import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.api.request.LoginRequest;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
@@ -19,15 +18,12 @@ import fr.epita.assistants.ping.errors.Exceptions.NotAuthorizedException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Logger;
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import static fr.epita.assistants.ping.utils.Logger.*;
 
 @Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)

@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.presentation.rest.tickets;
+package fr.epita.assistants.ping.presentation.rest;
 
 
 import java.util.ArrayList;
@@ -60,10 +60,11 @@ public class TicketResource {
 
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The ticket name is invalid")).build();
         } else {
-            logger.logInfo(identity.getPrincipal().getName() + " requested to create a new ticket named " + newTicketRequest.name);
+            logger.logInfo(identity.getPrincipal().getName() + " requested to create a new ticket named " + newTicketRequest.subject);
             UserModel user = userService.get(UUID.fromString(identity.getPrincipal().getName()));
+            // FIXME get the topic with the topic id
             logger.logSuccess("The operation was successful");
-            return Response.status(Response.Status.OK).entity(ticketService.buildCreateTicketResponse(newTicketRequest.name, user)).build();
+            return Response.status(Response.Status.OK).entity(ticketService.buildCreateTicketResponse(newTicketRequest.subject, user, null)).build();
         }
     }
 
