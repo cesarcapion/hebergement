@@ -23,7 +23,7 @@ public class FileService {
 
     private boolean isInvalidPath(UUID projectID, String path)
     {
-        return path == null || ticketService.DoesNotExist(projectID);
+        return path == null || ticketService.DoesNotExist(projectID)|| path.isBlank();;
     }
 
     boolean isPathTraversal(String path, UUID projectID)
