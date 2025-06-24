@@ -1,5 +1,5 @@
 package fr.epita.assistants.ping.api.request;
 
-public class UserProjectRequest {
+public class UserTicketRequest {
     public String userId;
 }

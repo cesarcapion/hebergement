@@ -2,9 +2,9 @@ package fr.epita.assistants.ping.utils;
 
 import com.arjuna.ats.jta.exceptions.NotImplementedException;
 import fr.epita.assistants.ping.api.request.ExecFeatureRequest;
-import fr.epita.assistants.ping.api.request.NewProjectRequest;
-import fr.epita.assistants.ping.api.request.UpdateProjectRequest;
-import fr.epita.assistants.ping.api.request.UserProjectRequest;
+import fr.epita.assistants.ping.api.request.NewTicketRequest;
+import fr.epita.assistants.ping.api.request.UpdateTicketRequest;
+import fr.epita.assistants.ping.api.request.UserTicketRequest;
 
 import java.util.UUID;
 
@@ -41,17 +41,17 @@ public class RequestVerifyer {
         return true;
     }
 
-    public static boolean isInvalid(NewProjectRequest request) {
+    public static boolean isInvalid(NewTicketRequest request) {
         return request == null || request.name == null || request.name.isEmpty();
     }
 
-    public static boolean isInvalid(UpdateProjectRequest request) {
+    public static boolean isInvalid(UpdateTicketRequest request) {
         return request == null || (request.name == null && request.newOwnerId == null) || (request.newOwnerId != null && isUUIDInvalid(request.newOwnerId));
     }
 
 
 
-    public static boolean isInvalid(UserProjectRequest request)
+    public static boolean isInvalid(UserTicketRequest request)
     {
         return request == null || request.userId == null || request.userId.isEmpty() || isUUIDInvalid(request.userId);
     }

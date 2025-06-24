@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 @With
-public class ProjectResponse {
+public class TicketResponse {
     public String id;
     public String name;
 

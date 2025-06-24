@@ -23,7 +23,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 
 import  fr.epita.assistants.ping.utils.Logger.*;
 
-@Path("/api/projects")
+@Path("/api/tickets")
 public class FilesResource {
 
     @Inject

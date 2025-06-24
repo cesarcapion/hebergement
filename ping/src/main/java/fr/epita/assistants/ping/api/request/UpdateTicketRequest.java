@@ -1,6 +1,6 @@
 package fr.epita.assistants.ping.api.request;
 
-public class UpdateProjectRequest {
+public class UpdateTicketRequest {
     public String name;
     public String newOwnerId;
 }
