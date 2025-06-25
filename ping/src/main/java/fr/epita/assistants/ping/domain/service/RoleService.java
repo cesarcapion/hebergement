@@ -23,6 +23,7 @@ public class RoleService {
     @Inject
     TopicModelToTopicInfoConverter topicModelToTopicInfoConverter;
 
+
     private String formatName(String name){
         return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
     }
@@ -90,5 +91,9 @@ public class RoleService {
     public boolean addTopicToRole(Long id, Long topicId)
     {
         return roleRepository.addTopicToRole(id, topicService.getTopicById(topicId));
+    }
+
+    public RoleModel findByName(String name) {
+        return roleRepository.findByName(name);
     }
 }

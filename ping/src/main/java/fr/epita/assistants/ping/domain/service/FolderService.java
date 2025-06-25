@@ -26,6 +26,12 @@ public class FolderService {
 
     @Inject
     TicketService ticketService;
+    @Inject
+    UserService userService;
+    public boolean isAdmin(UUID uuid)
+    {
+        return userService.isAdmin(uuid);
+    }
 
     private boolean isInvalidPath(UUID projectID, String path)
     {

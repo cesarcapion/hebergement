@@ -33,6 +33,9 @@ public class RoleRepository implements PanacheRepository<RoleModel> {
         role.setName(name);
     }
 
+    public RoleModel findByName(String name) {
+        return find("LOWER(name)", name.toLowerCase()).firstResult();
+        }
     public List<RoleModel> getAllRoles() {
         return findAll().stream().toList();
     }

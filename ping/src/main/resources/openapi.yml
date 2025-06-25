@@ -707,8 +707,8 @@ paths:
     post:
       summary: Create a user
       description: |
-        Create a new user, its login should be unique and contain at most
-        one '.' or '_'. The name should be initialized to the login split and capitalized on the separator.
+        Create a new user, its mail should be unique and contain at most
+        one '.' or '_'. The name should be initialized to the mail split and capitalized on the separator.
 
         Only an admin can access this endpoint.
       tags:
@@ -727,9 +727,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         "400":
-          description: The login or the password is invalid
+          description: The mail or the password is invalid
         "409":
-          description: The login is already taken
+          description: The mail is already taken
         "403":
           description: The user is not an admin
         "401":
@@ -767,13 +767,13 @@ paths:
       security:
         - SecurityScheme:
             - admin
-  /api/user/login:
+  /api/user/mail:
     post:
-      summary: Login a user
+      summary: Mail a user
       description: |
-        Login a user with its login and password.
+        Mail a user with its mail and password.
 
-        It should return a token if the login/password combination is valid.
+        It should return a token if the mail/password combination is valid.
       tags:
         - User
       requestBody:
@@ -790,9 +790,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         "401":
-          description: The login/password combination is invalid
+          description: The mail/password combination is invalid
         "400":
-          description: The login or the password is null
+          description: The mail or the password is null
       servers:
         - url: http://localhost:8080
   /api/user/refresh:
@@ -950,7 +950,7 @@ components:
     LoginRequest:
       type: object
       properties:
-        login:
+        mail:
           type: string
         password:
           type: string
@@ -974,7 +974,7 @@ components:
     NewUserRequest:
       type: object
       properties:
-        login:
+        mail:
           type: string
         password:
           type: string
@@ -1028,7 +1028,7 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/UUID'
-        login:
+        mail:
           type: string
         displayName:
           type: string
