@@ -14,6 +14,7 @@ public class RoleService {
     @Inject
     private RoleRepository roleRepository;
 
+
     private String formatName(String name){
         return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
     }
@@ -54,9 +55,12 @@ public class RoleService {
         return rolesResponses;
     }
 
-    public void deleteRoleById(Long id)
-    {
+    public void deleteRoleById(Long id) {
         // FIXME shouldn't allow removing role if there is still topics linked to it
         roleRepository.deleteRoleById(id);
+    }
+
+    public RoleModel findByName(String name) {
+        return roleRepository.findByName(name);
     }
 }

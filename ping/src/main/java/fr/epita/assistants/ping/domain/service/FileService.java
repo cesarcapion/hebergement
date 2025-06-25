@@ -20,7 +20,12 @@ public class FileService {
     @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
     @Inject
     TicketService ticketService;
-
+    @Inject
+    UserService userService;
+    public boolean isAdmin(UUID uuid)
+    {
+        return userService.isAdmin(uuid);
+    }
     private boolean isInvalidPath(UUID projectID, String path)
     {
         return path == null || ticketService.DoesNotExist(projectID)|| path.isBlank();

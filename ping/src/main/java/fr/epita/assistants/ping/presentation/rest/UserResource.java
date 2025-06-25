@@ -8,6 +8,7 @@ import fr.epita.assistants.ping.api.request.CreateUserRequest;
 import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
+import fr.epita.assistants.ping.data.model.UserModel;
 
 import fr.epita.assistants.ping.api.request.LoginRequest;
 import fr.epita.assistants.ping.domain.service.UserService;

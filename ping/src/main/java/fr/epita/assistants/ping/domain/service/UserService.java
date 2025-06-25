@@ -7,6 +7,7 @@ import fr.epita.assistants.ping.api.request.CreateUserRequest;
 import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
+import fr.epita.assistants.ping.data.model.RoleModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.errors.Exceptions.*;
@@ -22,14 +23,18 @@ import java.time.Duration;
 public class UserService {
     @Inject
     UserRepository repository;
-
+    @Inject
+    RoleService roleService;
 
 
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
     @Inject
     TicketService ticketService;
-
+    public boolean isAdmin(UUID uuid)
+    {
+        return repository.isAdmin(uuid);
+    }
     private boolean checkLogin(String login, String password) {
         return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") /*&& password.matches("[a-zA-Z]+")*/;
     }
@@ -77,12 +82,20 @@ public class UserService {
         UserModel newUser = new UserModel();
         newUser.setDisplayName(loginToName(input.login));
         newUser.setAvatar("");
-        newUser.setIsAdmin(input.isAdmin);
         newUser.setLogin(input.login);
         newUser.setPassword(input.password);
+        RoleModel role;
+        if (input.isAdmin) {
+            role = roleService.findByName("admin");
+        }
+        else
+        {
+            role = roleService.findByName("user");
+        }
+        newUser.setRole(role);
 
         repository.addUser(newUser);
-        return new UserResponse(newUser.getId(),newUser.getLogin(),newUser.getDisplayName(),newUser.getIsAdmin(),newUser.getAvatar());
+        return new UserResponse(newUser.getId(),newUser.getLogin(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
     }
 
     /*
@@ -93,7 +106,7 @@ public class UserService {
         List<UserModel> list = repository.listAll();
         List<UserResponse> response = new ArrayList<>();
         for (UserModel user : list) {
-            UserResponse element = new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+            UserResponse element = new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
             response.add(element);
         }
         return response.toArray(new UserResponse[0]); // 200
@@ -108,7 +121,7 @@ public class UserService {
         {
             throw new BadInfosException("password or login invalid");
         }
-        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),Objects.equals(repository.findByLogin(login).getRole().getName(), "admin") ));
     }
 
     public LoginResponse refreshToken(UUID id) throws UserException {
@@ -118,7 +131,7 @@ public class UserService {
             System.out.println(login);
             throw new UserException("login invalid");
         }
-        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),repository.findByLogin(login).getIsAdmin()));
+        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),Objects.equals(repository.findByLogin(login).getRole().getName(), "admin") ));
     }
 
 
@@ -150,7 +163,7 @@ public class UserService {
     public UserResponse update(UUID userId, UUID userToUpdateId, UserUpdateRequest input) throws NotAuthorizedException, UserException {
         if (repository.findById(userToUpdateId) == null)
             throw new UserException("utilisateur introuvable"); // 404
-        if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
         UserModel user = repository.findById(userToUpdateId);
         if (input.password !=null &&!input.password.isBlank())
@@ -159,24 +172,24 @@ public class UserService {
             user.setDisplayName(input.displayName);
         user.setAvatar(input.avatar);
         repository.updateUser(user);
-        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
     }
     public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
         if (repository.findById(userToUpdateId) == null)
             throw new UserException("utilisateur introuvable"); // 404
 
-        if (!repository.findById(userId).getIsAdmin() && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
         UserModel user = repository.findById(userToUpdateId);
-        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),user.getIsAdmin(),user.getAvatar());
+        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
     }
 
     @Transactional
     public void delete(UUID userToRemoveid, UUID userRemoverID) throws UserException, NotAuthorizedException {
         if (repository.findById(userToRemoveid) == null)
             throw new UserException("utilisateur introuvable"); // 404
-        if (!ticketService.buildGetTicketsResponse(userToRemoveid.toString(),true).isEmpty() || !repository.findById(userRemoverID).getIsAdmin())
+        if (!ticketService.buildGetTicketsResponse(userToRemoveid.toString(),true).isEmpty() || !Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
         ticketService.deleteFromAllProjects(userToRemoveid);
         repository.deleteUser(repository.findById(userToRemoveid));

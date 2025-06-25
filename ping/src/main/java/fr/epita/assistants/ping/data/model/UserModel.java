@@ -29,10 +29,12 @@ public class UserModel {
 
     @Column(name="display_name")
     private String displayName;
-    @Column(name="is_admin")
-    private Boolean isAdmin;
 
     private String avatar;
+
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private RoleModel role;
 
     @ManyToMany(mappedBy = "members", fetch = FetchType.EAGER)
     public List<TicketModel> tickets;

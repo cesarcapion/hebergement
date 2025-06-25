@@ -1,12 +1,21 @@
 package fr.epita.assistants.ping.data.repository;
 
 import fr.epita.assistants.ping.data.model.RoleModel;
+import jakarta.enterprise.context.ApplicationScoped;
+import fr.epita.assistants.ping.data.model.TicketModel;
+import fr.epita.assistants.ping.data.model.UserModel;
+import fr.epita.assistants.ping.utils.UserStatus;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Optional;
+
+import static io.quarkus.hibernate.orm.panache.PanacheEntityBase.find;
 
 @ApplicationScoped
 public class RoleRepository implements PanacheRepository<RoleModel> {
@@ -32,6 +41,9 @@ public class RoleRepository implements PanacheRepository<RoleModel> {
         role.setName(name);
     }
 
+    public RoleModel findByName(String name) {
+        return find("LOWER(name)", name.toLowerCase()).firstResult();
+        }
     public List<RoleModel> getAllRoles() {
         return findAll().stream().toList();
     }

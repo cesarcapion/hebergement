@@ -15,6 +15,16 @@ public class UserRepository  implements PanacheRepository<UserModel> {
         persist(user);
     }
 
+    public boolean isAdmin(UUID id) {
+        UserModel user = find("id", id).firstResult();
+
+        if (user == null || user.getRole() == null) {
+            return false;
+        }
+
+        return user.getRole().getName().equals("admin");
+    }
+
     public UserModel findById(UUID id) {
         return find("id", id).firstResult();
     }
@@ -40,7 +50,8 @@ public class UserRepository  implements PanacheRepository<UserModel> {
             existingUser.setDisplayName(updatedUser.getDisplayName());
             existingUser.setPassword(updatedUser.getPassword());
             existingUser.setAvatar(updatedUser.getAvatar());
-            existingUser.setIsAdmin(updatedUser.getIsAdmin());
+            existingUser.setRole(updatedUser.getRole());
+            existingUser.setTickets(updatedUser.getTickets());
         }
     }
 }
