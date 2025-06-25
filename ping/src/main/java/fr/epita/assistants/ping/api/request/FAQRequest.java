@@ -1,0 +1,11 @@
+package fr.epita.assistants.ping.api.request;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@AllArgsConstructor
+@Data
+public class FAQRequest {
+    public String question;
+    public String response;
+}
