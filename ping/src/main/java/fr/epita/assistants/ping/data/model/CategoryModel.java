@@ -17,11 +17,10 @@ public class CategoryModel {
     @GeneratedValue
     private Long id;
 
-//    @Column(unique=true)
     private String name;
 
-    @Column(name= "parent_id")
-    private Integer parentId;
+//    @Column(name= "parent_id")
+//    private Integer parentId;
 
     @OneToMany(mappedBy = "category")
     private List<FAQModel> questions;
