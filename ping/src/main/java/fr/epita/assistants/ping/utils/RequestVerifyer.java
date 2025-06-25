@@ -60,4 +60,16 @@ public class RequestVerifyer {
     public static boolean isInvalid(UpdateRoleRequest request) {
         return request == null || request.newName == null || request.newName.isEmpty();
     }
+
+    public static boolean isInvalid(TopicRoleRequest request) {
+        return request == null || request.topicId == null;
+    }
+
+    public static boolean isInvalid(NewTopicRequest request) {
+        return request == null || request.name == null || request.name.isEmpty();
+    }
+
+    public static boolean isInvalid(UpdateTopicRequest request) {
+        return request == null || request.newName == null || request.newName.isEmpty();
+    }
 }
