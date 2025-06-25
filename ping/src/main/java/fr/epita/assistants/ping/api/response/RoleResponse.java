@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
+import java.util.List;
+
 
 @With
 @AllArgsConstructor
@@ -11,4 +13,6 @@ import lombok.With;
 public class RoleResponse {
     public Long id;
     public String name;
+
+    public List<TopicInfoResponse> topics;
 }

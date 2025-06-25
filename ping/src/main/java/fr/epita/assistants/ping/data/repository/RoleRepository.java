@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.data.repository;
 
 import fr.epita.assistants.ping.data.model.RoleModel;
+import fr.epita.assistants.ping.data.model.TopicModel;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -39,5 +40,25 @@ public class RoleRepository implements PanacheRepository<RoleModel> {
     @Transactional
     public void deleteRoleById(Long id) {
         delete("id", id);
+    }
+
+    @Transactional
+    public boolean deleteTopicFromRole(Long id, Long topicId) {
+        RoleModel roleModel = getRoleById(id);
+        if (roleModel.getTopics().stream().filter(topic -> topic.getId().equals(topicId)).count() == 0) {
+            return false;
+        }
+        roleModel.setTopics(roleModel.getTopics().stream().filter(topic -> !topic.getId().equals(topicId)).toList());
+        return true;
+    }
+
+    @Transactional
+    public boolean addTopicToRole(Long id, TopicModel topicModel) {
+        RoleModel roleModel = getRoleById(id);
+        if (roleModel.getTopics().stream().filter(topic -> topic.getId().equals(topicModel.getId())).count() == 1) {
+            return false;
+        }
+        roleModel.getTopics().add(topicModel);
+        return true;
     }
 }
