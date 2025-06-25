@@ -1,4 +1,7 @@
 package fr.epita.assistants.ping.domain.service;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.nio.charset.StandardCharsets;
 
 import java.time.Instant;
 import java.util.*;
@@ -19,6 +22,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.time.Duration;
 
+import static org.postgresql.util.MD5Digest.bytesToHex;
+
 @ApplicationScoped
 public class UserService {
     @Inject
@@ -35,8 +40,20 @@ public class UserService {
     {
         return repository.isAdmin(uuid);
     }
-    private boolean checkLogin(String login, String password) {
-        return login.matches("^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$") /*&& password.matches("[a-zA-Z]+")*/;
+    private boolean checkLogin(String mail) {
+        return mail.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+    private boolean checkPassword(String password) {
+        return password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{12,}$");
+    }
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not available", e);
+        }
     }
 
     public static String generateToken(UUID userId, boolean isAdmin) {
@@ -49,21 +66,24 @@ public class UserService {
                 .sign();
     }
 
-    public String loginToName(String login) {
-        String[] parts = login.split("[._]");
+    public String loginToName(String mail) {
+        String loginPart = mail.split("@")[0];
+
+        String[] parts = loginPart.split("[._]");
         StringBuilder displayName = new StringBuilder();
+
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].isEmpty()) continue;
+
             String part = parts[i];
-            displayName.append(
-                    Character.toUpperCase(part.charAt(0))
-            ).append(
-                    part.substring(1)
-            );
+            displayName.append(Character.toUpperCase(part.charAt(0)))
+                    .append(part.substring(1));
+
             if (i < parts.length - 1) {
                 displayName.append(" ");
             }
         }
+
         return displayName.toString();
     }
 
@@ -72,18 +92,20 @@ public class UserService {
         create a new user
      */
     public UserResponse create(CreateUserRequest input) throws InvalidException, AlreadyExistException {
-        if (!checkLogin(input.login, input.password))
-            throw new InvalidException("login or password not valid"); // 400
+        if (!checkLogin(input.mail))
+            throw new InvalidException("email not valid"); // 400
+        if (!checkPassword(input.password))
+            throw new InvalidException("password not valid"); // 400
 
-        if (repository.findByLogin(input.login) != null)
+        if (repository.findByLogin(input.mail) != null)
         {
-            throw new AlreadyExistException("the login is already used"); // 409
+            throw new AlreadyExistException("the mail is already used"); // 409
         }
         UserModel newUser = new UserModel();
-        newUser.setDisplayName(loginToName(input.login));
+        newUser.setDisplayName(loginToName(input.mail));
         newUser.setAvatar("");
-        newUser.setLogin(input.login);
-        newUser.setPassword(input.password);
+        newUser.setMail(input.mail);
+        newUser.setPassword(hashPassword(input.password));
         RoleModel role;
         if (input.isAdmin) {
             role = roleService.findByName("admin");
@@ -95,7 +117,33 @@ public class UserService {
         newUser.setRole(role);
 
         repository.addUser(newUser);
-        return new UserResponse(newUser.getId(),newUser.getLogin(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
+    }
+
+    /*
+    * to create a new account if we don't have any
+    */
+    public UserResponse createNewAccount(CreateUserRequest input) throws InvalidException, AlreadyExistException {
+        input.isAdmin = false;
+        if (!checkLogin(input.mail))
+            throw new InvalidException("email not valid"); // 400
+        if (!checkPassword(input.password))
+            throw new InvalidException("password not valid"); // 400
+
+        if (repository.findByLogin(input.mail) != null)
+        {
+            throw new AlreadyExistException("the mail is already used"); // 409
+        }
+        UserModel newUser = new UserModel();
+        newUser.setDisplayName(loginToName(input.mail));
+        newUser.setAvatar("");
+        newUser.setMail(input.mail);
+        newUser.setPassword(hashPassword(input.password));
+        RoleModel role =roleService.findByName("user");
+        newUser.setRole(role);
+
+        repository.addUser(newUser);
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
     }
 
     /*
@@ -106,32 +154,32 @@ public class UserService {
         List<UserModel> list = repository.listAll();
         List<UserResponse> response = new ArrayList<>();
         for (UserModel user : list) {
-            UserResponse element = new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
+            UserResponse element = new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
             response.add(element);
         }
         return response.toArray(new UserResponse[0]); // 200
     }
 
-    public LoginResponse loginUser(String login, String password) throws InvalidException, BadInfosException {
-        if (login == null || password==null)
+    public LoginResponse loginUser(String mail, String password) throws InvalidException, BadInfosException {
+        if (mail == null || password==null)
         {
-            throw new InvalidException("login or password is null");
+            throw new InvalidException("mail or password is null");
         }
-        if (repository.findByLogin(login) == null || !Objects.equals(repository.findByLogin(login).getPassword(), password))
+        if (repository.findByLogin(mail) == null || !Objects.equals(repository.findByLogin(mail).getPassword(), hashPassword(password)))
         {
-            throw new BadInfosException("password or login invalid");
+            throw new BadInfosException("password or mail invalid");
         }
-        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),Objects.equals(repository.findByLogin(login).getRole().getName(), "admin") ));
+        return new LoginResponse(generateToken(repository.findByLogin(mail).getId(),Objects.equals(repository.findByLogin(mail).getRole().getName(), "admin") ));
     }
 
     public LoginResponse refreshToken(UUID id) throws UserException {
-        String login = repository.findById(id).getLogin();
-        if (repository.findByLogin(login) == null)
+        String mail = repository.findById(id).getMail();
+        if (repository.findByLogin(mail) == null)
         {
-            System.out.println(login);
-            throw new UserException("login invalid");
+            System.out.println(mail);
+            throw new UserException("mail invalid");
         }
-        return new LoginResponse(generateToken(repository.findByLogin(login).getId(),Objects.equals(repository.findByLogin(login).getRole().getName(), "admin") ));
+        return new LoginResponse(generateToken(repository.findByLogin(mail).getId(),Objects.equals(repository.findByLogin(mail).getRole().getName(), "admin") ));
     }
 
 
@@ -144,8 +192,8 @@ public class UserService {
 
 
 
-    private String generateDisplayName(String login) {
-        String[] parts = login.split("[._]");
+    private String generateDisplayName(String mail) {
+        String[] parts = mail.split("[._]");
         
         StringBuilder result = new StringBuilder();
         for (String s : parts) {
@@ -163,26 +211,26 @@ public class UserService {
     public UserResponse update(UUID userId, UUID userToUpdateId, UserUpdateRequest input) throws NotAuthorizedException, UserException {
         if (repository.findById(userToUpdateId) == null)
             throw new UserException("utilisateur introuvable"); // 404
-        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getMail(), repository.findById(userToUpdateId).getMail()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
         UserModel user = repository.findById(userToUpdateId);
         if (input.password !=null &&!input.password.isBlank())
-            user.setPassword(input.password);
+            user.setPassword(hashPassword(input.password));
         if (input.displayName != null && !input.displayName.isBlank())
             user.setDisplayName(input.displayName);
         user.setAvatar(input.avatar);
         repository.updateUser(user);
-        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
+        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
     }
     public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
         if (repository.findById(userToUpdateId) == null)
             throw new UserException("utilisateur introuvable"); // 404
 
-        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getLogin(), repository.findById(userToUpdateId).getLogin()))
+        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getMail(), repository.findById(userToUpdateId).getMail()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
         UserModel user = repository.findById(userToUpdateId);
-        return new UserResponse(user.getId(),user.getLogin(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
+        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
     }
 
     @Transactional

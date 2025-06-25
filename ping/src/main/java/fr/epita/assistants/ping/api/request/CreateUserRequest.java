@@ -3,7 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 public class CreateUserRequest {
-    public String login;
+    public String mail;
     public String password;
     public boolean isAdmin;
 }

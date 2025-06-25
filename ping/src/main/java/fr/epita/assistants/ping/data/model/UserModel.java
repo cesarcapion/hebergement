@@ -22,7 +22,7 @@ public class UserModel {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String login;
+    private String mail;
 
     @Column(nullable = false)
     private String password;

@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 public class UserResponse {
     public UUID id;
-    public String login;
+    public String mail;
     public String displayName;
     public boolean isAdmin;
     public String avatar;
