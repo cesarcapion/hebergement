@@ -1,5 +1,6 @@
 package fr.epita.assistants.ping.data.model;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,5 +24,6 @@ public class CategoryModel {
 //    private Integer parentId;
 
     @OneToMany(mappedBy = "category")
+    @JsonbTransient
     private List<FAQModel> questions;
 }

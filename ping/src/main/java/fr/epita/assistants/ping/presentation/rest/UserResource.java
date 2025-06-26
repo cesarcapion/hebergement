@@ -19,6 +19,7 @@ import fr.epita.assistants.ping.errors.Exceptions.NotAuthorizedException;
 import fr.epita.assistants.ping.errors.Exceptions.UserException;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Logger;
+import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -93,7 +94,7 @@ public class UserResource {
 
     //mail a user
     @POST
-    @Path("/mail")
+    @Path("/login")
     public Response loginUser(LoginRequest request) {
 
         try

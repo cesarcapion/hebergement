@@ -7,7 +7,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 public class FAQResponse {
-    public UUID id;
+    public Long id;
     public String question;
     public String response;
+    public Long categoryId;
 }
