@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.presentation.rest.user;
+package fr.epita.assistants.ping.presentation.rest;
 
 import java.io.InputStream;
 import java.util.UUID;
@@ -8,8 +8,8 @@ import fr.epita.assistants.ping.api.request.CreateUserRequest;
 import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
-
 import fr.epita.assistants.ping.data.model.UserModel;
+
 import fr.epita.assistants.ping.api.request.LoginRequest;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
@@ -27,8 +27,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import static fr.epita.assistants.ping.utils.Logger.*;
-
 @Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -43,20 +41,42 @@ public class UserResource {
     @RolesAllowed("admin")
     public Response createUser(CreateUserRequest user) {
 
-        logger.logInfo("User with ID " + identity.getPrincipal().getName() + " is trying to create the user: login: " + user.login + " ,password: " + user.password + " admin: " + user.isAdmin);
+        logger.logInfo("User with ID " + identity.getPrincipal().getName() + " is trying to create the user: mail: " + user.mail + " ,password: " + user.password + " admin: " + user.isAdmin);
 
         try {
             logger.logSuccess("The operation was successful : " );
             UserResponse response = userService.create(user);
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         } catch (InvalidException e) { // 400
-            logger.logError("Error 400: The login or the password is invalid");
+            logger.logError("Error 400: " + e.getMessage());
 
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The login or the password is invalid")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(e.getMessage())).build();
         }catch (AlreadyExistException e) { // 409
-            logger.logError("Error 409: The login is already taken");
+            logger.logError("Error 409: The mail is already taken");
 
-            return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The login is already taken")).build();
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The mail is already taken")).build();
+        }
+
+    }
+
+    @POST
+    @Path("/new-account")
+    public Response newAccount(CreateUserRequest user) {
+
+        logger.logInfo("User with ID " + identity.getPrincipal().getName() + " is trying to create the user: mail: " + user.mail + " ,password: " + user.password + " admin: " + user.isAdmin);
+
+        try {
+            logger.logSuccess("The operation was successful : " );
+            UserResponse response = userService.createNewAccount(user);
+            return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
+        } catch (InvalidException e) { // 400
+            logger.logError("Error 400: " + e.getMessage());
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(e.getMessage())).build();
+        }catch (AlreadyExistException e) { // 409
+            logger.logError("Error 409: The mail is already taken");
+
+            return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The mail is already taken")).build();
         }
 
     }
@@ -72,37 +92,35 @@ public class UserResource {
     }
 
 
-    //login a user
+    //mail a user
     @POST
     @Path("/login")
-    //@RolesAllowed("admin")
     public Response loginUser(LoginRequest request) {
 
         try
         {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("privateKey.txt");
-            //System.out.println("Key found? " + (is != null));
-            logger.logInfo("User is trying to connect as \"" + request.login + "\"");
-            LoginResponse response = userService.loginUser(request.login,request.password);
+            logger.logInfo("User is trying to connect as \"" + request.mail + "\"");
+            LoginResponse response = userService.loginUser(request.mail,request.password);
             logger.logSuccess(identity.getPrincipal().getName() + " successfully logged in : token : " + response.token);
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
         }
         catch (InvalidException e) { // 400
-            logger.logError("Error 400: The login or the password is invalid");
+            logger.logError("Error 400: The mail or the password is invalid");
 
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The login or the password is invalid")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The mail or the password is invalid")).build();
         }
         catch (BadInfosException e) // 401
         {
-            logger.logError("Error 401: The login/password combination is invalid");
-            return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("The login/password combination is invalid")).build();
+            logger.logError("Error 401: The mail/password combination is invalid");
+            return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorInfo("The mail/password combination is invalid")).build();
         }
     }
 
 
     @GET
     @Path("/refresh")
-    @RolesAllowed({"admin","user"})
+    @Authenticated
     public Response refreshToken() {
         try
         {
@@ -120,7 +138,7 @@ public class UserResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({"admin","user"})
+    @Authenticated
     public Response updateUser(UserUpdateRequest user,@PathParam("id") UUID id) {
         try
         {
@@ -143,7 +161,7 @@ public class UserResource {
 
     @GET
     @Path("/{id}")
-    @RolesAllowed({"admin","user"})
+    @Authenticated
     public Response getUser(@PathParam("id") UUID id) {
         try
         {
@@ -166,7 +184,7 @@ public class UserResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({"admin","user"})
+    @Authenticated
     public Response deleteUser(@PathParam("id") UUID id) {
         try
         {

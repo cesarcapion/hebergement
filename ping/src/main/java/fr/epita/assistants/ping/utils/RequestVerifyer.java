@@ -1,10 +1,7 @@
 package fr.epita.assistants.ping.utils;
 
 import com.arjuna.ats.jta.exceptions.NotImplementedException;
-import fr.epita.assistants.ping.api.request.ExecFeatureRequest;
-import fr.epita.assistants.ping.api.request.NewProjectRequest;
-import fr.epita.assistants.ping.api.request.UpdateProjectRequest;
-import fr.epita.assistants.ping.api.request.UserProjectRequest;
+import fr.epita.assistants.ping.api.request.*;
 
 import java.util.UUID;
 
@@ -41,18 +38,38 @@ public class RequestVerifyer {
         return true;
     }
 
-    public static boolean isInvalid(NewProjectRequest request) {
-        return request == null || request.name == null || request.name.isEmpty();
+    public static boolean isInvalid(NewTicketRequest request) {
+        return request == null || request.subject == null || request.subject.isEmpty();
     }
 
-    public static boolean isInvalid(UpdateProjectRequest request) {
+    public static boolean isInvalid(UpdateTicketRequest request) {
         return request == null || (request.name == null && request.newOwnerId == null) || (request.newOwnerId != null && isUUIDInvalid(request.newOwnerId));
     }
 
 
 
-    public static boolean isInvalid(UserProjectRequest request)
+    public static boolean isInvalid(UserTicketRequest request)
     {
         return request == null || request.userId == null || request.userId.isEmpty() || isUUIDInvalid(request.userId);
+    }
+
+    public static boolean isInvalid(NewRoleRequest request) {
+        return request == null || request.name == null || request.name.isEmpty();
+    }
+
+    public static boolean isInvalid(UpdateRoleRequest request) {
+        return request == null || request.newName == null || request.newName.isEmpty();
+    }
+
+    public static boolean isInvalid(TopicRoleRequest request) {
+        return request == null || request.topicId == null;
+    }
+
+    public static boolean isInvalid(NewTopicRequest request) {
+        return request == null || request.name == null || request.name.isEmpty();
+    }
+
+    public static boolean isInvalid(UpdateTopicRequest request) {
+        return request == null || request.newName == null || request.newName.isEmpty();
     }
 }

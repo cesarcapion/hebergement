@@ -22,18 +22,20 @@ public class UserModel {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String login;
+    private String mail;
 
     @Column(nullable = false)
     private String password;
 
     @Column(name="display_name")
     private String displayName;
-    @Column(name="is_admin")
-    private Boolean isAdmin;
 
     private String avatar;
 
+    @ManyToOne
+    @JoinColumn(name="role_id")
+    private RoleModel role;
+
     @ManyToMany(mappedBy = "members", fetch = FetchType.EAGER)
-    public List<ProjectModel> projects;
+    public List<TicketModel> tickets;
 }
