@@ -16,6 +16,7 @@ import fr.epita.assistants.ping.data.model.TicketModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 
 import fr.epita.assistants.ping.domain.service.TicketService;
+import fr.epita.assistants.ping.domain.service.TopicService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.utils.*;
 import io.quarkus.security.Authenticated;
@@ -36,6 +37,8 @@ public class TicketResource {
     UserService userService;
 
     @Inject public SecurityIdentity identity;
+    @Inject
+    TopicService topicService;
 
 
     @GET
@@ -43,10 +46,17 @@ public class TicketResource {
     @QueryParam("onlyOwned")
     @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTickets(@DefaultValue("false") @QueryParam("onlyOwned") boolean onlyOwned) {
-        logger.logInfo(identity.getPrincipal().getName() + " requested to get all the tickets where he is " + (onlyOwned ? "an owner" : "a member"));
+    public Response getTickets(@DefaultValue("false") @QueryParam("onlyOwned") boolean onlyOwned,
+                               @DefaultValue("false") @QueryParam("descending") boolean descending,
+                               @DefaultValue("NONE") @QueryParam("filter") TicketStatus filter,
+                               @DefaultValue("NONE") @QueryParam("sorting") TicketSortingStrategy sortingStrategy)
+    {
 
-        ArrayList<TicketResponse> ticketResponse = ticketService.buildGetTicketsResponse(identity.getPrincipal().getName(), onlyOwned);
+        logger.logInfo(identity.getPrincipal().getName() + " requested to get all the tickets where he is "
+                + (onlyOwned ? "an owner" : "a member") + "with filter: " + filter +
+                " and sorting strategy: " + sortingStrategy + "and descending: " + descending);
+
+        ArrayList<TicketResponse> ticketResponse = ticketService.buildGetTicketsResponse(identity.getPrincipal().getName(), onlyOwned, descending, filter, sortingStrategy);
         logger.logSuccess("The operation was successful");
         return Response.status(200).entity(ticketResponse).build();
     }
@@ -64,9 +74,15 @@ public class TicketResource {
         } else {
             logger.logInfo(identity.getPrincipal().getName() + " requested to create a new ticket named " + newTicketRequest.subject);
             UserModel user = userService.get(UUID.fromString(identity.getPrincipal().getName()));
-            // FIXME get the topic with the topic id
+            if (!topicService.topicExists(newTicketRequest.topicId))
+            {
+                logger.logError("Error 404: The topic does not exist");
+                return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Topic does not exist")).build();
+            }
+
             logger.logSuccess("The operation was successful");
-            return Response.status(Response.Status.OK).entity(ticketService.buildCreateTicketResponse(newTicketRequest.subject, user, null)).build();
+            return Response.status(Response.Status.OK).entity(ticketService.buildCreateTicketResponse(newTicketRequest.subject,
+                    user, topicService.getTopicById(newTicketRequest.topicId))).build();
         }
     }
 
@@ -87,6 +103,10 @@ public class TicketResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTicket(@PathParam("id") UUID ticketId, UpdateTicketRequest updateTicketRequest) {
+        // FIXME great change to implement in the future: if the topic of the ticket changes,
+        //  all the devs on this ticket will be kicked out of this ticket if they cannot handle the new topic
+        //  and the ownership of the ticket will be given back to the user, placing the ticket to PENDING status again,
+        //  however if one dev in the ticket can still handle this topic, the ownership will be transfered to him if needed
         if (RequestVerifyer.isInvalid(updateTicketRequest)) {
             logger.logError("Error 400: Bad update ticket request, fields are null or the request is null");
             return Response.status(Response.Status.BAD_REQUEST).
@@ -95,7 +115,8 @@ public class TicketResource {
         }
 
         logger.logInfo(identity.getPrincipal().getName() + " requested to update the ticket with id " + ticketId
-                + " new name: " + updateTicketRequest.name + "new owner: " + updateTicketRequest.newOwnerId);
+                + " new name: " + updateTicketRequest.subject + "new owner: " + updateTicketRequest.newOwnerId
+                + " new ticket status: " + updateTicketRequest.ticketStatus);
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
         UserStatus userStatus = ticketService.getUserStatus(currentUser, ticketId, Objects.equals(currentUser.getRole().getName(), "admin"));
         if (userStatus == UserStatus.NOT_A_MEMBER && !Objects.equals(currentUser.getRole().getName(), "admin")) {
@@ -117,7 +138,8 @@ public class TicketResource {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The ticket does not exist")).build();
         }
         UserModel newOwner = updateTicketRequest.newOwnerId != null ? userService.get(UUID.fromString(updateTicketRequest.newOwnerId)) : null;
-        TicketModel updatedProject = ticketService.UpdateTicket(ticketId, newOwner, updateTicketRequest.name);
+        TicketModel updatedProject = ticketService.UpdateTicket(ticketId, newOwner,
+                updateTicketRequest.subject, updateTicketRequest.ticketStatus);
         if (updatedProject == null) {
             logger.logError("Error 404: The new owner is not a member of this ticket, or the new owner does not exist");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The new owner is not a member of this ticket, or the new owner does not exist")).build();

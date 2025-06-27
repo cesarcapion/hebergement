@@ -2,12 +2,15 @@ package fr.epita.assistants.ping.domain.service;
 
 import fr.epita.assistants.ping.api.response.TicketResponse;
 import fr.epita.assistants.ping.api.response.UserInfoResponse;
+import fr.epita.assistants.ping.data.converter.TopicModelToTopicInfoConverter;
 import fr.epita.assistants.ping.data.converter.UserModelToUserInfoConverter;
 import fr.epita.assistants.ping.data.model.TicketModel;
 import fr.epita.assistants.ping.data.model.TopicModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.TicketRepository;
 import fr.epita.assistants.ping.utils.Feature;
+import fr.epita.assistants.ping.utils.TicketSortingStrategy;
+import fr.epita.assistants.ping.utils.TicketStatus;
 import fr.epita.assistants.ping.utils.UserStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -19,10 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @ApplicationScoped
 public class TicketService {
@@ -32,6 +32,8 @@ public class TicketService {
     UserModelToUserInfoConverter userModelToUserInfoConverter;
     @Inject
     UserService userService;
+    @Inject
+    TopicModelToTopicInfoConverter topicModelToTopicInfoConverter;
 
     @ConfigProperty(name="PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
@@ -40,10 +42,41 @@ public class TicketService {
     {
         ticketRepository.clear();
     }
+
+    public TicketSortingStrategy validSortingStrategy(String strategy)
+    {
+        strategy = strategy.toLowerCase();
+        if (strategy.equals("last_modified"))
+        {
+            return TicketSortingStrategy.LAST_MODIFIED;
+        }
+        if (strategy.equals("status"))
+        {
+            return TicketSortingStrategy.STATUS;
+        }
+        return null;
+    }
+
+
+
+    public boolean ownsProjects(UUID userUUID)
+    {
+        return !ticketRepository.getOwnedTickets(userService.get(userUUID)).isEmpty();
+    }
+
     public boolean isAdmin(UUID uuid)
     {
         return userService.isAdmin(uuid);
     }
+    public TicketStatus getTicketStatus(UUID ticketUUID)
+    {
+        return ticketRepository.findTicketByUUID(ticketUUID).getTicketStatus();
+    }
+    public TicketModel get(UUID ticketUUID)
+    {
+        return ticketRepository.findTicketByUUID(ticketUUID);
+    }
+
     public boolean DoesNotExist(UUID ticketUUID) {
         return ticketRepository.findTicketByUUID(ticketUUID) == null;
     }
@@ -53,17 +86,31 @@ public class TicketService {
         return ticket.getMembers().stream().filter(userModel -> userModel.getId().equals(UUID.fromString(userId))).count() == 1;
     }
 
-    public ArrayList<TicketResponse> buildGetTicketsResponse(String userUUID, boolean onlyOwned) {
+    public ArrayList<TicketResponse> buildGetTicketsResponse(String userUUID, boolean onlyOwned, boolean descending,
+                                                             TicketStatus filter, TicketSortingStrategy sortingStrategy) {
         ArrayList<TicketResponse> responses = new ArrayList<>();
 
         if (onlyOwned) {
             List<TicketModel> ownedTickets = ticketRepository.getOwnedTickets(userService.get(UUID.fromString(userUUID)));
-            fillResponses(responses, ownedTickets);
+            fillResponses(responses, ownedTickets, filter);
         }
         else
         {
             List<TicketModel> memberTickets = ticketRepository.getMemberTickets(userUUID);
-            fillResponses(responses, memberTickets);
+            fillResponses(responses, memberTickets, filter);
+        }
+
+        if (sortingStrategy == TicketSortingStrategy.STATUS)
+        {
+            responses.sort(Comparator.comparing(TicketResponse::getStatus));
+        }
+        else if (sortingStrategy == TicketSortingStrategy.LAST_MODIFIED)
+        {
+            responses.sort(Comparator.comparing(TicketResponse::getLastModified).reversed());
+        }
+        if (descending)
+        {
+            Collections.reverse(responses);
         }
         return responses;
     }
@@ -77,22 +124,37 @@ public class TicketService {
         return members;
     }
 
-    private void fillResponses(ArrayList<TicketResponse> responses, List<TicketModel> tickets) {
+    private void fillResponses(ArrayList<TicketResponse> responses, List<TicketModel> tickets, TicketStatus filter) {
         for (TicketModel ticket : tickets) {
             UserModel owner = ticket.getOwner();
             UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
 
             ArrayList<UserInfoResponse> members = getMembersInfo(ticket);
-
-            responses.add(
-                    new TicketResponse()
-                            .withId(ticket.getId().toString())
-                            .withOwner(ownerInfo)
-                            .withName(ticket.getSubject())
-                            .withMembers(members)
-                            .withStatus(ticket.getTicketStatus())
-                            .withLastModified(ticket.getCreatedAt())
-                            );
+            if (filter == TicketStatus.NONE) {
+                responses.add(
+                        new TicketResponse()
+                                .withId(ticket.getId().toString())
+                                .withOwner(ownerInfo)
+                                .withName(ticket.getSubject())
+                                .withMembers(members)
+                                .withStatus(ticket.getTicketStatus())
+                                .withLastModified(ticket.getCreatedAt())
+                                .withTopic(topicModelToTopicInfoConverter.convert(ticket.getTopic()))
+                );
+            }
+            else if (ticket.getTicketStatus() == filter)
+            {
+                responses.add(
+                        new TicketResponse()
+                                .withId(ticket.getId().toString())
+                                .withOwner(ownerInfo)
+                                .withName(ticket.getSubject())
+                                .withMembers(members)
+                                .withStatus(ticket.getTicketStatus())
+                                .withLastModified(ticket.getCreatedAt())
+                                .withTopic(topicModelToTopicInfoConverter.convert(ticket.getTopic()))
+                );
+            }
         }
     }
 
@@ -108,7 +170,8 @@ public class TicketService {
                 .withName(ticket.getSubject())
                 .withMembers(members)
                 .withStatus(ticket.getTicketStatus())
-                .withLastModified(ticket.getCreatedAt());
+                .withLastModified(ticket.getCreatedAt())
+                .withTopic(topicModelToTopicInfoConverter.convert(ticket.getTopic()));
     }
 
     private boolean createTicketFolder(TicketModel createdTicket) {
@@ -117,8 +180,7 @@ public class TicketService {
     }
 
     public TicketResponse buildCreateTicketResponse(String ticketName, UserModel user, TopicModel topic) {
-        // FIXME add topic name to the ticketResponse or the topic id whatever fits best
-        TicketModel createdTicket = ticketRepository.createNewTicket(ticketName, user);
+        TicketModel createdTicket = ticketRepository.createNewTicket(ticketName, user, topic);
         createTicketFolder(createdTicket);
 
         UserInfoResponse owner = userModelToUserInfoConverter.convert(user);
@@ -132,13 +194,14 @@ public class TicketService {
                 .withMembers(members)
                 .withOwner(owner)
                 .withStatus(createdTicket.getTicketStatus())
-                .withLastModified(createdTicket.getCreatedAt());
+                .withLastModified(createdTicket.getCreatedAt())
+                .withTopic(topicModelToTopicInfoConverter.convert(topic));
     }
 
     public ArrayList<TicketResponse> buildGetAllTicketsResponse() {
         List<TicketModel> tickets = ticketRepository.getAllTickets();
         ArrayList<TicketResponse> responses = new ArrayList<>();
-        fillResponses(responses, tickets);
+        fillResponses(responses, tickets, TicketStatus.NONE);
         return responses;
     }
 
@@ -147,12 +210,12 @@ public class TicketService {
     }
 
     /// returns the updated project if the new owner is member of the project and updates it, null otherwise
-    public TicketModel UpdateTicket(UUID ticketUUID, UserModel newOwner, String newName) {
+    public TicketModel UpdateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus) {
         if (newOwner != null && getUserStatus(newOwner, ticketUUID, false) == UserStatus.NOT_A_MEMBER)
         {
             return null;
         }
-        return ticketRepository.updateTicket(ticketUUID, newOwner, newName);
+        return ticketRepository.updateTicket(ticketUUID, newOwner, newSubject, newTicketStatus);
     }
 
     public TicketResponse buildGetTicketResponseWithId(UUID ticketUUID) {

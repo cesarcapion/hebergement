@@ -242,7 +242,8 @@ public class UserService {
     public void delete(UUID userToRemoveid, UUID userRemoverID) throws UserException, NotAuthorizedException {
         if (repository.findById(userToRemoveid) == null)
             throw new UserException("utilisateur introuvable"); // 404
-        if (!ticketService.buildGetTicketsResponse(userToRemoveid.toString(),true).isEmpty() || !Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
+//        if (!ticketService.buildGetTicketsResponse(userToRemoveid.toString(),true).isEmpty() || !Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
+        if (ticketService.ownsProjects(userToRemoveid) || !Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
         ticketService.deleteFromAllProjects(userToRemoveid);
         repository.deleteUser(repository.findById(userToRemoveid));

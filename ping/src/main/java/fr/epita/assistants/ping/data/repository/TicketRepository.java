@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.data.repository;
 
 import fr.epita.assistants.ping.data.model.TicketModel;
+import fr.epita.assistants.ping.data.model.TopicModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.utils.TicketStatus;
 import fr.epita.assistants.ping.utils.UserStatus;
@@ -42,7 +43,7 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
     }
 
     @Transactional
-    public TicketModel createNewTicket(String projectName, UserModel user)
+    public TicketModel createNewTicket(String projectName, UserModel user, TopicModel topic)
     {
         String path = defaultPath;
         if (!path.endsWith("/"))
@@ -55,7 +56,8 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
             .withSubject(projectName)
             .withPath("")
             .withTicketStatus(TicketStatus.PENDING)
-            .withCreatedAt(LocalDateTime.now());
+            .withCreatedAt(LocalDateTime.now())
+            .withTopic(topic);
         persist(createdTicket);
 
         createdTicket.getMembers().add(user);
@@ -98,7 +100,7 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
     }
 
     @Transactional
-    public TicketModel updateTicket(UUID ticketUUID, UserModel newOwner, String newName)
+    public TicketModel updateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus)
     {
         TicketModel ticketModel = find("id", ticketUUID).firstResult();
 
@@ -106,11 +108,14 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
         {
             ticketModel.setOwner(newOwner);
         }
-        if (newName != null && !newName.equals(ticketModel.getSubject()))
+        if (newSubject != null && !newSubject.equals(ticketModel.getSubject()))
         {
-            ticketModel.setSubject(newName);
+            ticketModel.setSubject(newSubject);
         }
-
+        if (newTicketStatus != null && !newTicketStatus.equals(ticketModel.getTicketStatus()))
+        {
+            ticketModel.setTicketStatus(newTicketStatus);
+        }
         return ticketModel;
     }
 
