@@ -39,26 +39,27 @@ public class RequestVerifyer {
     }
 
     public static boolean isInvalid(NewTicketRequest request) {
-        return request == null || request.subject == null || request.subject.isEmpty();
+        return request == null || request.subject == null || request.subject.isBlank();
     }
 
     public static boolean isInvalid(UpdateTicketRequest request) {
-        return request == null || (request.name == null && request.newOwnerId == null) || (request.newOwnerId != null && isUUIDInvalid(request.newOwnerId));
+        return request == null || (request.subject == null && request.newOwnerId == null && request.ticketStatus == null)
+                || (request.newOwnerId != null && isUUIDInvalid(request.newOwnerId));
     }
 
 
 
     public static boolean isInvalid(UserTicketRequest request)
     {
-        return request == null || request.userId == null || request.userId.isEmpty() || isUUIDInvalid(request.userId);
+        return request == null || request.userId == null || request.userId.isBlank() || isUUIDInvalid(request.userId);
     }
 
     public static boolean isInvalid(NewRoleRequest request) {
-        return request == null || request.name == null || request.name.isEmpty();
+        return request == null || request.name == null || request.name.isBlank();
     }
 
     public static boolean isInvalid(UpdateRoleRequest request) {
-        return request == null || request.newName == null || request.newName.isEmpty();
+        return request == null || request.newName == null || request.newName.isBlank();
     }
 
     public static boolean isInvalid(TopicRoleRequest request) {
@@ -66,10 +67,14 @@ public class RequestVerifyer {
     }
 
     public static boolean isInvalid(NewTopicRequest request) {
-        return request == null || request.name == null || request.name.isEmpty();
+        return request == null || request.name == null || request.name.isBlank();
     }
 
     public static boolean isInvalid(UpdateTopicRequest request) {
-        return request == null || request.newName == null || request.newName.isEmpty();
+        return request == null || request.newName == null || request.newName.isBlank();
+    }
+
+    public static boolean isInvalid(NewTicketHistoryRequest request) {
+        return request == null || request.contentPath == null || request.contentPath.isBlank() || (request.resourcePath != null && request.resourcePath.isBlank());
     }
 }
