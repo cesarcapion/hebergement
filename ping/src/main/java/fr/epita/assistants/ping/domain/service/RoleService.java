@@ -24,20 +24,28 @@ public class RoleService {
     TopicModelToTopicInfoConverter topicModelToTopicInfoConverter;
 
 
-    private String formatName(String name){
-        return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
+    public void clear() {
+        roleRepository.clear();
     }
 
-    public boolean roleSameNameExists(String name)
-    {
+    private String formatName(String name) {
+//        return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
+        return name;
+    }
+
+    public boolean roleSameNameExists(String name) {
         return roleRepository.RoleSameNameExists(formatName(name));
     }
 
-    public RoleResponse buildCreateRoleResponse(String name)
-    {
+    public RoleResponse buildCreateRoleResponse(String name) {
         RoleModel createdRole = roleRepository.createRole(formatName(name));
 
         return new RoleResponse().withId(createdRole.getId()).withName(createdRole.getName()).withTopics(new ArrayList<>());
+    }
+
+    public RoleModel getRoleById(Long id)
+    {
+        return roleRepository.getRoleById(id);
     }
 
     public boolean roleExists(Long id)

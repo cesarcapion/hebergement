@@ -23,6 +23,12 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
         return find("owner", user).stream().toList();
     }
 
+    @Transactional
+    public void clear()
+    {
+        deleteAll();
+    }
+
     /// returns all the projects where there is a member with userUUID
     public List<TicketModel> getMemberTickets(String userUUID)
     {

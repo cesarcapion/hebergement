@@ -14,10 +14,12 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserRepository  implements PanacheRepository<UserModel> {
+
     @Transactional
     public void addUser(UserModel user) {
         persist(user);
     }
+
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

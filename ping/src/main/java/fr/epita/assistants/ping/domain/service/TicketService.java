@@ -35,6 +35,11 @@ public class TicketService {
 
     @ConfigProperty(name="PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
+
+    public void clear()
+    {
+        ticketRepository.clear();
+    }
     public boolean isAdmin(UUID uuid)
     {
         return userService.isAdmin(uuid);

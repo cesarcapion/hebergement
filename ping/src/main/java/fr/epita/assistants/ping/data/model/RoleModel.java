@@ -26,4 +26,6 @@ public class RoleModel {
             inverseJoinColumns = @JoinColumn(name= "topic_id")
     )
     private List<TopicModel> topics;
+
+    // FIXME add readonly field that will be set to true for user and admin role
 }

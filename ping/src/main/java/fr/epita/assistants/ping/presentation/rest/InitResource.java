@@ -8,6 +8,7 @@ import fr.epita.assistants.ping.domain.service.RoleService;
 import fr.epita.assistants.ping.domain.service.TicketService;
 import fr.epita.assistants.ping.domain.service.TopicService;
 import fr.epita.assistants.ping.domain.service.UserService;
+import fr.epita.assistants.ping.utils.DefaultRoles;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Logger;
 import jakarta.inject.Inject;
@@ -31,6 +32,7 @@ public class InitResource {
     @Inject
     TicketService ticketService;
 
+    DefaultRoles defaultRoles;
 
     @Path("")
     @GET
@@ -50,8 +52,12 @@ public class InitResource {
                 topicService.clear();
                 ticketService.clear();
                 roleService.clear();
+                logger.logInfo("creating admin role...");
                 RoleResponse adminRoleResponse = roleService.buildCreateRoleResponse("admin");
+                DefaultRoles.setAdminRoleId(adminRoleResponse.id);
+                logger.logInfo("creating user role...");
                 RoleResponse userRoleResponse = roleService.buildCreateRoleResponse("user");
+                DefaultRoles.setUserRoleId(userRoleResponse.id);
                 CreateUserRequest createUserRequest = new CreateUserRequest()
                         .withMail("admin.admin@epita.fr")
                         .withPassword("@dminPING_2025")

@@ -14,6 +14,7 @@ import fr.epita.assistants.ping.data.model.RoleModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.errors.Exceptions.*;
+import fr.epita.assistants.ping.utils.DefaultRoles;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,7 @@ public class UserService {
 
     @Inject
     TicketService ticketService;
+
     public boolean isAdmin(UUID uuid)
     {
         return repository.isAdmin(uuid);
@@ -108,11 +110,13 @@ public class UserService {
         newUser.setPassword(hashPassword(input.password));
         RoleModel role;
         if (input.isAdmin) {
-            role = roleService.findByName("admin");
+//            role = roleService.findByName("admin");
+            role = roleService.getRoleById(DefaultRoles.getAdminRoleId());
         }
         else
         {
-            role = roleService.findByName("user");
+//            role = roleService.findByName("user");
+            role = roleService.getRoleById(DefaultRoles.getUserRoleId());
         }
         newUser.setRole(role);
 

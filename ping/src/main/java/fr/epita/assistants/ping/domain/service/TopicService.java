@@ -17,6 +17,11 @@ public class TopicService {
     @Inject
     TopicModelToTopicInfoConverter topicModelToTopicInfoConverter;
 
+    public void clear()
+    {
+        topicRepository.clear();
+    }
+
     private String formatName(String name){
         return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
     }

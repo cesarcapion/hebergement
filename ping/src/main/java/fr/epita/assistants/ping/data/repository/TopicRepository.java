@@ -10,6 +10,13 @@ import java.util.List;
 
 @ApplicationScoped
 public class TopicRepository implements PanacheRepository<TopicModel> {
+
+    @Transactional
+    public void clear()
+    {
+        deleteAll();
+    }
+
     public TopicModel getTopicById(Long id) {
         return find("id", id).firstResult();
     }

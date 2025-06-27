@@ -28,14 +28,22 @@ public class RoleRepository implements PanacheRepository<RoleModel> {
     }
 
     @Transactional
+    public void clear()
+    {
+        deleteAll();
+    }
+
+    @Transactional
     public void updateRole(Long id, String name) {
         RoleModel role = getRoleById(id);
         role.setName(name);
     }
 
     public RoleModel findByName(String name) {
-        return find("LOWER(name)", name.toLowerCase()).firstResult();
-        }
+//        return find("LOWER(name)", name.toLowerCase()).firstResult();
+        return find("name", name).firstResult();
+    }
+
     public List<RoleModel> getAllRoles() {
         return findAll().stream().toList();
     }

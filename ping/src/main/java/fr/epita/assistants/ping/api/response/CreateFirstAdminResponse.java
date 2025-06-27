@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @With
 public class CreateFirstAdminResponse {
-    UserResponse user;
+    public UserResponse user;
 
-    List<RoleResponse> createdRoles;
+    public List<RoleResponse> createdRoles;
 }
