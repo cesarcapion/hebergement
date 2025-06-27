@@ -69,7 +69,7 @@ public class RoleResource {
             return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("Role already exists")).build();
         }
         logger.logSuccess("the operation was successful");
-        return Response.status(Response.Status.OK).entity(roleService.buildCreateRoleResponse(newRoleRequest.name)).build();
+        return Response.status(Response.Status.OK).entity(roleService.buildCreateRoleResponse(newRoleRequest.name, false)).build();
     }
 
     @PUT
@@ -90,7 +90,12 @@ public class RoleResource {
             logger.logError("Error 404: role not found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Role not found")).build();
         }
-
+        boolean canUpdateRole = roleService.canUpdate(id);
+        if (!canUpdateRole)
+        {
+            logger.logError("Error 405: role is read only, you cannot change it");
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ErrorInfo("Role is read only")).build();
+        }
         boolean updated = roleService.updateRole(id, updateRoleRequest.newName);
         if (!updated)
         {
@@ -111,6 +116,12 @@ public class RoleResource {
             logger.logError("Error 404: role not found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Role not found")).build();
         }
+        boolean canUpdateRole = roleService.canUpdate(id);
+        if (!canUpdateRole)
+        {
+            logger.logError("Error 404: role is read only, you cannot change it");
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ErrorInfo("Role is read only")).build();
+        }
         roleService.deleteRoleById(id);
         logger.logSuccess("the operation was successful");
         return Response.status(Response.Status.NO_CONTENT).build();
@@ -130,6 +141,12 @@ public class RoleResource {
         {
             logger.logError("Error 404: role not found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Role not found")).build();
+        }
+        boolean canUpdateRole = roleService.canUpdate(id);
+        if (!canUpdateRole)
+        {
+            logger.logError("Error 405: role is read only, you cannot add topic to it");
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ErrorInfo("Role is read only")).build();
         }
         if (!topicService.topicExists(topicRoleRequest.topicId))
         {
@@ -159,6 +176,12 @@ public class RoleResource {
         {
             logger.logError("Error 404: role not found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Role not found")).build();
+        }
+        boolean canUpdateRole = roleService.canUpdate(id);
+        if (!canUpdateRole)
+        {
+            logger.logError("Error 405: role is read only, cannot remove topic");
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ErrorInfo("Role is read only")).build();
         }
         if (!topicService.topicExists(topicRoleRequest.topicId))
         {

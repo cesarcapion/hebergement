@@ -143,7 +143,8 @@ public class UserService {
         newUser.setAvatar("");
         newUser.setMail(input.mail);
         newUser.setPassword(hashPassword(input.password));
-        RoleModel role =roleService.findByName("user");
+//        RoleModel role =roleService.findByName("user");
+        RoleModel role = roleService.getRoleById(DefaultRoles.getUserRoleId());
         newUser.setRole(role);
 
         repository.addUser(newUser);

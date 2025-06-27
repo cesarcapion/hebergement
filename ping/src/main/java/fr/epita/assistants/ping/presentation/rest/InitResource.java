@@ -53,10 +53,10 @@ public class InitResource {
                 ticketService.clear();
                 roleService.clear();
                 logger.logInfo("creating admin role...");
-                RoleResponse adminRoleResponse = roleService.buildCreateRoleResponse("admin");
+                RoleResponse adminRoleResponse = roleService.buildCreateRoleResponse("admin", true);
                 DefaultRoles.setAdminRoleId(adminRoleResponse.id);
                 logger.logInfo("creating user role...");
-                RoleResponse userRoleResponse = roleService.buildCreateRoleResponse("user");
+                RoleResponse userRoleResponse = roleService.buildCreateRoleResponse("user", true);
                 DefaultRoles.setUserRoleId(userRoleResponse.id);
                 CreateUserRequest createUserRequest = new CreateUserRequest()
                         .withMail("admin.admin@epita.fr")

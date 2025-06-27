@@ -30,15 +30,20 @@ public class RoleService {
 
     private String formatName(String name) {
 //        return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
-        return name;
+        return name.toLowerCase();
+    }
+
+    public boolean canUpdate(Long id)
+    {
+        return !getRoleById(id).isReadOnly();
     }
 
     public boolean roleSameNameExists(String name) {
         return roleRepository.RoleSameNameExists(formatName(name));
     }
 
-    public RoleResponse buildCreateRoleResponse(String name) {
-        RoleModel createdRole = roleRepository.createRole(formatName(name));
+    public RoleResponse buildCreateRoleResponse(String name, boolean readOnly) {
+        RoleModel createdRole = roleRepository.createRole(formatName(name), readOnly);
 
         return new RoleResponse().withId(createdRole.getId()).withName(createdRole.getName()).withTopics(new ArrayList<>());
     }
@@ -101,7 +106,7 @@ public class RoleService {
         return roleRepository.addTopicToRole(id, topicService.getTopicById(topicId));
     }
 
-    public RoleModel findByName(String name) {
-        return roleRepository.findByName(name);
-    }
+//    public RoleModel findByName(String name) {
+//        return roleRepository.findByName(name);
+//    }
 }

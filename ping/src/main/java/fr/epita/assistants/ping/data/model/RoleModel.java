@@ -1,6 +1,7 @@
 package fr.epita.assistants.ping.data.model;
 
 import jakarta.persistence.*;
+import jakarta.ws.rs.Consumes;
 import lombok.*;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public class RoleModel {
     private List<TopicModel> topics;
 
     // FIXME add readonly field that will be set to true for user and admin role
+    @Column(name= "read_only")
+    private boolean readOnly;
 }

@@ -20,9 +20,10 @@ public class RoleRepository implements PanacheRepository<RoleModel> {
     }
 
     @Transactional
-    public RoleModel createRole(String name) {
+    public RoleModel createRole(String name, boolean readOnly) {
         RoleModel role = new RoleModel()
-                .withName(name);
+                .withName(name)
+                .withReadOnly(readOnly);
         persist(role);
         return role;
     }
