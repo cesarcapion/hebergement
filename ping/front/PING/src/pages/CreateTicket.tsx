@@ -13,6 +13,7 @@ export default function CreateTicket() {
     const [object, setObject] = useState("");
     const [topic, setTopic] = useState("");
     const [text, setText] = useState("");
+    const [setFile] = useState<File | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
 
     return (
