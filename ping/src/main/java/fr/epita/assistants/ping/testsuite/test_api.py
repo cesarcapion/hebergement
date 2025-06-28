@@ -160,18 +160,6 @@ def test_update_user():
 
     assert response.status_code == 200, "Expected 200"
 
-
-
-
-
-
-
-
-
-
-
-
-
 def test_delete_user_fom_user():
     global johndoeID
     assert johndoeID is not None, "john.doe@epita.fr must be created before deletion"

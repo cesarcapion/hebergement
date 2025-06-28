@@ -77,4 +77,8 @@ public class RequestVerifyer {
     public static boolean isInvalid(NewTicketHistoryRequest request) {
         return request == null || request.contentPath == null || request.contentPath.isBlank() || (request.resourcePath != null && request.resourcePath.isBlank());
     }
+
+    public static boolean isInvalid(RelativePathRequest request) {
+        return request == null || request.relativePath == null || request.relativePath.isBlank();
+    }
 }

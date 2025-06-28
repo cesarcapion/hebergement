@@ -6,10 +6,12 @@ import fr.epita.assistants.ping.api.response.GetFolderResponse;
 import fr.epita.assistants.ping.domain.service.FolderService;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import fr.epita.assistants.ping.utils.Logger;
+import fr.epita.assistants.ping.utils.RequestVerifyer;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
@@ -120,11 +122,17 @@ public class FilesResource {
     public Response postFiles(@PathParam("projectId") UUID projectId, RelativePathRequest request) {
         logger.logInfo(identity.getPrincipal().getName() + " request to create a file at " + projectId + "/" + request.relativePath);
 
+        if (RequestVerifyer.isInvalid(request))
+        {
+            logger.logError("The request is invalid: null request, path empty or null");
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("null request, path empty or null")).build();
+        }
         try {
 
             String userId = identity.getPrincipal().getName();
             boolean isAdmin = identity.getRoles().contains("admin");
-            fileService.createFile(projectId, userId, request.relativePath, isAdmin);
+            fileService.createFile(projectId, userId, request.relativePath, request.content, isAdmin);
+
             logger.logSuccess("The operation was successful");
 
             return Response.status(Response.Status.CREATED).entity(new ErrorInfo("The file was created")).build(); // 201

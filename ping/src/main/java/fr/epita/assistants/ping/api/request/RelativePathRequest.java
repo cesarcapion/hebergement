@@ -5,4 +5,5 @@ import lombok.Data;
 
 public class RelativePathRequest {
     public String relativePath;
+    public String content;
 }

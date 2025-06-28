@@ -4,10 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -107,7 +104,7 @@ public class FileService {
     /*
         create a file/directory
      */
-    public void createFile(UUID projectID, String userId, String path, boolean isAdmin) throws PathException, UserException, InvalidException, AlreadyExistException, IOException {
+    public void createFile(UUID projectID, String userId, String path, String content, boolean isAdmin) throws PathException, UserException, InvalidException, AlreadyExistException, IOException {
 
         if (isInvalidPath(projectID, path) || path.isBlank())
             throw new PathException("Chemin invalide"); // 400
@@ -126,6 +123,12 @@ public class FileService {
             throw  new AlreadyExistException("le fichier existe deja"); // 409
         Files.createDirectories(requestedPath.getParent());
         Files.createFile(requestedPath);
+        if (content != null && !content.isBlank())
+        {
+            FileWriter fileWriter = new FileWriter(requestedPath.toFile());
+            fileWriter.write(content);
+            fileWriter.close();
+        }
     }
 
     /*
@@ -167,7 +170,7 @@ public class FileService {
         Path basePath = Paths.get(defaultPath, projectID.toString());
         Path requestedPath = basePath.resolve(path).normalize();
         try {
-            createFile(projectID,userId,path,isAdmin);
+            createFile(projectID,userId,path,null,isAdmin);
             try (OutputStream out = Files.newOutputStream(requestedPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
                 inputStream.transferTo(out);
             }
