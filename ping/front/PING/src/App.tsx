@@ -5,7 +5,6 @@ import Signup from './pages/Signup'
 import ResetPasswordEmail from './pages/ResetPasswordEmail';
 import SetNewPassword from './pages/SetNewPassword';
 import QA from './pages/QA';
-import TicketsPage from "./pages/MyTickets.tsx";
 import MyTickets from "./pages/MyTickets.tsx";
 import TicketDiscussion from "./pages/TicketDiscussion.tsx";
 import CreateTicket from "./pages/CreateTicket.tsx";
