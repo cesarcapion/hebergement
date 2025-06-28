@@ -7,6 +7,7 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.UUID;
 
+import fr.epita.assistants.ping.api.request.UserUpdateRequest;
 import fr.epita.assistants.ping.data.model.UserModel;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -57,15 +58,15 @@ public class UserRepository  implements PanacheRepository<UserModel> {
     }
 
     @Transactional
-    public void updateUser(UserModel updatedUser) {
-        UserModel existingUser = findById(updatedUser.getId());
-        if (existingUser != null) {
-            existingUser.setMail(updatedUser.getMail());
-            existingUser.setDisplayName(updatedUser.getDisplayName());
-            existingUser.setPassword(hashPassword(updatedUser.getPassword()));
-            existingUser.setAvatar(updatedUser.getAvatar());
-            existingUser.setRole(updatedUser.getRole());
-            existingUser.setTickets(updatedUser.getTickets());
+    public void updateUser(UserModel updatedUser, UserUpdateRequest input) {
+        if (updatedUser != null)
+        {
+        if (input.password !=null &&!input.password.isBlank())
+            updatedUser.setPassword(hashPassword(input.password));
+        if (input.displayName != null && !input.displayName.isBlank())
+            updatedUser.setDisplayName(input.displayName);
+        if (input.avatar !=null && !input.avatar.isBlank())
+            updatedUser.setAvatar(input.avatar);
         }
     }
 }

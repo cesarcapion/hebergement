@@ -219,12 +219,8 @@ public class UserService {
         if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getMail(), repository.findById(userToUpdateId).getMail()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
         UserModel user = repository.findById(userToUpdateId);
-        if (input.password !=null &&!input.password.isBlank())
-            user.setPassword(hashPassword(input.password));
-        if (input.displayName != null && !input.displayName.isBlank())
-            user.setDisplayName(input.displayName);
-        user.setAvatar(input.avatar);
-        repository.updateUser(user);
+
+        repository.updateUser(user,input);
         return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar());
     }
     public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
