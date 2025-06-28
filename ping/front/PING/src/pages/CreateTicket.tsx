@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const topics = [
@@ -13,7 +13,6 @@ export default function CreateTicket() {
     const [object, setObject] = useState("");
     const [topic, setTopic] = useState("");
     const [text, setText] = useState("");
-    const [file, setFile] = useState<File | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
 
     return (
