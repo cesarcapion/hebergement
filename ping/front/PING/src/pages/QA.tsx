@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const faqs = [
@@ -30,19 +30,27 @@ const QA = () => {
   return (
     <div className="w-screen h-screen bg-[#384454] flex flex-col">
       {/* Navbar */}
-      <nav className="bg-[#E1A624] flex items-center justify-between px-6 py-4 shadow">
-        <Link to="/" className="flex items-center text-white font-bold text-lg">
-          <img src="/White-Logo-without-bg.png" alt="Logo" className="w-10 h-10 mr-2" />
-          Tick-E Taka
+      <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
+        <Link to="/">
+          <div className="flex items-center gap-3">
+            <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
+          </div></Link>
+        <div className="flex gap-6">
+          <Link to="/qa">
+            <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
+              Q&amp;A
+            </button>
+          </Link>
+          <Link to="/my-tickets">
+            <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">My tickets</button>
+          </Link>
+        </div>
+        <Link to="/profile">
+          <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
+            <span role="img" aria-label="profile">👤</span>
+          </div>
         </Link>
-        <div className="flex gap-4">
-          <Link to="/qa" className="bg-[#F89BEB] text-white px-4 py-2 rounded hover:bg-pink-400 font-semibold">Q&amp;A</Link>
-          <Link to="/tickets" className="bg-[#F89BEB] text-white px-4 py-2 rounded hover:bg-pink-400 font-semibold">My Tickets</Link>
-        </div>
-        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer">
-          <span role="img" aria-label="Account">👤</span>
-        </div>
-      </nav>
+      </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-start pt-12">

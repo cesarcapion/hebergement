@@ -18,8 +18,12 @@ const Home = () => {
       </div>
 
       <div className="button-group">
-        <button className="btn">Q&amp;A</button>
-        <button className="btn">My tickets</button>
+          <Link to="/qa">
+              <button className="btn">Q&amp;A</button>
+          </Link>
+          <Link to="/my-tickets">
+          <button className="btn">My tickets</button>
+          </Link>
       </div>
     </>
   );
