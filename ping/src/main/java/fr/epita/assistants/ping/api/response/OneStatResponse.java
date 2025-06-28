@@ -1,10 +1,17 @@
 package fr.epita.assistants.ping.api.response;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+@AllArgsConstructor
+@NoArgsConstructor
+@With
 public class OneStatResponse {
     public long PendingTickets;
     public long ResolvedTickets;
     public long InProgressTickets;
-    public LocalDateTime AverageAnswerTime;
+    public Duration AverageAnswerTime;
 }

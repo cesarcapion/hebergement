@@ -4,7 +4,9 @@ import fr.epita.assistants.ping.api.response.OneStatResponse;
 import fr.epita.assistants.ping.api.response.TicketHistoryResponse;
 import fr.epita.assistants.ping.data.converter.HistoryModelToHistoryInfoConverter;
 import fr.epita.assistants.ping.data.model.TicketHistoryModel;
+import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.TicketHistoryRepository;
+import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.utils.TicketStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -22,7 +24,8 @@ public class TicketHistoryService {
     TicketService ticketService;
     @Inject
     UserService userService;
-
+    @Inject
+    UserRepository userRepository;
     @Inject
     TicketHistoryRepository ticketHistoryRepository;
 
@@ -65,53 +68,33 @@ public class TicketHistoryService {
         return latestByTicket.values().stream()
                 .filter(history -> history.getTicketStatus() == status).count();
     }
-    public Duration getAverageResponseTime(String userEmail, List<TicketHistoryModel> allHistories) {
-        // On filtre les réponses de cet utilisateur
-        List<TicketHistoryModel> userResponses = allHistories.stream()
-                .filter(h -> h.getInteractedBy() != null &&
-                        userEmail.equals(h.getInteractedBy().getMail()))
-                .sorted(Comparator.comparing(TicketHistoryModel::getInteractedOn))
-                .toList();
+    public Duration getAverageResponseTime(String userEmail) {
+        UserModel user = userRepository.findByLogin(userEmail);
 
-        if (userResponses.isEmpty()) {
-            return Duration.ZERO;
+        List<TicketHistoryModel> userHistories = ticketHistoryRepository
+                .findByUser(user);
+
+        List<Duration> durations = new ArrayList<>();
+
+        for (TicketHistoryModel current : userHistories) {
+            TicketHistoryModel previousInteraction = ticketHistoryRepository
+                    .findPrev(
+                            current.getTicket(),
+                            current.getInteractedOn()
+                    );
+                Duration duration = Duration.between(previousInteraction.getInteractedOn(), current.getInteractedOn());
+                durations.add(duration);
         }
 
-        List<Duration> responseTimes = new ArrayList<>();
+        if (durations.isEmpty()) return Duration.ZERO;
 
-        // Regrouper toutes les interactions par ticket
-        Map<UUID, List<TicketHistoryModel>> historyByTicket = allHistories.stream()
-                .filter(h -> h.getTicket() != null && h.getInteractedOn() != null)
-                .collect(Collectors.groupingBy(h -> h.getTicket().getId()));
-
-        for (TicketHistoryModel userResponse : userResponses) {
-            UUID ticketId = userResponse.getTicket().getId();
-            LocalDateTime userTime = userResponse.getInteractedOn();
-
-            // Obtenir les interactions précédentes sur le même ticket
-            List<TicketHistoryModel> ticketHistories = historyByTicket.getOrDefault(ticketId, Collections.emptyList());
-
-            // Chercher la dernière interaction avant celle de l'utilisateur
-            Optional<LocalDateTime> lastBefore = ticketHistories.stream()
-                    .filter(h -> h.getInteractedOn().isBefore(userTime))
-                    .map(TicketHistoryModel::getInteractedOn)
-                    .max(LocalDateTime::compareTo);
-
-            lastBefore.ifPresent(previousTime -> {
-                Duration diff = Duration.between(previousTime, userTime);
-                responseTimes.add(diff);
-            });
-        }
-
-        if (responseTimes.isEmpty()) return Duration.ZERO;
-
-        // Moyenne
-        long averageSeconds = responseTimes.stream()
+        long totalSeconds = durations.stream()
                 .mapToLong(Duration::getSeconds)
-                .sum() / responseTimes.size();
+                .sum();
 
-        return Duration.ofSeconds(averageSeconds);
+        return Duration.ofSeconds(totalSeconds / durations.size());
     }
+
 
     public OneStatResponse getStat(String mail)
     {
@@ -119,10 +102,7 @@ public class TicketHistoryService {
         long resolvedTickets = countLatest(ticketHistoryModels,TicketStatus.RESOLVED);
         long inProgressTickets = countLatest(ticketHistoryModels,TicketStatus.IN_PROGRESS);
         long pendingTickets = ticketService.countPendingTickets();
-        Duration averageResponseTime = getAverageResponseTime(mail, ticketHistoryModels);
-        OneStatResponse oneStatResponses;
-
-
-        return ticketHistoryResponses;
+        Duration averageResponseTime = getAverageResponseTime(mail);
+        return new OneStatResponse(resolvedTickets,inProgressTickets,pendingTickets,averageResponseTime);
     }
 }

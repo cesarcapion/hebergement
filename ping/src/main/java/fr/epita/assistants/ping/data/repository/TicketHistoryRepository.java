@@ -31,7 +31,14 @@ public class TicketHistoryRepository implements PanacheRepository<TicketHistoryM
                 .withInteractedOn(LocalDateTime.now());
         persist(ticketHistoryModel);
     }
+    public List<TicketHistoryModel> findByUser(UserModel user) {
+        return find("interactedBy = ?1 order by interactedOn", user).list();
+    }
 
+    public TicketHistoryModel findPrev(TicketModel ticket, LocalDateTime before) {
+        return find("ticket = ?1 and interactedOn < ?2 order by interactedOn desc", ticket, before)
+                .firstResult();
+    }
     public List<TicketHistoryModel> findByMail(String mail) {
         return find("mail", mail).list();
     }
