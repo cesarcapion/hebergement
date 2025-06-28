@@ -79,7 +79,7 @@ export default function CreateTicket() {
                 />
 
                 <div className="flex items-center gap-2 mb-4">
-                    <label className="flex-1">
+                    <div className="flex-1">
                         <div className="text-xs text-gray-700 bg-white rounded-l px-3 py-2 border border-gray-300 flex items-center">
                             Join document (png, jpeg, pdf) max size : X mo
                         </div>
@@ -89,24 +89,31 @@ export default function CreateTicket() {
                             className="hidden"
                             accept=".png,.jpeg,.jpg,.pdf"
                             onChange={e => setFile(e.target.files?.[0] || null)}
+                            id="file-upload"
                         />
-                        {file && (
-                            <div className="text-xs text-gray-700 mt-1">
-                                Fichier sélectionné : <b>{file.name}</b>
-                            </div>
-                        )}
-                    </label>
-                    <button
-                        type="button"
-                        onClick={() => fileInput.current?.click()}
-                        className="bg-[#d3d4dc] h-full px-2 rounded-r border border-gray-300"
-                        title="Upload"
-                    >
-                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                            <path stroke="#434F5E" strokeWidth="2" d="M12 17V3m0 0l-4 4m4-4l4 4"/>
-                            <rect width="20" height="2" y="19" x="2" fill="#434F5E" rx="1"/>
-                        </svg>
-                    </button>
+                        <div className="flex items-center mt-1">
+                            <button
+                                type="button"
+                                onClick={() => fileInput.current?.click()}
+                                className="bg-[#d3d4dc] px-2 rounded border border-gray-300 text-sm mr-2"
+                            >
+                                📎 Sélectionner un fichier
+                            </button>
+                            {file && (
+                                <div className="flex items-center gap-2 text-xs text-gray-200">
+                                    <span className="text-gray-200">{file.name}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFile(null)}
+                                        className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
+                                        title="Retirer le fichier"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
 
