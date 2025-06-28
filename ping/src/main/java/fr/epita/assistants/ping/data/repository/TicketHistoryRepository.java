@@ -31,4 +31,8 @@ public class TicketHistoryRepository implements PanacheRepository<TicketHistoryM
                 .withInteractedOn(LocalDateTime.now());
         persist(ticketHistoryModel);
     }
+
+    public List<TicketHistoryModel> findByMail(String mail) {
+        return find("mail", mail).list();
+    }
 }

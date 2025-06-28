@@ -250,6 +250,14 @@ public class TicketService {
         deleteTicketFolder(ticketUUID);
         ticketRepository.deleteTicketById(ticketUUID);
     }
+    public long countPendingTickets() {
+        return ticketRepository.countPendingTickets();
+    }
+
+        public List<TicketModel> getAllTickets()
+    {
+        return ticketRepository.getAllTickets();
+    }
 
     public boolean addUserToTicket(UUID ticketUUID, UserModel user) {
         return ticketRepository.addUserToTicket(ticketUUID, user);

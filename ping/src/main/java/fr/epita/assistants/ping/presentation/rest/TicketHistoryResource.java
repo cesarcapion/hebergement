@@ -4,12 +4,14 @@ package fr.epita.assistants.ping.presentation.rest;
 import fr.epita.assistants.ping.api.request.NewTicketHistoryRequest;
 import fr.epita.assistants.ping.domain.service.TicketHistoryService;
 import fr.epita.assistants.ping.domain.service.TicketService;
+import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.utils.ErrorInfo;
 import fr.epita.assistants.ping.utils.Logger;
 import fr.epita.assistants.ping.utils.RequestVerifyer;
 import fr.epita.assistants.ping.utils.TicketStatus;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -25,6 +27,9 @@ public class TicketHistoryResource {
 
     @Inject
     TicketHistoryService ticketHistoryService;
+
+    @Inject
+    UserService userService;
 
     @Inject
     public SecurityIdentity identity;
@@ -79,4 +84,25 @@ public class TicketHistoryResource {
         logger.logSuccess("the operation was successful");
         return Response.status(Response.Status.OK).entity(ticketHistoryService.getHistory(ticketId)).build();
     }
+
+    @GET
+    @Path("/stats/{mail}")
+    @RolesAllowed("admin")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStat(@PathParam("mail") String mail) {
+        logger.logInfo(identity.getPrincipal().getName() + " requested to get stats of : " + mail);
+        if (!userService.mailExist(mail))
+        {
+            logger.logError("Error 404: mail not found");
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Mail not found")).build();
+        }
+        if (userService.isUser(mail))
+        {
+            logger.logError("Error 400: this mail is from a user");
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Mail from a user")).build();
+        }
+        logger.logSuccess("the operation was successful");
+        return Response.status(Response.Status.OK).entity(ticketHistoryService.getStat(mail)).build();
+    }
+
 }

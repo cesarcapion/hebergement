@@ -74,7 +74,9 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
     {
         return findAll().stream().toList();
     }
-
+    public long countPendingTickets() {
+        return count("ticketStatus", TicketStatus.PENDING);
+    }
     public UserStatus getUserStatus(UserModel user, UUID ticketUUID, boolean isAdmin)
     {
         TicketModel ticketModel = find("id", ticketUUID).firstResult();

@@ -42,6 +42,10 @@ public class UserService {
     {
         return repository.isAdmin(uuid);
     }
+    public boolean isUser(String mail)
+    {
+        return repository.isUser(mail);
+    }
     private boolean checkLogin(String mail) {
         return mail.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
@@ -58,10 +62,15 @@ public class UserService {
         }
     }
 
-    public static String generateToken(UUID userId, boolean isAdmin) {
+    public boolean mailExist(String mail)
+    {
+        return repository.findByLogin(mail) != null;
+    }
+
+    public String generateToken(UUID userId, boolean isAdmin) {
         System.out.println(userId + " : " + isAdmin);
         return Jwt.subject(userId.toString())
-                .groups(Set.of(isAdmin ? "admin" : "user"))
+                .groups(Set.of(repository.findRoleById(userId).getName()))
                 .issuer("http://mon-app.epita.fr")
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(3600))

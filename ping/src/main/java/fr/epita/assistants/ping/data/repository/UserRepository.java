@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.epita.assistants.ping.api.request.UserUpdateRequest;
+import fr.epita.assistants.ping.data.model.RoleModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,9 +40,22 @@ public class UserRepository  implements PanacheRepository<UserModel> {
 
         return user.getRole().getName().equals("admin");
     }
+    public boolean isUser(String mail) {
+        UserModel user = findByLogin(mail);
+
+        if (user == null || user.getRole() == null) {
+            return false;
+        }
+
+        return user.getRole().getName().equals("user");
+    }
 
     public UserModel findById(UUID id) {
         return find("id", id).firstResult();
+    }
+
+    public RoleModel findRoleById(UUID id) {
+        return find("id", id).firstResult().getRole();
     }
 
     public UserModel findByLogin(String mail) {
