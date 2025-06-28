@@ -13,16 +13,18 @@ export default function CreateTicket() {
     const [object, setObject] = useState("");
     const [topic, setTopic] = useState("");
     const [text, setText] = useState("");
-    const [, setFile] = useState<File | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
 
     return (
         <div className="w-screen min-h-screen bg-[#384454]">
             {/* HEADER */}
             <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
-                </div>
+                <Link to ="/">
+                    <div className="flex items-center gap-3">
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
+                    </div>
+                </Link>
                 <div className="flex gap-6">
                     <Link to="/qa">
                         <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
@@ -35,9 +37,12 @@ export default function CreateTicket() {
                         </button>
                     </Link>
                 </div>
-                <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
-                    <span role="img" aria-label="profile">👤</span>
-                </div>
+                <Link to="profile">
+                    <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
+                        <span role="img" aria-label="profile">👤</span>
+                    </div>
+                </Link>
+
             </div>
 
             <div className="max-w-2xl mx-auto pt-4 pb-2 px-2">
@@ -85,6 +90,11 @@ export default function CreateTicket() {
                             accept=".png,.jpeg,.jpg,.pdf"
                             onChange={e => setFile(e.target.files?.[0] || null)}
                         />
+                        {file && (
+                            <div className="text-xs text-gray-700 mt-1">
+                                Fichier sélectionné : <b>{file.name}</b>
+                            </div>
+                        )}
                     </label>
                     <button
                         type="button"
@@ -98,6 +108,7 @@ export default function CreateTicket() {
                         </svg>
                     </button>
                 </div>
+
 
                 <div className="flex justify-end">
                     <button
