@@ -6,12 +6,15 @@ import fr.epita.assistants.ping.data.converter.HistoryModelToHistoryInfoConverte
 import fr.epita.assistants.ping.data.model.TicketHistoryModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.TicketHistoryRepository;
+import fr.epita.assistants.ping.data.repository.TicketRepository;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.utils.TicketStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -23,6 +26,8 @@ public class TicketHistoryService {
     @Inject
     TicketService ticketService;
     @Inject
+    TicketRepository  ticketRepository;
+    @Inject
     UserService userService;
     @Inject
     UserRepository userRepository;
@@ -31,11 +36,14 @@ public class TicketHistoryService {
 
     @Inject
     HistoryModelToHistoryInfoConverter modelToInfoConverter;
+    @ConfigProperty(name= "PROJECT_DEFAULT_PATH", defaultValue = "/tmp/www/projects/") String defaultPath;
 
     public boolean addHistory(String contentPath, String resourcePath, UUID ticketUUID, UUID userUUId)
     {
+        Path basePath = Paths.get(defaultPath, ticketUUID.toString());
+        Path requestedPath = basePath.resolve(contentPath).normalize();
         if ((resourcePath != null && !Files.exists(Paths.get(resourcePath)))
-                || !Files.exists(Paths.get(contentPath)))
+                || !Files.exists(requestedPath))
         {
             return false;
         }
@@ -45,7 +53,7 @@ public class TicketHistoryService {
 
     public List<TicketHistoryResponse> getHistory(UUID ticketUUID)
     {
-        List<TicketHistoryModel> ticketHistoryModels = ticketHistoryRepository.findByTicketId(ticketUUID);
+        List<TicketHistoryModel> ticketHistoryModels = ticketHistoryRepository.findByTicket(ticketRepository.findTicketByUUID(ticketUUID));
         List<TicketHistoryResponse> ticketHistoryResponses = new ArrayList<>();
         ticketHistoryModels.forEach(ticketHistoryModel -> {
             ticketHistoryResponses.add(modelToInfoConverter.convert(ticketHistoryModel));
@@ -95,6 +103,18 @@ public class TicketHistoryService {
         return Duration.ofSeconds(totalSeconds / durations.size());
     }
 
+    public String durationToString(Duration duration) {
+        long days = duration.toDays();
+        long hours = duration.minusDays(days).toHours();
+        long minutes = duration.minusDays(days).minusHours(hours).toMinutes();
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d");
+        if (hours > 0) sb.append(hours).append("h");
+        if (minutes > 0 || sb.isEmpty()) sb.append(minutes).append("min");
+
+        return sb.toString();
+    }
 
     public OneStatResponse getStat(String mail)
     {
@@ -103,6 +123,6 @@ public class TicketHistoryService {
         long inProgressTickets = countLatest(ticketHistoryModels,TicketStatus.IN_PROGRESS);
         long pendingTickets = ticketService.countPendingTickets();
         Duration averageResponseTime = getAverageResponseTime(mail);
-        return new OneStatResponse(resolvedTickets,inProgressTickets,pendingTickets,averageResponseTime);
+        return new OneStatResponse(pendingTickets,resolvedTickets,inProgressTickets,durationToString(averageResponseTime));
     }
 }

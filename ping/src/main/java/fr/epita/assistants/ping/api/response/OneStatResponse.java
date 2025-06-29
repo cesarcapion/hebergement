@@ -13,5 +13,5 @@ public class OneStatResponse {
     public long PendingTickets;
     public long ResolvedTickets;
     public long InProgressTickets;
-    public Duration AverageAnswerTime;
+    public String AverageAnswerTime;
 }

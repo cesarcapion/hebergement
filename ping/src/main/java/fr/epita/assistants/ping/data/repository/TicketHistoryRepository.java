@@ -14,9 +14,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class TicketHistoryRepository implements PanacheRepository<TicketHistoryModel> {
-    public List<TicketHistoryModel> findByTicketId(UUID ticketId)
-    {
-        return find("ticketId", ticketId).list();
+    public List<TicketHistoryModel> findByTicket(TicketModel ticket) {
+        return find("ticket", ticket).list();
     }
 
     @Transactional
@@ -40,6 +39,6 @@ public class TicketHistoryRepository implements PanacheRepository<TicketHistoryM
                 .firstResult();
     }
     public List<TicketHistoryModel> findByMail(String mail) {
-        return find("mail", mail).list();
+        return find("interactedBy.mail = ?1", mail).list();
     }
 }
