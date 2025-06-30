@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @With
 public class OneStatResponse {
+    public String mail;
     public long PendingTickets;
     public long ResolvedTickets;
     public long InProgressTickets;

@@ -49,6 +49,11 @@ public class UserRepository  implements PanacheRepository<UserModel> {
 
         return user.getRole().getName().equals("user");
     }
+    public List<String> findAllNonUserMails() {
+        return getEntityManager()
+                .createQuery("SELECT u.mail FROM UserModel u WHERE u.role.name <> 'user'", String.class)
+                .getResultList();
+    }
 
     public UserModel findById(UUID id) {
         return find("id", id).firstResult();

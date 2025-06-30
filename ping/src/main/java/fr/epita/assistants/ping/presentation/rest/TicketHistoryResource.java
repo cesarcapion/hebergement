@@ -84,7 +84,15 @@ public class TicketHistoryResource {
         logger.logSuccess("the operation was successful");
         return Response.status(Response.Status.OK).entity(ticketHistoryService.getHistory(ticketId)).build();
     }
-
+    @GET
+    @Path("/stats")
+    @RolesAllowed("admin")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStats() {
+        logger.logInfo(identity.getPrincipal().getName() + " requested to get all stats");
+        logger.logSuccess("the operation was successful");
+        return Response.status(Response.Status.OK).entity(ticketHistoryService.getStats()).build();
+    }
     @GET
     @Path("/stats/{mail}")
     @RolesAllowed("admin")

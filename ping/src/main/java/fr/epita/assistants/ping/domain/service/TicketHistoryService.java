@@ -116,6 +116,13 @@ public class TicketHistoryService {
         return sb.toString();
     }
 
+    public OneStatResponse[] getStats() {
+        List<String> mails = userRepository.findAllNonUserMails();
+        List<OneStatResponse> oneStatResponses = new ArrayList<>();
+        mails.forEach(mail -> {oneStatResponses.add(getStat(mail));});
+        return oneStatResponses.toArray(new OneStatResponse[0]);
+    }
+
     public OneStatResponse getStat(String mail)
     {
         List<TicketHistoryModel> ticketHistoryModels = ticketHistoryRepository.findByMail(mail);
@@ -123,6 +130,6 @@ public class TicketHistoryService {
         long inProgressTickets = countLatest(ticketHistoryModels,TicketStatus.IN_PROGRESS);
         long pendingTickets = ticketService.countPendingTickets();
         Duration averageResponseTime = getAverageResponseTime(mail);
-        return new OneStatResponse(pendingTickets,resolvedTickets,inProgressTickets,durationToString(averageResponseTime));
+        return new OneStatResponse(mail,pendingTickets,resolvedTickets,inProgressTickets,durationToString(averageResponseTime));
     }
 }
