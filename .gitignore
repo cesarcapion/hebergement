@@ -3,3 +3,4 @@ ping/target/
 setup.sh
 ping/logs.txt
 ping/error.txt
+ping/src/main/java/fr/epita/assistants/ping/testsuite/__pycache__/
