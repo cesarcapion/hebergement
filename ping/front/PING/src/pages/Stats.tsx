@@ -85,6 +85,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: "#2f3a48",
         color: "white",
         minHeight: "100vh",
+        width: "100vw",
     },
     header: {
         backgroundColor: "#FCD34D",
