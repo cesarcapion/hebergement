@@ -1,26 +1,55 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const SetNewPassword = () => {
+  const location = useLocation(); // ✅ à mettre ici, pas dans handleSubmit
+  const navigate = useNavigate();
+
   const [newPassword, setNewPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (newPassword !== confirm) {
-      setError('Les mots de passe ne correspondent pas.');
+      setError('The passwords do not match.');
       return;
     }
 
-    // Simuler appel API
-    console.log('Mot de passe mis à jour :', newPassword);
-    alert('Mot de passe réinitialisé !');
+    try {
+      console.log(newPassword);
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/update-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({token, password: newPassword }),
+      });
+      console.log(`token: ${token}, password: ${newPassword}, response:`, response);
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = `${import.meta.env.VITE_BASE_URL}`;
+      } else if (response.status === 400) {
+        alert("Bad Token");
+      } else {
+        setError("Password should be at least 12 characters long and be composed of digits, letters, capital letters and symbols.");
+      }
+      console.log("CA AMRAHCZIBGZKJEBGUORBGIUBGJNRJONGKJLEZGNVJREIUVB")
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+    console.log("Token récupéré depuis l'URL :", token);
+    console.log('Password updated :', newPassword);
+
+    alert('Password updated !');
     navigate('/login');
   };
 
@@ -39,7 +68,7 @@ const SetNewPassword = () => {
               type={showNew ? 'text' : 'password'}
               required
               minLength={6}
-              placeholder="Nouveau mot de passe"
+              placeholder="New password"
               className="bg-[#d3d4dc] w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -58,7 +87,7 @@ const SetNewPassword = () => {
               type={showConfirm ? 'text' : 'password'}
               required
               minLength={6}
-              placeholder="Confirmer le mot de passe"
+              placeholder="Confirm password"
               className="bg-[#d3d4dc] w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
@@ -78,7 +107,7 @@ const SetNewPassword = () => {
             type="submit"
             className="w-full bg-[#E1A624] text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Réinitialiser le mot de passe
+            Reset password
           </button>
         </form>
       </div>

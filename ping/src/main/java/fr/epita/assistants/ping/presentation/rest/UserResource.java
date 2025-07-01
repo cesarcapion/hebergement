@@ -4,13 +4,13 @@ import java.io.InputStream;
 import java.util.UUID;
 
 
-import fr.epita.assistants.ping.api.request.CreateUserRequest;
-import fr.epita.assistants.ping.api.request.UserUpdateRequest;
+import fr.epita.assistants.ping.api.request.*;
+import fr.epita.assistants.ping.api.response.ResetResponse;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
 
-import fr.epita.assistants.ping.api.request.LoginRequest;
+import fr.epita.assistants.ping.domain.service.EmailService;
 import fr.epita.assistants.ping.domain.service.UserService;
 import fr.epita.assistants.ping.errors.Exceptions.AlreadyExistException;
 import fr.epita.assistants.ping.errors.Exceptions.BadInfosException;
@@ -36,7 +36,7 @@ public class UserResource {
     @Inject public SecurityIdentity identity;
     @Inject
     Logger logger;
-
+    @Inject EmailService emailService;
     @POST
     @RolesAllowed("admin")
     public Response createUser(CreateUserRequest user) {
@@ -63,7 +63,7 @@ public class UserResource {
     @Path("/new-account")
     public Response newAccount(CreateUserRequest user) {
 
-        logger.logInfo("User with ID " + identity.getPrincipal().getName() + " is trying to create the user: mail: " + user.mail + " ,password: " + user.password + " admin: " + user.isAdmin);
+        logger.logInfo("Someone is trying to create the user: mail: " + user.mail + " ,password: " + user.password + " admin: " + user.isAdmin);
 
         try {
             logger.logSuccess("The operation was successful : " );
@@ -78,7 +78,6 @@ public class UserResource {
 
             return Response.status(Response.Status.CONFLICT).entity(new ErrorInfo("The mail is already taken")).build();
         }
-
     }
 
     @GET
@@ -133,6 +132,35 @@ public class UserResource {
         {
             logger.logError("Error 404: The user could not be found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The user could not be found")).build();
+        }
+    }
+
+    @POST
+    @Path("/request-reset")
+    public Response requestReset(ResetRequest input) {
+            logger.logInfo("User request a reset link");
+            ResetResponse response = userService.resetRequest(input.mail);
+            if (response.token != null)
+                emailService.dispatchResetLink(input.mail,"http://localhost:5173/set-new-password?token=" + response.token);
+            logger.logSuccess("The operation was successful");
+            return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
+    }
+    @POST
+    @Path("/update-password")
+    public Response updatePassword(PasswordRequest input) {
+        try {
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+
+            logger.logInfo("Password update attempt");
+            userService.updatePassword(input);
+            logger.logSuccess("Password successfully updated");
+            return Response.ok().build(); // 200 OK
+        } catch (InvalidException e) {
+            logger.logError("Invalid token");
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build(); // 400
+        } catch (BadInfosException e) {
+            logger.logInfo("Mot de pass non conforme");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).entity(e.getMessage()).build(); // 406
         }
     }
 

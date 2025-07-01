@@ -3,23 +3,79 @@ package fr.epita.assistants.ping.data.repository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
+import fr.epita.assistants.ping.api.request.PasswordRequest;
 import fr.epita.assistants.ping.api.request.UserUpdateRequest;
+import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.data.model.RoleModel;
 import fr.epita.assistants.ping.data.model.UserModel;
+import fr.epita.assistants.ping.errors.Exceptions.InvalidException;
+import fr.epita.assistants.ping.utils.DefaultRoles;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserRepository  implements PanacheRepository<UserModel> {
-
+    @Inject
+    RoleRepository roleRepository;
     @Transactional
     public void addUser(UserModel user) {
         persist(user);
+    }
+    public String loginToName(String mail) {
+        String loginPart = mail.split("@")[0];
+
+        String[] parts = loginPart.split("[._]");
+        StringBuilder displayName = new StringBuilder();
+
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].isEmpty()) continue;
+
+            String part = parts[i];
+            displayName.append(Character.toUpperCase(part.charAt(0)))
+                    .append(part.substring(1));
+
+            if (i < parts.length - 1) {
+                displayName.append(" ");
+            }
+        }
+
+        return displayName.toString();
+    }
+
+    @Transactional
+    public void setResetToken(String mail, String token) {
+        update("resetToken = ?1 where mail = ?2", token, mail);
+
+    }
+    @Transactional
+    public void setPassword(String password, String token) {
+        update("password = ?1 where resetToken = ?2", password, token);
+
+    }
+    public UserModel findByResetToken(String token) {
+        return find("resetToken", token).firstResult();
+    }
+    public UserModel getUserByResetToken(String token) {
+        return find("resetToken", token).firstResult();
+    }
+
+    @Transactional
+    public UserResponse createUser(String mail, String password) {
+        UserModel newUser = new UserModel();
+        newUser.setDisplayName(loginToName(mail));
+        newUser.setAvatar("");
+        newUser.setMail(mail);
+        newUser.setPassword(hashPassword(password));
+        RoleModel role = roleRepository.getRoleById(DefaultRoles.getUserRoleId());
+        newUser.setRole(role);
+        persist(newUser);
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
+
     }
 
     private String hashPassword(String password) {

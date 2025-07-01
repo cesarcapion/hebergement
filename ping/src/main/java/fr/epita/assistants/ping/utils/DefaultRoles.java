@@ -7,8 +7,8 @@ import lombok.Setter;
 public class DefaultRoles {
     @Getter
     @Setter
-    private static Long adminRoleId = null;
+    private static Long adminRoleId = 1L;
     @Getter
     @Setter
-    private static Long userRoleId = null;
+    private static Long userRoleId = 2L;
 }

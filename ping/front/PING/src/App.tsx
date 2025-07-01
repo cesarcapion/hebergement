@@ -9,23 +9,60 @@ import MyTickets from "./pages/MyTickets.tsx";
 import TicketDiscussion from "./pages/TicketDiscussion.tsx";
 import CreateTicket from "./pages/CreateTicket.tsx";
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/reset-password" element={<ResetPasswordEmail />} />
-          <Route path="/set-new-password" element={<SetNewPassword />} />
-          <Route path="/my-tickets" element={<MyTickets />} />
-          <Route path="/my-tickets/:id" element={<TicketDiscussion />} />
-          <Route path="/qa" element={<QA />} />
-          <Route path="/create-ticket" element={<CreateTicket />} />
+import PrivateRoute from './PrivateRoute';
 
-      </Routes>
-    </BrowserRouter>
-  );
+function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/reset-password" element={<ResetPasswordEmail />} />
+                <Route path="/set-new-password" element={<SetNewPassword />} />
+
+                <Route
+                    path="/"
+                    element={
+                        <PrivateRoute>
+                            <Home />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-tickets"
+                    element={
+                        <PrivateRoute>
+                            <MyTickets />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-tickets/:id"
+                    element={
+                        <PrivateRoute>
+                            <TicketDiscussion />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/qa"
+                    element={
+                        <PrivateRoute>
+                            <QA />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/create-ticket"
+                    element={
+                        <PrivateRoute>
+                            <CreateTicket />
+                        </PrivateRoute>
+                    }
+                />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;

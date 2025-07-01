@@ -4,10 +4,14 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import fr.epita.assistants.ping.api.request.CreateUserRequest;
+import fr.epita.assistants.ping.api.request.PasswordRequest;
 import fr.epita.assistants.ping.api.request.UserUpdateRequest;
+import fr.epita.assistants.ping.api.response.ResetResponse;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.RoleModel;
@@ -15,11 +19,16 @@ import fr.epita.assistants.ping.data.model.UserModel;
 import fr.epita.assistants.ping.data.repository.UserRepository;
 import fr.epita.assistants.ping.errors.Exceptions.*;
 import fr.epita.assistants.ping.utils.DefaultRoles;
+import io.smallrye.jwt.auth.principal.DefaultJWTParser;
+import io.smallrye.jwt.auth.principal.JWTParser;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import io.smallrye.jwt.build.Jwt;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.Claims;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jose4j.jwt.JwtClaims;
 
 import java.time.Duration;
 
@@ -31,7 +40,8 @@ public class UserService {
     UserRepository repository;
     @Inject
     RoleService roleService;
-
+    @Inject
+    JsonWebToken jwt;
 
     @ConfigProperty(name= "KEY", defaultValue = "remy") String key;
 
@@ -147,17 +157,8 @@ public class UserService {
         {
             throw new AlreadyExistException("the mail is already used"); // 409
         }
-        UserModel newUser = new UserModel();
-        newUser.setDisplayName(loginToName(input.mail));
-        newUser.setAvatar("");
-        newUser.setMail(input.mail);
-        newUser.setPassword(hashPassword(input.password));
-//        RoleModel role =roleService.findByName("user");
-        RoleModel role = roleService.getRoleById(DefaultRoles.getUserRoleId());
-        newUser.setRole(role);
 
-        repository.addUser(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
+        return repository.createUser(input.mail,input.password);
     }
 
     /*
@@ -195,7 +196,36 @@ public class UserService {
         }
         return new LoginResponse(generateToken(repository.findByLogin(mail).getId(),Objects.equals(repository.findByLogin(mail).getRole().getName(), "admin") ));
     }
+    @Inject
+    JWTParser parser;
 
+    public boolean isTokenExpired(String token) {
+        try {
+            JWTParser parser = new DefaultJWTParser();
+            JsonWebToken jwt = parser.parse(token);
+
+            long exp = jwt.getExpirationTime();
+            boolean isExpired = Instant.now().getEpochSecond() > exp;
+            System.out.println("Token expiré: " + isExpired);
+
+            return isExpired;
+        } catch (Exception e) {
+            System.out.println("Token invalide ou expiré");
+            return true;
+        }
+    }
+
+    public void updatePassword(PasswordRequest input) throws InvalidException, BadInfosException {
+        if (repository.findByResetToken(input.token) == null /*|| isTokenExpired(input.token)*/)
+        {
+            System.out.println("CAAAAAAAAAAAAAAAA NE MARCHE PASAAAAAAAAAAAAAAAAAAAAA");
+            throw new InvalidException("Token not valid");
+        }
+        System.out.println("Password update attempt " + input.password);
+        if (!checkPassword(input.password))
+            throw new BadInfosException("password not valid");
+        repository.setPassword( hashPassword(input.password), input.token);
+    }
 
     public UserModel get(UUID id) {
         UserModel user = repository.findById(id);
@@ -253,5 +283,22 @@ public class UserService {
         ticketService.deleteFromAllProjects(userToRemoveid);
         repository.deleteUser(repository.findById(userToRemoveid));
 //        pmService.deleteFromAllProjects(userToRemoveid);
+    }
+
+    public ResetResponse resetRequest(String mail) {
+        Instant expiresAt = LocalDateTime.now()
+                .plusMinutes(10)
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
+        String token = Jwt.issuer("https://tick-e-taka.onrender.com/")
+                .expiresAt(expiresAt)
+                .claim("email", mail)
+                .sign();
+        if (repository.findByLogin(mail) == null)
+        {
+            return null;
+        }
+        repository.setResetToken(mail,token);
+        return new ResetResponse(token);
     }
 }

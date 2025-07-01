@@ -29,6 +29,8 @@ public class UserModel {
 
     @Column(name="display_name")
     private String displayName;
+    @Column(columnDefinition = "TEXT")
+    private String resetToken;
 
     private String avatar;
 

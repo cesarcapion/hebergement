@@ -1,20 +1,27 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { login } from '../api/login.tsx';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log(email);
     if (!email || !password) {
-      alert('Veuillez remplir tous les champs.');
+      alert('Please fill in all fields.');
       return;
     }
 
-    alert('Connexion simulée !');
+    try {
+      console.log("email : " +  email + "password : " + password);
+      await login(email, password);
+    } catch (error) {
+      console.error('Erreur de connexion', error);
+      alert("Login failed.");
+    }
   };
 
   return (
@@ -30,7 +37,7 @@ const Login = () => {
           <input
             type="email"
             required
-            placeholder="votre@email.com"
+            placeholder="your@email.com"
             className="bg-[#d3d4dc] w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -58,21 +65,21 @@ const Login = () => {
             to="/reset-password"
             className="text-sm text-[#EA508E] hover:underline block"
           >
-            Mot de passe oublié ?
+            Forgot password ?
           </Link>
 
           <button
             type="submit"
             className="w-full bg-[#E1A624] text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Se connecter
+            Login
           </button>
         </form>
 
         <div className="mt-4 text-center text-sm text-[#d3d4dc]">
-          Pas de compte ?{' '}
+          No account ?{' '}
           <Link to="/signup" className="text-[#EA508E] hover:underline">
-            Créer un compte
+            Create an account
           </Link>
         </div>
       </div>

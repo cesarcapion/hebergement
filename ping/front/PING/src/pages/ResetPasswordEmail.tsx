@@ -4,15 +4,19 @@ import { Link } from 'react-router-dom';
 const ResetPasswordEmail = () => {
   const [email, setEmail] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) {
-      alert('Veuillez entrer votre adresse email.');
+      alert('Enter your email.');
       return;
     }
-
-    alert('Un lien de réinitialisation a été envoyé à votre adresse email.');
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/request-reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mail: email}),
+    });
+    alert('A reset link has been sent to your email address.');
   };
 
   return (
@@ -28,7 +32,7 @@ const ResetPasswordEmail = () => {
           <input
             type="email"
             required
-            placeholder="votre@email.com"
+            placeholder="your@email.com"
             className="bg-[#d3d4dc] w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -38,13 +42,13 @@ const ResetPasswordEmail = () => {
             type="submit"
             className="w-full bg-[#E1A624] text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Réinitialiser le mot de passe
+            Reset Password
           </button>
         </form>
 
         <div className="mt-4 text-center text-sm text-[#d3d4dc]">
           <Link to="/login" className="text-[#EA508E] hover:underline">
-            Retour à la connexion
+            Back to connection
           </Link>
         </div>
       </div>
