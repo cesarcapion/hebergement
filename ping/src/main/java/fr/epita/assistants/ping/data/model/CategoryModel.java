@@ -20,9 +20,6 @@ public class CategoryModel {
 
     private String name;
 
-//    @Column(name= "parent_id")
-//    private Integer parentId;
-
     @OneToMany(mappedBy = "category")
     @JsonbTransient
     private List<FAQModel> questions;
