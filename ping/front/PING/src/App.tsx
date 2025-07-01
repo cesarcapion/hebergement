@@ -10,6 +10,7 @@ import TicketDiscussion from "./pages/TicketDiscussion.tsx";
 import CreateTicket from "./pages/CreateTicket.tsx";
 
 import PrivateRoute from './PrivateRoute';
+import StatsPage from "./pages/Stats.tsx";
 
 function App() {
     return (
@@ -57,6 +58,14 @@ function App() {
                     element={
                         <PrivateRoute>
                             <CreateTicket />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/stats"
+                    element={
+                        <PrivateRoute>
+                            <StatsPage />
                         </PrivateRoute>
                     }
                 />
