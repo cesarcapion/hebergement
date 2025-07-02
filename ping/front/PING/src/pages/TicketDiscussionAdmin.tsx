@@ -11,24 +11,24 @@ const dummyMessages = [
         sender: "Nicolas",
         date: "2025-06-22 05:47:21 pm",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-        filePath: "White-Logo-without-bg.png",
+        filePath: "",
     },
     {
         sender: "You",
         date: "2025-06-24 08:35:09 pm",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...",
-        filePath: "../src/pages/TicketDiscussion.tsx",
+        filePath: "../src/pages/TicketDiscussionAdmin.tsx",
     },
 ];
 
-export default function TicketDiscussion() {
+export default function TicketDiscussionAdmin() {
     const { id } = useParams();
 
     return (
         <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER identique à la liste */}
             <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-                <Link to="/">
+                <Link to="/admin">
                     <div className="flex items-center gap-3">
                         <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
                     </div></Link>
@@ -38,8 +38,8 @@ export default function TicketDiscussion() {
                             Q&amp;A
                         </button>
                     </Link>
-                    <Link to="/my-tickets">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">My tickets</button>
+                    <Link to="/my-tickets/admin">
+                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">Inbox</button>
                     </Link>
                 </div>
                 <Link to="/profile">
@@ -52,7 +52,7 @@ export default function TicketDiscussion() {
             {/* TICKET HEADER */}
             <div className="max-w-3xl mx-auto py-6">
                 <div className="flex items-center gap-4 mb-4">
-                    <Link to="/my-tickets">
+                    <Link to="/my-tickets/admin">
                         <button className="text-white text-2xl">&larr;</button>
                     </Link>
                     <h2 className="text-2xl font-bold text-white mx-auto">Ticket {id}</h2>
@@ -66,20 +66,30 @@ export default function TicketDiscussion() {
                             {msg.filePath && (
                                 <div className="mt-2">
                                     <a
-                                    href={msg.filePath}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    download
-                                    className="inline-block bg-pink-400 text-white text-xs font-semibold px-3 py-1 rounded hover:bg-pink-500">
+                                        href={msg.filePath}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        className="inline-block bg-pink-400 text-white text-xs font-semibold px-3 py-1 rounded hover:bg-pink-500">
                                         Download file
                                     </a>
                                 </div>
                             )}
                             {i === dummyMessages.length - 1 && (
-                                <Link to={`/answer/${id}`}>
-                                    <button className="ml-4 px-6 py-1 rounded bg-[#F89BEB] text-white text-sm font-bold">answer</button>
+                                <><Link to={`/answer/admin/${id}`}>
+                                    <button
+                                        className="ml-4 px-6 py-1 rounded bg-[#F89BEB] text-white text-sm font-bold">answer
+                                    </button>
                                 </Link>
-                            )}
+                                    <button
+                                        onClick={() => {
+                                        }} 
+                                        className="ml-4 px-6 py-1 rounded bg-[#F89BEB] text-white text-sm font-bold"
+                                    >
+                                        redirect
+                                    </button>
+                                </>
+                                )}
                         </div>
                     ))}
                 </div>

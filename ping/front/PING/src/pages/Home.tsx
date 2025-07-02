@@ -1,8 +1,30 @@
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import './Home.css';
 
+
 const Home = () => {
-  return (
+  /*const navigate = useNavigate();
+  const [role, setRole] = useState<Role | null>(null);
+  useEffect(() => {
+      const token = localStorage.getItem("token");
+      fetch("http://localhost:8080/api/roles/2", {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+          },
+      })
+          .then((res) => {
+              if (res.status === 401){
+                  navigate("/login");
+              }
+              return res.json();
+          })
+          .then((data) => setRole(data))
+          .catch((err) => console.error(err));
+  }, []);
+  if (!role) return <p>Chargement du rôle...</p>;*/
+    return (
     <>
       <Link className="profile-button" to="/profile" title="My Profile">👤</Link>
 
@@ -22,7 +44,7 @@ const Home = () => {
               <button className="btn">Q&amp;A</button>
           </Link>
           <Link to="/my-tickets">
-          <button className="btn">My tickets</button>
+              <button className="btn">My Tickets</button>
           </Link>
       </div>
     </>

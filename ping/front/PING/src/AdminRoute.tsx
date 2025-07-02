@@ -1,6 +1,7 @@
 import type {JSX} from 'react';
 import { Navigate } from 'react-router-dom';
-const getUserGroupFromToken = (): string | null => {
+// eslint-disable-next-line react-refresh/only-export-components
+export const getUserGroupFromToken = (): string | null => {
     const token = localStorage.getItem('token');
     if (!token) return null;
 

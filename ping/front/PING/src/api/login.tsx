@@ -1,3 +1,5 @@
+import {getUserGroupFromToken} from "../AdminRoute.tsx";
+
 export const login = async (email: string, password: string): Promise<void> => {
   try {
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/login`, {
@@ -10,7 +12,15 @@ export const login = async (email: string, password: string): Promise<void> => {
 
     if (response.ok) {
       localStorage.setItem('token', data.token);
-      window.location.href = `${import.meta.env.VITE_BASE_URL}`;
+      const group = getUserGroupFromToken();
+      if (group?.toString() == "user")
+      {
+        window.location.href = `${import.meta.env.VITE_BASE_URL}`;
+      }
+      else
+      {
+        window.location.href = `${import.meta.env.VITE_BASE_URL}admin`;
+      }
     } else {
       alert(data.message || "Erreur de connexion.");
     }

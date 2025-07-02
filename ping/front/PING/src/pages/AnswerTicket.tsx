@@ -1,25 +1,55 @@
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
 
-const topics = [
-    "Support",
-    "Payment",
-    "Technical issue",
-    "Account",
-    "Other"
-];
 const MAX_FILE_SIZE_MB = 5;
 
-export default function CreateTicket() {
-    const [object, setObject] = useState("");
-    const [topic, setTopic] = useState("");
+
+export default function AnswerTicket() {
+    const { id } = useParams<{ id: string }>();
+    const [ticket, setTicket] = useState<any>(null);
     const [text, setText] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = async () => {
-        // TODO
-    };
+    useEffect(() => {
+        const fetchTicket = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            console.log("Fetching ticket with id:", id);
+
+            try {
+                const response = await fetch(
+                    `${import.meta.env.VITE_SERVER_URL}/api/tickets/7f5e3a75-fe60-430f-9dd6-61025621743e`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Fetched ticket:", data);
+                    setTicket(data);
+                } else {
+                    console.error("Erreur HTTP", response.status);
+                }
+            } catch (err) {
+                console.error("Erreur réseau", err);
+            }
+        };
+
+        fetchTicket();
+    }, [id]);
+
+    console.log("Ticket avant set:", ticket);
+    useEffect(() => {
+        console.log("Ticket après set:", ticket);
+    }, [ticket]);
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -34,11 +64,42 @@ export default function CreateTicket() {
         }
     };
 
+
+    /*const handleSubmit = async () => {
+        if (!text) {
+            alert("Le message ne peut pas être vide.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("text", text);
+        if (file) {
+            formData.append("file", file);
+        }
+
+        try {
+            const res = await fetch(`https://TON_BACKEND_URL/api/tickets/${id}/answer`, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error("Échec de l'envoi");
+
+            alert("Réponse envoyée !");
+            setText("");
+            setFile(null);
+            if (fileInput.current) fileInput.current.value = "";
+        } catch (err) {
+            alert("Erreur lors de l'envoi de la réponse.");
+            console.error(err);
+        }
+    };*/
+
     return (
-        <div className="w-screen min-h-screen bg-[#384454]">
+        <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER */}
             <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-                <Link to ="/">
+                <Link to="/">
                     <div className="flex items-center gap-3">
                         <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
                     </div>
@@ -51,49 +112,44 @@ export default function CreateTicket() {
                     </Link>
                     <Link to="/my-tickets">
                         <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">
-                            My tickets
+                            Inbox
                         </button>
                     </Link>
                 </div>
-                <Link to="profile">
+                <Link to="/profile">
                     <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
                         <span role="img" aria-label="profile">👤</span>
                     </div>
                 </Link>
-
             </div>
 
+            {/* FORM */}
             <div className="max-w-2xl mx-auto pt-4 pb-2 px-2">
                 <button className="text-white text-xl mb-2 mt-4" onClick={() => window.history.back()}>
                     <span className="text-2xl mr-2">&#8592;</span>
                 </button>
-                <h1 className="text-white text-3xl font-bold text-center mb-6">New ticket</h1>
+                <h1 className="text-white text-3xl font-bold text-center mb-6">Reply to Ticket</h1>
 
                 <div className="flex gap-2 mb-2">
                     <input
                         type="text"
-                        placeholder="Object"
-                        className="w-1/2 px-3 py-2 rounded border-none bg-[#d3d4dc] text-gray-800 font-medium focus:outline-none"
-                        value={object}
-                        onChange={e => setObject(e.target.value)}
+                        value={ticket?.name || ""}
+                        disabled
+                        className="w-1/2 px-3 py-2 rounded bg-gray-300 text-gray-600 font-semibold"
                     />
-                    <select
-                        className="w-1/2 px-3 py-2 rounded bg-[#d3d4dc] text-gray-800 font-medium focus:outline-none"
-                        value={topic}
-                        onChange={e => setTopic(e.target.value)}
-                    >
-                        <option value="">Topic</option>
-                        {topics.map(t => (
-                            <option value={t} key={t}>{t}</option>
-                        ))}
-                    </select>
+                    <input
+                        type="text"
+                        value={ticket?.topic.name || ""}
+                        disabled
+                        className="w-1/2 px-3 py-2 rounded bg-gray-300 text-gray-600 font-semibold"
+                    />
                 </div>
 
                 <textarea
                     className="w-full min-h-[150px] rounded bg-[#d3d4dc] text-gray-800 px-3 py-2 mb-2 border-none focus:outline-none"
-                    placeholder="Text"
+                    placeholder="Your message"
                     value={text}
-                    onChange={e => setText(e.target.value)}
+                    onChange={(e) => setText(e.target.value)}
                 />
 
                 <div className="flex items-center gap-2 mb-4">
@@ -135,13 +191,12 @@ export default function CreateTicket() {
                     </button>
                 </div>
 
-
                 <div className="flex justify-end">
                     <button
-                        className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold shadow transition hover:opacity-90"
-                        onClick={handleSubmit}
+                        className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold"
+                        onClick={() => alert("Ticket sent (simulé)")}
                     >
-                        Send
+                        Send Answer
                     </button>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 const SetNewPassword = () => {
-  const location = useLocation(); // ✅ à mettre ici, pas dans handleSubmit
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [newPassword, setNewPassword] = useState('');

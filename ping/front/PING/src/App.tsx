@@ -1,18 +1,23 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import HomeAdmin from './pages/HomeAdmin';
 import Login from './pages/Login';
 import Signup from './pages/Signup'
 import ResetPasswordEmail from './pages/ResetPasswordEmail';
 import SetNewPassword from './pages/SetNewPassword';
 import QA from './pages/QA';
 import MyTickets from "./pages/MyTickets.tsx";
+import MyTicketsAdmin from "./pages/MyTicketsAdmin.tsx";
 import TicketDiscussion from "./pages/TicketDiscussion.tsx";
+import TicketDiscussionAdmin from "./pages/TicketDiscussionAdmin.tsx";
 import CreateTicket from "./pages/CreateTicket.tsx";
 
 import PrivateRoute from './PrivateRoute';
 import AdminRoute from './AdminRoute.tsx';
 
 import StatsPage from "./pages/Stats.tsx";
+import AnswerTicket from "./pages/AnswerTicket.tsx";
+import AnswerTicketAdmin from "./pages/AnswerTicketAdmin.tsx";
 
 function App() {
     return (
@@ -32,6 +37,14 @@ function App() {
                     }
                 />
                 <Route
+                    path="/admin"
+                    element={
+                        <PrivateRoute>
+                            <HomeAdmin />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
                     path="/my-tickets"
                     element={
                         <PrivateRoute>
@@ -40,10 +53,26 @@ function App() {
                     }
                 />
                 <Route
+                    path="/my-tickets/admin"
+                    element={
+                        <PrivateRoute>
+                            <MyTicketsAdmin />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
                     path="/my-tickets/:id"
                     element={
                         <PrivateRoute>
                             <TicketDiscussion />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-tickets/admin/:id"
+                    element={
+                        <PrivateRoute>
+                            <TicketDiscussionAdmin />
                         </PrivateRoute>
                     }
                 />
@@ -71,6 +100,24 @@ function App() {
                         </AdminRoute>
                     }
                 />
+                <Route
+                    path="/answer/:id"
+                    element={
+                    <PrivateRoute>
+                        <AnswerTicket />
+                    </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/answer/admin/:id"
+                    element={
+                        <PrivateRoute>
+                            <AnswerTicketAdmin />
+                        </PrivateRoute>
+                    }
+                />
+
+
             </Routes>
         </BrowserRouter>
     );

@@ -1,28 +1,29 @@
 import { useState } from "react";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-// Juste des exemples pour l'affichage
-const tickets = [
-    { id: 58562, title: "ticket 58562", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...", status: "in progress" },
-    { id: 22254, title: "ticket 22254", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...", status: "resolved" },
-    { id: 15245, title: "ticket 15245", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...", status: "pending" },
-    { id: 8956, title: "ticket 8956", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...", status: "pending" },
-    { id: 589, title: "ticket 589", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...", status: "resolved" },
+// Exemple de tickets
+const initialTickets = [
+    { id: 58562, title: "ticket 58562", desc: "Lorem ipsum...", status: "in progress" },
+    { id: 22254, title: "ticket 22254", desc: "Lorem ipsum...", status: "resolved" },
+    { id: 15245, title: "ticket 15245", desc: "Lorem ipsum...", status: "pending" },
+    { id: 8956, title: "ticket 8956", desc: "Lorem ipsum...", status: "pending" },
+    { id: 589, title: "ticket 589", desc: "Lorem ipsum...", status: "resolved" },
 ];
 
 const statusOrder = ["in progress", "pending", "resolved"];
 
-const statusColors: Record<string, string> = {
-    pending: "bg-green-400",
-    "in progress": "bg-yellow-400",
-    resolved: "bg-red-400",
-};
 
-export default function MyTickets() {
+export default function AdminTickets() {
+    const [tickets, setTickets] = useState(initialTickets);
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState("");
     const navigate = useNavigate();
 
+    const handleStatusChange = (id: number, newStatus: string) => {
+        setTickets((prev) =>
+            prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
+        );
+    };
 
     const filteredTickets = filter
         ? tickets.filter((t) => t.status === filter)
@@ -41,18 +42,21 @@ export default function MyTickets() {
         <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER */}
             <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-                <Link to="/">
+                <Link to="/admin">
                     <div className="flex items-center gap-3">
-                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
-                    </div></Link>
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
+                    </div>
+                </Link>
                 <div className="flex gap-6">
                     <Link to="/qa">
                         <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
                             Q&amp;A
                         </button>
                     </Link>
-                    <Link to="/my-tickets">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">My tickets</button>
+                    <Link to="/my-tickets/admin">
+                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">
+                            Inbox
+                        </button>
                     </Link>
                 </div>
                 <Link to="/profile">
@@ -75,7 +79,7 @@ export default function MyTickets() {
                     <option value="resolved">Resolved</option>
                 </select>
 
-                <h1 className="text-white text-3xl font-bold text-center">My tickets</h1>
+                <h1 className="text-white text-3xl font-bold text-center">Inbox</h1>
 
                 <select
                     className="bg-white rounded p-2 text-gray-700"
@@ -89,20 +93,50 @@ export default function MyTickets() {
                 </select>
             </div>
 
-            {/* LISTE DES TICKETS */}
+            {/* TICKETS */}
             <div className="max-w-3xl mx-auto">
                 {sortedTickets.map((ticket) => (
                     <div
                         key={ticket.id}
                         className="flex items-center gap-3 mb-3 px-3 py-3 rounded bg-[#434F5E] hover:bg-[#4f5d6f] cursor-pointer"
-                        onClick={() => navigate(`/my-tickets/${ticket.id}`)}
+                        onClick={() => navigate(`/my-tickets/admin/${ticket.id}`)}
                     >
                         <div className="w-1/5 font-semibold text-white">{ticket.title}</div>
                         <div className="flex-1 text-sm text-gray-200 truncate">{ticket.desc}</div>
-                        <div>
-              <span className={`px-4 py-1 rounded-full font-bold text-xs text-white ${statusColors[ticket.status]}`}>
-                {ticket.status}
-              </span>
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <select
+                                className="px-3 py-1 rounded-full font-bold text-xs text-white"
+                                style={{
+                                    backgroundColor:
+                                        ticket.status === "pending"
+                                            ? "#4ade80" // green-400
+                                            : ticket.status === "in progress"
+                                                ? "#facc15" // yellow-400
+                                                : "#f87171", // red-400
+                                }}
+                                value={ticket.status}
+                                onChange={(e) => handleStatusChange(ticket.id, e.target.value)}
+                            >
+                                <option
+                                    value="in progress"
+                                    style={{ backgroundColor: "#facc15", color: "white" }}
+                                >
+                                    in progress
+                                </option>
+                                <option
+                                    value="pending"
+                                    style={{ backgroundColor: "#4ade80", color: "white" }}
+                                >
+                                    pending
+                                </option>
+                                <option
+                                    value="resolved"
+                                    style={{ backgroundColor: "#f87171", color: "white" }}
+                                >
+                                    resolved
+                                </option>
+                            </select>
+
                         </div>
                     </div>
                 ))}
