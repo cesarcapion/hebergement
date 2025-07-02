@@ -31,7 +31,7 @@ const StatsPage: React.FC = () => {
             body: JSON.stringify({ mail: "menfou", days }),
         });
 
-        if (response.ok) {
+        if (response?.status == 200) {
             const data = await response.json();
             console.log("Received allStats:", data);
             setAllStats(data);

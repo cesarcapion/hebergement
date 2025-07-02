@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { login } from '../api/login.tsx';
+const [error, setError] = useState('');
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,16 +12,17 @@ const Login = () => {
     e.preventDefault();
     console.log(email);
     if (!email || !password) {
-      alert('Please fill in all fields.');
+      //alert('Please fill in all fields.');
       return;
     }
 
     try {
       console.log("email : " +  email + "password : " + password);
-      await login(email, password);
+      const a = await login(email, password);
+      setError(a);
     } catch (error) {
       console.error('Erreur de connexion', error);
-      alert("Login failed.");
+      //alert("Login failed.");
     }
   };
 
@@ -75,6 +77,9 @@ const Login = () => {
             Login
           </button>
         </form>
+        {error && (
+            <p className="text-sm text-red-600">{error}</p>
+        )}
 
         <div className="mt-4 text-center text-sm text-[#d3d4dc]">
           No account ?{' '}
