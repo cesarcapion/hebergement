@@ -1,6 +1,6 @@
 import {getUserGroupFromToken} from "../AdminRoute.tsx";
 
-export const login = async (email: string, password: string): Promise<void> => {
+export const login = async (email: string, password: string): Promise<string> => {
   try {
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/user/login`, {
       method: 'POST',
@@ -21,12 +21,15 @@ export const login = async (email: string, password: string): Promise<void> => {
       {
         window.location.href = `${import.meta.env.VITE_BASE_URL}admin`;
       }
+
+      return ''
     } else {
-      alert(data.message || "Erreur de connexion.");
+      //alert(data.message || "Erreur de connexion.");
+      return data.message;
     }
-    console.log("CA AMRAHCZIBGZKJEBGUORBGIUBGJNRJONGKJLEZGNVJREIUVB")
   } catch (error) {
     console.error("Login error:", error);
-    alert("Erreur réseau");
+    //alert("Erreur réseau");
+    return ""
   }
 };

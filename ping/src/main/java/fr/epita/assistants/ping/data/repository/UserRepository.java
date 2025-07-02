@@ -60,6 +60,7 @@ public class UserRepository  implements PanacheRepository<UserModel> {
     public UserModel findByResetToken(String token) {
         return find("resetToken", token).firstResult();
     }
+
     public UserModel getUserByResetToken(String token) {
         return find("resetToken", token).firstResult();
     }

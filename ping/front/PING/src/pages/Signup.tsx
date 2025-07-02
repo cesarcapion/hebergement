@@ -25,8 +25,10 @@ const Signup = () => {
     catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
+        return;
       } else {
         setError("An unknown error occurred.");
+        return;
       }
     }
 
