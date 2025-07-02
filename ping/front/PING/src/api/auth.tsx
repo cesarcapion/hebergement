@@ -36,5 +36,5 @@ export async function authedAPIRequest(endpoint: string, options: FetchOptions =
 
 function redirectToLogin(): void {
     localStorage.clear();
-    window.location.href = `${frontURL}/login`;
+    window.location.href = `${frontURL}login`;
 }
