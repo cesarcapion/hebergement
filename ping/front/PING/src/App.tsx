@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import HomeAdmin from './pages/HomeAdmin';
 import Login from './pages/Login';
 import Signup from './pages/Signup'
 import ResetPasswordEmail from './pages/ResetPasswordEmail';
@@ -33,14 +32,6 @@ function App() {
                     element={
                         <PrivateRoute>
                             <Home />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/admin"
-                    element={
-                        <PrivateRoute>
-                            <HomeAdmin />
                         </PrivateRoute>
                     }
                 />

@@ -3,6 +3,7 @@ package fr.epita.assistants.ping.api.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -14,4 +15,5 @@ public class UserResponse {
     public boolean isAdmin;
     public String avatar;
     public Long roleId;
+    public String created;
 }

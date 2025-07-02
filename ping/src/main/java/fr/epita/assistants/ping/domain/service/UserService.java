@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import fr.epita.assistants.ping.api.request.CreateUserRequest;
@@ -76,7 +77,10 @@ public class UserService {
     {
         return repository.findByLogin(mail) != null;
     }
-
+    public static String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return dateTime.format(formatter);
+    }
     public String generateToken(UUID userId, boolean isAdmin) {
         System.out.println(userId + " : " + isAdmin);
         return Jwt.subject(userId.toString())
@@ -127,6 +131,7 @@ public class UserService {
         newUser.setAvatar("");
         newUser.setMail(input.mail);
         newUser.setPassword(hashPassword(input.password));
+        newUser.setCreatedOn(LocalDateTime.now());
         RoleModel role;
         if (input.isAdmin) {
 //            role = roleService.findByName("admin");
@@ -140,7 +145,7 @@ public class UserService {
         newUser.setRole(role);
 
         repository.addUser(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId());
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(), formatDate(newUser.getCreatedOn()));
     }
 
     /*
@@ -169,7 +174,7 @@ public class UserService {
         List<UserModel> list = repository.listAll();
         List<UserResponse> response = new ArrayList<>();
         for (UserModel user : list) {
-            UserResponse element = new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId());
+            UserResponse element = new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(),formatDate(user.getCreatedOn()));
             response.add(element);
         }
         return response.toArray(new UserResponse[0]); // 200
@@ -261,7 +266,7 @@ public class UserService {
         UserModel user = repository.findById(userToUpdateId);
 
         repository.updateUser(user,input);
-        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId());
+        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(), formatDate(user.getCreatedOn()));
     }
     public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
         if (repository.findById(userToUpdateId) == null)
@@ -271,7 +276,7 @@ public class UserService {
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
         UserModel user = repository.findById(userToUpdateId);
-        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId());
+        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(),formatDate(user.getCreatedOn()));
     }
 
     @Transactional

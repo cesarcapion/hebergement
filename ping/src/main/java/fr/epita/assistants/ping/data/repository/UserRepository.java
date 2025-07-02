@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import fr.epita.assistants.ping.api.request.PasswordRequest;
@@ -64,7 +65,10 @@ public class UserRepository  implements PanacheRepository<UserModel> {
     public UserModel getUserByResetToken(String token) {
         return find("resetToken", token).firstResult();
     }
-
+    public static String formatDate(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return dateTime.format(formatter);
+    }
     @Transactional
     public UserResponse createUser(String mail, String password) {
         UserModel newUser = new UserModel();
@@ -74,8 +78,9 @@ public class UserRepository  implements PanacheRepository<UserModel> {
         newUser.setPassword(hashPassword(password));
         RoleModel role = roleRepository.getRoleById(DefaultRoles.getUserRoleId());
         newUser.setRole(role);
+        newUser.setCreatedOn(LocalDateTime.now());
         persist(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId());
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(),formatDate(newUser.getCreatedOn()));
 
     }
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +34,9 @@ public class UserModel {
     private String resetToken;
 
     private String avatar;
+
+    @Column(name= "created_on")
+    private LocalDateTime createdOn;
 
     @ManyToOne
     @JoinColumn(name="role_id")
