@@ -1,9 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const StatsPage: React.FC = () => {
     const [email, setEmail] = useState("");
-    const [filterRange, setFilterRange] = useState("Last 5 days");
+    const [filterRange, setFilterRange] = useState<string>("Last 5 days");
     const [bottomRange, setBottomRange] = useState("Last 5 days");
+    const [pending, setPending] = useState(0);
+    const [resolved, setResolved] = useState(0);
+    const [inProgress, setInProgress] = useState(0);
+    const [error, setError] = useState('');
+    const [allStats, setAllStats] = useState<any[]>([]);
+
+    const [avgTime, setAvgTime] = useState("0d0h0m");
+    function parseFilterRange(filterRange: string): number {
+        const match = filterRange.match(/Last\s+(\d+)\s+days/i);
+        if (match && match[1]) {
+            return parseInt(match[1], 10);
+        }
+        return 5;
+    }
+    const handleAllStats = async () => {
+        const days = parseFilterRange(bottomRange);
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/stats`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ mail: "menfou", days }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Received allStats:", data);
+            setAllStats(data);
+        } else {
+            console.error("Failed to fetch all stats");
+            setAllStats([]);
+        }
+    };
+    const handleStats = async () => {
+        const days = parseFilterRange(filterRange);
+
+        console.log("Fetching stats for:", { email,days});
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/stat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ mail: email, days: days }),
+        });
+        setError('');
+        if (response.status === 400) {
+            console.log("RESPONSE 400")
+            setError('This email is from a user');
+        }
+        if (response.status === 404) {
+            console.log("RESPONSE 404")
+            setError('Email not found');
+        }
+        const data = await response.json();
+        console.log(data);
+     //   const data = await response.json();
+
+     //   console.log(data);
+
+        if (response.status === 200) {
+            setPending(data.PendingTickets);
+            setResolved(data.ResolvedTickets);
+            setInProgress(data.InProgressTickets);
+            setAvgTime(data.AverageAnswerTime);
+        }
+
+    };
+
+    const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            handleStats();
+        }
+
+    };
+
+    useEffect(() => {
+        handleStats();
+    }, [filterRange]);
 
     return (
         <div style={styles.body}>
@@ -29,6 +113,7 @@ const StatsPage: React.FC = () => {
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={handleEmailKeyDown}
                         style={styles.input}
                     />
                     <select
@@ -41,7 +126,9 @@ const StatsPage: React.FC = () => {
                         <option>Last 30 days</option>
                     </select>
                 </div>
-
+                {error && (
+                    <p className="text-sm text-red-600">{error}</p>
+                )}
                 <table style={styles.table}>
                     <thead>
                     <tr>
@@ -53,16 +140,18 @@ const StatsPage: React.FC = () => {
                     </thead>
                     <tbody>
                     <tr>
-                        <td>24</td>
-                        <td>53</td>
-                        <td>7</td>
-                        <td>1d5h9m</td>
+                        <td>{pending}</td>
+                        <td>{resolved}</td>
+                        <td>{inProgress}</td>
+                        <td>{avgTime}</td>
                     </tr>
                     </tbody>
                 </table>
 
                 <div style={styles.bottomSection}>
-                    <button style={styles.btnBottom}>Show all employees</button>
+                    <button style={styles.btnBottom} onClick={handleAllStats}>
+                        Show all employees
+                    </button>
                     <select
                         value={bottomRange}
                         onChange={(e) => setBottomRange(e.target.value)}
@@ -73,6 +162,35 @@ const StatsPage: React.FC = () => {
                         <option>Last 30 days</option>
                     </select>
                 </div>
+                {allStats.length > 0 && (
+                    <div style={{ marginTop: "40px" }}>
+                        <h2 style={styles.h1}>Stats by employee</h2>
+                        {allStats.map((stat, idx) => (
+                            <div key={idx} style={{ marginBottom: "20px" }}>
+                                <h3 style={{ textAlign: "left", marginBottom: "10px" }}>{stat.mail}</h3>
+                                <table style={styles.table}>
+                                    <thead>
+                                    <tr>
+                                        <th>Pending</th>
+                                        <th>Resolved</th>
+                                        <th>In progress</th>
+                                        <th>Average Time</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{stat.PendingTickets}</td>
+                                        <td>{stat.ResolvedTickets}</td>
+                                        <td>{stat.InProgressTickets}</td>
+                                        <td>{stat.AverageAnswerTime}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             </div>
         </div>
     );

@@ -2,6 +2,7 @@ package fr.epita.assistants.ping.presentation.rest;
 
 
 import fr.epita.assistants.ping.api.request.NewTicketHistoryRequest;
+import fr.epita.assistants.ping.api.request.StatRequest;
 import fr.epita.assistants.ping.domain.service.TicketHistoryService;
 import fr.epita.assistants.ping.domain.service.TicketService;
 import fr.epita.assistants.ping.domain.service.UserService;
@@ -84,33 +85,35 @@ public class TicketHistoryResource {
         logger.logSuccess("the operation was successful");
         return Response.status(Response.Status.OK).entity(ticketHistoryService.getHistory(ticketId)).build();
     }
-    @GET
+    @POST
     @Path("/stats")
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getStats() {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getStats(StatRequest statRequest) {
         logger.logInfo(identity.getPrincipal().getName() + " requested to get all stats");
         logger.logSuccess("the operation was successful");
-        return Response.status(Response.Status.OK).entity(ticketHistoryService.getStats()).build();
+        return Response.status(Response.Status.OK).entity(ticketHistoryService.getStats(statRequest.days)).build();
     }
-    @GET
-    @Path("/stats/{mail}")
+    @POST
+    @Path("/stat")
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getStat(@PathParam("mail") String mail) {
-        logger.logInfo(identity.getPrincipal().getName() + " requested to get stats of : " + mail);
-        if (!userService.mailExist(mail))
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getStat(StatRequest statRequest) {
+        logger.logInfo(identity.getPrincipal().getName() + " requested to get stats of : " + statRequest.mail);
+        if (!userService.mailExist(statRequest.mail))
         {
             logger.logError("Error 404: mail not found");
-            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Mail not found")).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Mail not found")).build(); // 404
         }
-        if (userService.isUser(mail))
+        if (userService.isUser(statRequest.mail))
         {
             logger.logError("Error 400: this mail is from a user");
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Mail from a user")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("Mail from a user")).build(); // 400
         }
         logger.logSuccess("the operation was successful");
-        return Response.status(Response.Status.OK).entity(ticketHistoryService.getStat(mail)).build();
+        return Response.status(Response.Status.OK).entity(ticketHistoryService.getStat(statRequest.mail, statRequest.days)).build();
     }
 
 }

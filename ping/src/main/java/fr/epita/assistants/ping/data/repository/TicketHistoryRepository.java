@@ -38,7 +38,9 @@ public class TicketHistoryRepository implements PanacheRepository<TicketHistoryM
         return find("ticket = ?1 and interactedOn < ?2 order by interactedOn desc", ticket, before)
                 .firstResult();
     }
-    public List<TicketHistoryModel> findByMail(String mail) {
-        return find("interactedBy.mail = ?1", mail).list();
+    public List<TicketHistoryModel> findByMail(String mail, int delay) {
+        LocalDateTime since = LocalDateTime.now().minusDays(delay);
+        return find("interactedBy.mail = ?1 AND interactedOn >= ?2", mail, since).list();
     }
+
 }

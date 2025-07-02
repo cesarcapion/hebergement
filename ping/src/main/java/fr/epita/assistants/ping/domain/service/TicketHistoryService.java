@@ -116,16 +116,16 @@ public class TicketHistoryService {
         return sb.toString();
     }
 
-    public OneStatResponse[] getStats() {
+    public OneStatResponse[] getStats( int delay) {
         List<String> mails = userRepository.findAllNonUserMails();
         List<OneStatResponse> oneStatResponses = new ArrayList<>();
-        mails.forEach(mail -> {oneStatResponses.add(getStat(mail));});
+        mails.forEach(mail -> {oneStatResponses.add(getStat(mail,delay));});
         return oneStatResponses.toArray(new OneStatResponse[0]);
     }
 
-    public OneStatResponse getStat(String mail)
+    public OneStatResponse getStat(String mail, int delay)
     {
-        List<TicketHistoryModel> ticketHistoryModels = ticketHistoryRepository.findByMail(mail);
+        List<TicketHistoryModel> ticketHistoryModels = ticketHistoryRepository.findByMail(mail, delay);
         long resolvedTickets = countLatest(ticketHistoryModels,TicketStatus.RESOLVED);
         long inProgressTickets = countLatest(ticketHistoryModels,TicketStatus.IN_PROGRESS);
         long pendingTickets = ticketService.countPendingTickets();
