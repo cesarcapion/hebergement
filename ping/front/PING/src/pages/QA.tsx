@@ -102,99 +102,100 @@ const QA = () => {
           {
             faqs.map((faq, idx) => (
               
-            // <div key={idx} className="rounded-lg overflow-hidden">
-            // <div key={idx} className="w-full text-left font-semibold bg-white text-[#384454] shadow focus:outline-none">
-            //   <button
-            //     type="button"
-            //     onClick={() => {
-            //       if (editIndex === null)
-            //       {
-            //         toggle(idx)
-            //       }
-            //     }}
-            //     className="w-full text-left px-6 py-4 font-semibold flex justify-between items-center bg-white text-[#384454] shadow focus:outline-none">
-            //     {isAdmin && <button id="edit_button"
-            //       onClick={(e) => {
-            //         if (openIndex === idx)
-            //         {
-            //           e.stopPropagation()
-            //         }
-            //         setEditedIndex(idx)
-            //         setEditedAnswer(faqs[idx].answer)
-            //         setEditedQuestion(faqs[idx].question)
-            //       }}
-            //       disabled={editIndex !== null && editIndex !== idx}
-            //       className={`font-medium whitespace-nowrap ${editIndex !== null && editIndex !== idx ? 'text-gray-400 cursor-not-allowed' : ''}`}
-            //       >
-            //       <span>edit ✏️</span>
-            //     </button>}
-            //     <div className='flex items-center justify-between w-full'>
-            //       {editIndex !== idx ? 
-            //       <span>{faq.question}</span> : 
-            //       <input placeholder='Type the question...' value={editedQuestion}
-            //        onChange={(e) => setEditedQuestion(e.target.value)} 
-            //       className="w-full text-[#384454] bg-transparent border-b border-gray-300 focus:outline-none"/>
-            //        }
+            <div key={idx} className="rounded-lg overflow-hidden">
+            <div key={idx} className="w-full text-left font-semibold bg-white text-[#384454] shadow focus:outline-none">
+              <button
+                type="button"
+                onClick={() => {
+                  if (editIndex === null)
+                  {
+                    toggle(idx)
+                  }
+                }}
+                className="w-full text-left px-6 py-4 font-semibold flex justify-between items-center bg-white text-[#384454] shadow focus:outline-none">
+                {isAdmin && <button id="edit_button"
+                  onClick={(e) => {
+                    if (openIndex === idx)
+                    {
+                      e.stopPropagation()
+                    }
+                    setEditedIndex(idx)
+                    setEditedAnswer(faqs[idx].answer)
+                    setEditedQuestion(faqs[idx].question)
+                  }}
+                  disabled={editIndex !== null && editIndex !== idx}
+                  className={`font-medium whitespace-nowrap ${editIndex !== null && editIndex !== idx ? 'text-gray-400 cursor-not-allowed' : ''}`}
+                  >
+                  <span>edit ✏️</span>
+                </button>}
+                <div className='flex items-center justify-between w-full'>
+                  {editIndex !== idx ? 
+                  <span>{faq.question}</span> : 
+                  <input placeholder='Type the question...' value={editedQuestion}
+                   onChange={(e) => setEditedQuestion(e.target.value)} 
+                  className="w-full text-[#384454] bg-transparent border-b border-gray-300 focus:outline-none"/>
+                   }
                   
-            //       {editIndex === idx && (
-            //       <button
-            //       onClick={(e) => {
-            //         e.stopPropagation()
-            //         // FIXME handle the case where updated question or updated answer is empty
-            //         faqs[idx].answer = editedAnswer
-            //         faqs[idx].question = editedQuestion
-            //         setEditedIndex(null)
-            //         setEditedAnswer('')
-            //         setEditedQuestion('')
-            //         }
-            //       }
-            //       className="ml-4 whitespace-nowrap">
-            //         <span>Save 💾</span>
-            //       </button>
-            //     )}
-            //     </div>
-            //     <span className={`text-[#EA508E] transition-transform ${openIndex === idx ? 'rotate-180' : ''}`}>▼</span>
-            //   </button>
-            //   {openIndex === idx && (
-            //     <div className="px-6 py-4 bg-white text-[#384454] border-t">
-            //       {editIndex !== idx ?
-            //        <p>{faq.answer}</p> : 
-            //       (
-            //         <textarea value={editedAnswer} placeholder='Type the answer...'
-            //         className="w-full min-h-[80px] text-[#384454] bg-transparent border-b border-gray-300 focus:outline-none resize-none"
-            //         onChange={(e) => {
-            //           setEditedAnswer(e.target.value)
-            //         }}/>
-            //       )}
-            //     </div>
-            //   )}
-            //   {isAdmin && editIndex == null && (
-            //     confirmDeleteIndex !== idx ? 
-            //     (
-            //     <button className="ml-4 bg-red-500 text-white font-bold px-4 py-2 rounded hover:bg-red-700 focus:outline-none"
-            //     onClick={() => {setConfirmDeleteIndex(idx)}}>Delete</button>
-            //     ) :
-            //     (
-            //     <div className="mt-2 flex gap-2">
-            //       <button
-            //         className="bg-red-500 text-white font-bold px-3 py-1 rounded hover:bg-red-700"
-            //         onClick={() => {
-            //           // your actual delete logic here
-            //           faqs.splice(idx, 1)
-            //           setConfirmDeleteIndex(null)
-            //         }}
-            //       >
-            //         Confirm ❌
-            //       </button>
-            //       <button
-            //         className="bg-gray-300 text-black font-bold px-3 py-1 rounded hover:bg-gray-400"
-            //         onClick={() => setConfirmDeleteIndex(null)}
-            //       >
-            //         Cancel
-            //       </button>
-                // </div>
+                  {editIndex === idx && (
+                  <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    // FIXME handle the case where updated question or updated answer is empty
+                    faqs[idx].answer = editedAnswer
+                    faqs[idx].question = editedQuestion
+                    setEditedIndex(null)
+                    setEditedAnswer('')
+                    setEditedQuestion('')
+                    }
+                  }
+                  className="ml-4 whitespace-nowrap">
+                    <span>Save 💾</span>
+                  </button>
+                )}
+                </div>
+                <span className={`text-[#EA508E] transition-transform ${openIndex === idx ? 'rotate-180' : ''}`}>▼</span>
+              </button>
+              {openIndex === idx && (
+                <div className="px-6 py-4 bg-white text-[#384454] border-t">
+                  {editIndex !== idx ?
+                   <p>{faq.answer}</p> : 
+                  (
+                    <textarea value={editedAnswer} placeholder='Type the answer...'
+                    className="w-full min-h-[80px] text-[#384454] bg-transparent border-b border-gray-300 focus:outline-none resize-none"
+                    onChange={(e) => {
+                      setEditedAnswer(e.target.value)
+                    }}/>
+                  )}
+                </div>
+              )}
+              {isAdmin && editIndex == null && (
+                confirmDeleteIndex !== idx ? 
+                (
+                <button className="ml-4 bg-red-500 text-white font-bold px-4 py-2 rounded hover:bg-red-700 focus:outline-none"
+                onClick={() => {setConfirmDeleteIndex(idx)}}>Delete</button>
+                ) :
+                (
+                <div className="mt-2 flex gap-2">
+                  <button
+                    className="bg-red-500 text-white font-bold px-3 py-1 rounded hover:bg-red-700"
+                    onClick={() => {
+                      // your actual delete logic here
+                      faqs.splice(idx, 1)
+                      setConfirmDeleteIndex(null)
+                    }}
+                  >
+                    Confirm ❌
+                  </button>
+                  <button
+                    className="bg-gray-300 text-black font-bold px-3 py-1 rounded hover:bg-gray-400"
+                    onClick={() => setConfirmDeleteIndex(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
                 )
               )}
+            </div>
             </div>
           ))
           }
