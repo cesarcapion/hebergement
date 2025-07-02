@@ -225,6 +225,7 @@ public class UserService {
         if (!checkPassword(input.password))
             throw new BadInfosException("password not valid");
         repository.setPassword( hashPassword(input.password), input.token);
+        repository.setResetToken(repository.findByResetToken(input.token).getMail(),null);
     }
 
     public UserModel get(UUID id) {

@@ -140,7 +140,7 @@ public class UserResource {
     public Response requestReset(ResetRequest input) {
             logger.logInfo("User request a reset link");
             ResetResponse response = userService.resetRequest(input.mail);
-            if (response.token != null)
+            if (response != null && response.token != null)
                 emailService.dispatchResetLink(input.mail,"http://localhost:5173/set-new-password?token=" + response.token);
             logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200

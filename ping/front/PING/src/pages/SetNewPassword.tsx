@@ -32,19 +32,17 @@ const SetNewPassword = () => {
         body: JSON.stringify({token, password: newPassword }),
       });
       console.log(`token: ${token}, password: ${newPassword}, response:`, response);
-      const data = await response.json();
 
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        window.location.href = `${import.meta.env.VITE_BASE_URL}`;
-      } else if (response.status === 400) {
-        alert("Bad Token");
-      } else {
+      if (response.status === 400) {
+        setError("Bad Token");
+        return;
+      } else if (response.status === 406) {
         setError("Password should be at least 12 characters long and be composed of digits, letters, capital letters and symbols.");
+        return;
       }
-      console.log("CA AMRAHCZIBGZKJEBGUORBGIUBGJNRJONGKJLEZGNVJREIUVB")
     } catch (error) {
       console.error("Login error:", error);
+      return;
     }
     console.log("Token récupéré depuis l'URL :", token);
     console.log('Password updated :', newPassword);
