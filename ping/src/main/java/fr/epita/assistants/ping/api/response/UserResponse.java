@@ -13,4 +13,5 @@ public class UserResponse {
     public String displayName;
     public boolean isAdmin;
     public String avatar;
+    public Long roleId;
 }

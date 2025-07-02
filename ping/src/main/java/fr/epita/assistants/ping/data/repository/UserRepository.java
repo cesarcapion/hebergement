@@ -74,7 +74,7 @@ public class UserRepository  implements PanacheRepository<UserModel> {
         RoleModel role = roleRepository.getRoleById(DefaultRoles.getUserRoleId());
         newUser.setRole(role);
         persist(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar());
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId());
 
     }
 
