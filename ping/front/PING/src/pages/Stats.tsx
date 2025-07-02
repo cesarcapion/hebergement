@@ -22,7 +22,7 @@ const StatsPage: React.FC = () => {
         const days = parseFilterRange(bottomRange);
         const token = localStorage.getItem('token');
 
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/stats`, {
+        const response = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/stats`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

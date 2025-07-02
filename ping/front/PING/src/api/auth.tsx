@@ -4,7 +4,7 @@ const frontURL = import.meta.env.VITE_BASE_URL;
 type FetchOptions = RequestInit;
 
 async function fetchWithToken(endpoint: string, token: string, options: FetchOptions = {}): Promise<Response> {
-    return await fetch(`${apiURL}/api${endpoint}`, {
+    return await fetch(`${endpoint}`, {
         ...options,
         headers: {
             ...(options.headers || {}),
@@ -20,14 +20,14 @@ export async function authedAPIRequest(endpoint: string, options: FetchOptions =
     if (!token) {
         console.warn("Token manquant.");
         redirectToLogin();
-        return authedAPIRequest(endpoint,options);
+        return null;
     }
 
     const response = await fetchWithToken(endpoint, token, options);
     if (response.status === 401) {
         console.warn("Token expiré.");
         redirectToLogin();
-        return authedAPIRequest(endpoint,options);
+        return null;
     }
 
     return response;
