@@ -17,6 +17,7 @@ import AdminRoute from './AdminRoute.tsx';
 import StatsPage from "./pages/Stats.tsx";
 import AnswerTicket from "./pages/AnswerTicket.tsx";
 import AnswerTicketAdmin from "./pages/AnswerTicketAdmin.tsx";
+import Profil from "./pages/Profile.tsx"
 
 function App() {
     return (
@@ -104,6 +105,14 @@ function App() {
                     element={
                         <PrivateRoute>
                             <AnswerTicketAdmin />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/profil"
+                    element={
+                        <PrivateRoute>
+                            <Profil />
                         </PrivateRoute>
                     }
                 />
