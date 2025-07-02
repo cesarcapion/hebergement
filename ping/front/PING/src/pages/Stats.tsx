@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import {authedAPIRequest} from "../api/auth.tsx"
 const StatsPage: React.FC = () => {
     const [email, setEmail] = useState("");
     const [filterRange, setFilterRange] = useState<string>("Last 5 days");
@@ -46,7 +46,7 @@ const StatsPage: React.FC = () => {
         console.log("Fetching stats for:", { email,days});
         const token = localStorage.getItem('token');
 
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/stat`, {
+        const response = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/stat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -55,21 +55,21 @@ const StatsPage: React.FC = () => {
             body: JSON.stringify({ mail: email, days: days }),
         });
         setError('');
-        if (response.status === 400) {
+        if (response?.status === 400) {
             console.log("RESPONSE 400")
             setError('This email is from a user');
         }
-        if (response.status === 404) {
+        if (response?.status === 404) {
             console.log("RESPONSE 404")
             setError('Email not found');
         }
-        const data = await response.json();
+        const data = await response?.json();
         console.log(data);
      //   const data = await response.json();
 
      //   console.log(data);
 
-        if (response.status === 200) {
+        if (response?.status === 200) {
             setPending(data.PendingTickets);
             setResolved(data.ResolvedTickets);
             setInProgress(data.InProgressTickets);
