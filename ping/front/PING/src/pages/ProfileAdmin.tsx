@@ -1,20 +1,62 @@
 "use client"
 
-import { Link } from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
+import {useEffect, useState} from "react";
+import {authedAPIRequest} from "../api/auth.tsx";
+export const getUserIdFromToken = (): string | null => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
 
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.sub || null;
+    } catch (err) {
+        console.error("Erreur lors du décodage du token :", err);
+        return null;
+    }
+};
 export default function ProfileAdmin() {
-    // Données utilisateur admin (à remplacer par de vraies données)
-    const userEmail = "xavier.login@epita.fr"
-    const memberSince = "02/01/2025"
-    const userRole = "Administrator"
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [memberSince, setMemberSince] = useState<string | null>(null);
+    const [userRole, setUserRole] = useState<string | null>(null);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const userId = getUserIdFromToken();
+            if (!userId) {
+                console.error("Aucun ID utilisateur trouvé dans le token.");
+                return;
+            }
+            console.log(userId);
+            const response = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/user/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            console.log(response?.statusText);
+            if (!response) return;
+
+            const data = await response.json();
+            setUserEmail(data.mail);
+            setMemberSince(data.created);
+            setUserRole(data.role);
+        };
+
+        fetchUserData();
+    }, []);
 
     const handleLogout = () => {
-        // Logique de déconnexion
         if (confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
-            console.log("Admin logged out")
-            // navigate("/login")
+            localStorage.clear();
+            navigate("/login");
         }
-    }
+    };
+    // Données utilisateur admin (à remplacer par de vraies données)
+
+    //const userRole = "Administrator"
 
     const handleManage = () => {
         // Logique pour gérer le compte
@@ -44,14 +86,14 @@ export default function ProfileAdmin() {
                             Q&A
                         </button>
                     </Link>
-                    <Link to="/my-tickets">
+                    <Link to="/my-tickets/admin">
                         <button className="btn">
-                            My tickets
+                            Inbox
                         </button>
                     </Link>
                 </div>
 
-                <Link to="/profile">
+                <Link to="/profile-admin">
                     <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#EA508E] text-white rounded-full shadow-lg">
             <span role="img" aria-label="profile" className="text-2xl">
               👤

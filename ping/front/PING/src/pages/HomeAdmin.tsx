@@ -5,7 +5,7 @@ import './Home.css';
 const HomeAdmin = () => {
     return (
         <>
-            <Link className="profile-button" to="/profile" title="My Profile">👤</Link>
+            <Link className="profile-button" to="/profile-admin" title="My Profile">👤</Link>
 
             <div className="header-block">
                 <div className="text-block">

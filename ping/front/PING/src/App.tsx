@@ -19,6 +19,7 @@ import AnswerTicket from "./pages/AnswerTicket.tsx";
 import AnswerTicketAdmin from "./pages/AnswerTicketAdmin.tsx";
 import Profile from "./pages/Profile.tsx"
 import ProfileAdmin from "./pages/ProfileAdmin.tsx"
+import HomeAdmin from "./pages/HomeAdmin.tsx";
 function App() {
     return (
         <BrowserRouter>
@@ -117,10 +118,18 @@ function App() {
                     }
                 />
                 <Route
-                    path="/profile"
+                    path="/profile-admin"
                     element={
                         <AdminRoute>
                             <ProfileAdmin />
+                        </AdminRoute>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <AdminRoute>
+                            <HomeAdmin />
                         </AdminRoute>
                     }
                 />

@@ -145,7 +145,7 @@ public class UserService {
         newUser.setRole(role);
 
         repository.addUser(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(), formatDate(newUser.getCreatedOn()));
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(),Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(), formatDate(newUser.getCreatedOn()),role.getName());
     }
 
     /*
@@ -174,7 +174,7 @@ public class UserService {
         List<UserModel> list = repository.listAll();
         List<UserResponse> response = new ArrayList<>();
         for (UserModel user : list) {
-            UserResponse element = new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(),formatDate(user.getCreatedOn()));
+            UserResponse element = new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(),formatDate(user.getCreatedOn()),roleService.getRoleById(user.getRole().getId()).getName());
             response.add(element);
         }
         return response.toArray(new UserResponse[0]); // 200
@@ -266,7 +266,7 @@ public class UserService {
         UserModel user = repository.findById(userToUpdateId);
 
         repository.updateUser(user,input);
-        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(), formatDate(user.getCreatedOn()));
+        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(), formatDate(user.getCreatedOn()), roleService.getRoleById(user.getRole().getId()).getName());
     }
     public UserResponse get(UUID userId, UUID userToUpdateId) throws NotAuthorizedException, UserException {
         if (repository.findById(userToUpdateId) == null)
@@ -276,7 +276,7 @@ public class UserService {
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
         UserModel user = repository.findById(userToUpdateId);
-        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(),formatDate(user.getCreatedOn()));
+        return new UserResponse(user.getId(),user.getMail(),user.getDisplayName(),Objects.equals(user.getRole().getName(), "admin"),user.getAvatar(), user.getRole().getId(),formatDate(user.getCreatedOn()),roleService.getRoleById(user.getRole().getId()).getName());
     }
 
     @Transactional

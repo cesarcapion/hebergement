@@ -16,4 +16,5 @@ public class UserResponse {
     public String avatar;
     public Long roleId;
     public String created;
+    public String role;
 }
