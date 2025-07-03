@@ -34,7 +34,6 @@
         }
 
         .header-block {
-            position: absolute;
             top: 25%;
             left: 25%;
             display: flex;
@@ -72,7 +71,6 @@
         }
 
         .button-group {
-            position: absolute;
             bottom: 22%;
             left: 50%;
             transform: translateX(-50%);
