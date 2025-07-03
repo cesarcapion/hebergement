@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const isAdmin = false
-let categories = [
+/*let categories = [
   {
     id: 1,
     name: "Category 1"
@@ -15,7 +15,7 @@ let categories = [
     id: 3,
     name: "Category 3"
   }
-]
+]*/
 let initialFAQs = [
   {
     question: 'How do I create an account?',
