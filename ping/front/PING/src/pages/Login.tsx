@@ -1,8 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { login } from '../api/login.tsx';
 
 const Login = () => {
+
+  useEffect(() => {
+    init().then(() => setIsinitiated(true));
+  }, []);
+
+
+  const init = async() => {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/init`, {
+      method: 'GET',
+    });
+  };
+  const [isinitiated, setIsinitiated] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +38,7 @@ const Login = () => {
     }
   };
 
-  return (
+  return ( isinitiated &&
     <div className="w-screen h-screen bg-[#384454] flex items-center justify-center">
       <div className="bg-[#384454] p-8 rounded-lg shadow-lg w-full max-w-md">
         <img
