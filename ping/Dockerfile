@@ -1,11 +1,9 @@
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+FROM eclipse-temurin:21 AS build
 WORKDIR /app
 COPY . .
-RUN mvn package -Dquarkus.package.type=uber-jar
+RUN ./mvnw package -Dquarkus.package.type=uber-jar
 
-FROM eclipse-temurin:17
+FROM eclipse-temurin:21
 WORKDIR /app
-COPY --from=build /app/target/quarkus-app/ ./
-EXPOSE 8080
-ENV PORT=8080
-CMD ["java", "-jar", "target/ping-*-runner.jar"]
+COPY --from=build /app/target/quarkus-app/ .
+CMD ["java", "-jar", "quarkus-run.jar"]
