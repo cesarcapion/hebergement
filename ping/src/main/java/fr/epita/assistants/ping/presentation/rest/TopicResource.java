@@ -80,6 +80,7 @@ public class TopicResource {
     @Path("/all")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("user")
     public Response getAllTopics() {
         return Response.status(Response.Status.OK).entity(topicService.buildGetAllTopicsResponse()).build();
     }

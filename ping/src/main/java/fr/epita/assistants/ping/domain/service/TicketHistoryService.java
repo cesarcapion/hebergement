@@ -41,11 +41,18 @@ public class TicketHistoryService {
     public boolean addHistory(String contentPath, String resourcePath, UUID ticketUUID, UUID userUUId)
     {
         Path basePath = Paths.get(defaultPath, ticketUUID.toString());
-        Path requestedPath = basePath.resolve(contentPath).normalize();
-        if ((resourcePath != null && !Files.exists(Paths.get(resourcePath)))
-                || !Files.exists(requestedPath))
+        Path contentFullPath = basePath.resolve(contentPath).normalize();
+        if (!Files.exists(contentFullPath))
         {
             return false;
+        }
+        if (resourcePath != null)
+        {
+            Path resourceFullPath = basePath.resolve(resourcePath).normalize();
+            if (!Files.exists(resourceFullPath))
+            {
+                return false;
+            }
         }
         ticketHistoryRepository.addHistory(ticketService.get(ticketUUID), userService.get(userUUId), contentPath, resourcePath);
         return true;
