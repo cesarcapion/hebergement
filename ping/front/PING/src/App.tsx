@@ -118,7 +118,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/profile-admin"
+                    path="/profile/admin"
                     element={
                         <AdminRoute>
                             <ProfileAdmin />

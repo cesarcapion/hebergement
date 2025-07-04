@@ -74,14 +74,14 @@ export default function ProfileAdmin() {
         <div className="w-screen min-h-screen bg-[#384454] flex flex-col">
             {/* Navbar */}
             <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-                <Link to="/">
+                <Link to="/admin">
                     <div className="flex items-center gap-3">
                         <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
                     </div>
                 </Link>
 
                 <div className="flex gap-4">
-                    <Link to="/qa">
+                    <Link to="/qa-admin">
                         <button className="btn">
                             Q&A
                         </button>
@@ -93,7 +93,7 @@ export default function ProfileAdmin() {
                     </Link>
                 </div>
 
-                <Link to="/profile-admin">
+                <Link to="/profile/admin">
                     <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#EA508E] text-white rounded-full shadow-lg">
             <span role="img" aria-label="profile" className="text-2xl">
               👤
