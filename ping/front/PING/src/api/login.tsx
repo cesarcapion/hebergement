@@ -19,7 +19,7 @@ export const login = async (email: string, password: string): Promise<string> =>
       }
       else
       {
-        window.location.href = `${import.meta.env.VITE_BASE_URL}admin`;
+        window.location.href = `${import.meta.env.VITE_BASE_URL}/admin`;
       }
 
       return ''
