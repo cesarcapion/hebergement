@@ -10,5 +10,4 @@ public class FAQResponse {
     public Long id;
     public String question;
     public String response;
-    public Long categoryId;
 }

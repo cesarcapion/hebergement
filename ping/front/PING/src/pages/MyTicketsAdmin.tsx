@@ -48,7 +48,7 @@ export default function AdminTickets() {
                     </div>
                 </Link>
                 <div className="flex gap-6">
-                    <Link to="/qa">
+                    <Link to="/qa/admin">
                         <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
                             Q&amp;A
                         </button>
@@ -59,7 +59,7 @@ export default function AdminTickets() {
                         </button>
                     </Link>
                 </div>
-                <Link to="/profile">
+                <Link to="/profile/admin">
                     <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
                         <span role="img" aria-label="profile">👤</span>
                     </div>

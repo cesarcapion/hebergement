@@ -81,7 +81,7 @@ export default function ProfileAdmin() {
                 </Link>
 
                 <div className="flex gap-4">
-                    <Link to="/qa-admin">
+                    <Link to="/qa/admin">
                         <button className="btn">
                             Q&A
                         </button>

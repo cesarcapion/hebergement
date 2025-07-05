@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.data.model;
+/*package fr.epita.assistants.ping.data.model;
 
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
@@ -20,7 +20,8 @@ public class CategoryModel {
 
     private String name;
 
-    @OneToMany(mappedBy = "category")
-    @JsonbTransient
-    private List<FAQModel> questions;
+ //   @OneToMany(mappedBy = "category")
+//    @JsonbTransient
+//    private List<FAQModel> questions;
 }
+*/

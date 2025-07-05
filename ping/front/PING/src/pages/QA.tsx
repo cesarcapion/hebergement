@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { Link } from "react-router-dom"
+import {authedAPIRequest} from "../api/auth.tsx";
 
 interface FAQ {
   id: number
@@ -9,51 +10,22 @@ interface FAQ {
   answer: string
 }
 
+interface FAQResponse {
+  id: number
+  question: string
+  answer: string
+}
+
 const FAQ_STORAGE_KEY = "qa_faqs"
 
-const defaultFaqs: FAQ[] = [
-  {
-    id: 1,
-    question: "How do I create an account?",
-    answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    id: 2,
-    question: "I forgot my password, what should I do?",
-    answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    id: 3,
-    question: "How can I purchase tickets?",
-    answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    id: 4,
-    question: "Can I get a refund for my ticket?",
-    answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    id: 5,
-    question: "How do I contact support?",
-    answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    id: 6,
-    question: "What payment methods do you accept?",
-    answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-]
+const defaultFaqs: FAQ[] = []
 
 const QA = () => {
   const [faqs, setFaqs] = useState<FAQ[]>(defaultFaqs)
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const filteredFaqs = useMemo(() => {
     if (!searchQuery.trim()) return faqs
@@ -66,33 +38,44 @@ const QA = () => {
   }, [faqs, searchQuery])
 
   useEffect(() => {
-    const loadFaqs = () => {
+    const fetchFAQs = async () => {
+      setLoading(true)
+      setError(null)
+
       try {
-        const stored = localStorage.getItem(FAQ_STORAGE_KEY)
-        if (stored) {
-          setFaqs(JSON.parse(stored))
+        const response = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/FAQ`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const faqData: FAQResponse[] = await response.json();
+
+          // Transformer les données de l'API en format FAQ si nécessaire
+          const transformedFaqs: FAQ[] = faqData.map(item => ({
+            id: item.id,
+            question: item.question,
+            answer: item.response
+          }));
+
+          setFaqs(transformedFaqs);
+        } else {
+          // En cas d'erreur, garder les FAQs par défaut
+          console.error('Erreur lors du chargement des FAQs:', response.status);
+          setError('Impossible de charger les FAQs depuis le serveur');
         }
-      } catch (error) {
-        console.error("Failed to load FAQs:", error)
+      } catch (err) {
+        console.error('Erreur lors du chargement des FAQs:', err);
+        setError('Erreur de connexion au serveur');
+        // Garder les FAQs par défaut en cas d'erreur
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    loadFaqs()
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === FAQ_STORAGE_KEY) {
-        loadFaqs()
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-
-    const interval = setInterval(loadFaqs, 1000)
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange)
-      clearInterval(interval)
-    }
+    fetchFAQs();
   }, [])
 
   const toggle = (idx: number) => {
@@ -160,8 +143,22 @@ const QA = () => {
             </div>
           </div>
 
+          {/* Affichage du loading */}
+          {loading && (
+              <div className="text-center py-8">
+                <p className="text-gray-300 text-lg">Chargement des FAQs...</p>
+              </div>
+          )}
+
+          {/* Affichage des erreurs */}
+          {error && (
+              <div className="text-center py-4 px-4 mb-4 bg-red-600/20 border border-red-600 rounded-lg">
+                <p className="text-red-300 text-sm">{error}</p>
+              </div>
+          )}
+
           <div className="w-full flex flex-col">
-            {filteredFaqs.length === 0 ? (
+            {!loading && filteredFaqs.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-300 text-lg">
                     {searchQuery ? `Aucune question trouvée pour "${searchQuery}"` : "No FAQs available"}
