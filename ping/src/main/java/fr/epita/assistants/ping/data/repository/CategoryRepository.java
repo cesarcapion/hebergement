@@ -1,4 +1,4 @@
-package fr.epita.assistants.ping.data.repository;
+/*package fr.epita.assistants.ping.data.repository;
 
 import fr.epita.assistants.ping.data.model.CategoryModel;
 import fr.epita.assistants.ping.data.model.FAQModel;
@@ -45,3 +45,4 @@ public class CategoryRepository implements PanacheRepository<CategoryModel> {
         return true;
     }
 }
+*/

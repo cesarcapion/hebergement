@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {authedAPIRequest} from "../api/auth.tsx"
+import {Link} from "react-router-dom";
 const StatsPage: React.FC = () => {
     const [email, setEmail] = useState("");
     const [filterRange, setFilterRange] = useState<string>("Last 5 days");
@@ -91,18 +92,30 @@ const StatsPage: React.FC = () => {
 
     return (
         <div style={styles.body}>
-            <header style={styles.header}>
-                <img
-                    src="White-Logo-without-bg.png"
-                    alt="Logo"
-                    style={styles.logo as React.CSSProperties}
-                />
-                <div style={styles.headerButtons}>
-                    <button style={styles.btnHeader}>Q&A</button>
-                    <button style={styles.btnHeader}>Inbox</button>
+            <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
+                <Link to="/admin">
+                    <div className="flex items-center gap-3">
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
+                    </div>
+                </Link>
+                <div className="flex gap-6">
+                    <Link to="/qa/admin">
+                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
+                            Q&amp;A
+                        </button>
+                    </Link>
+                    <Link to="/my-tickets/admin">
+                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">
+                            Inbox
+                        </button>
+                    </Link>
                 </div>
-                <div style={styles.profileIcon}>👤</div>
-            </header>
+                <Link to="/profile/admin">
+                    <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
+                        <span role="img" aria-label="profile">👤</span>
+                    </div>
+                </Link>
+            </div>
 
             <div style={styles.content}>
                 <h1 style={styles.h1}>Stats</h1>

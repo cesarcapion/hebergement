@@ -17,8 +17,10 @@ import AdminRoute from './AdminRoute.tsx';
 import StatsPage from "./pages/Stats.tsx";
 import AnswerTicket from "./pages/AnswerTicket.tsx";
 import AnswerTicketAdmin from "./pages/AnswerTicketAdmin.tsx";
-import Profil from "./pages/Profile.tsx"
-
+import Profile from "./pages/Profile.tsx"
+import ProfileAdmin from "./pages/ProfileAdmin.tsx"
+import HomeAdmin from "./pages/HomeAdmin.tsx";
+import QAAdmin from "./pages/QAAdmin.tsx";
 function App() {
     return (
         <BrowserRouter>
@@ -69,7 +71,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/qa"
+                    path="/qa_faqs"
                     element={
                         <PrivateRoute>
                             <QA />
@@ -109,11 +111,35 @@ function App() {
                     }
                 />
                 <Route
-                    path="/profil"
+                    path="/profile"
                     element={
                         <PrivateRoute>
-                            <Profil />
+                            <Profile />
                         </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/profile/admin"
+                    element={
+                        <AdminRoute>
+                            <ProfileAdmin />
+                        </AdminRoute>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <AdminRoute>
+                            <HomeAdmin />
+                        </AdminRoute>
+                    }
+                />
+                <Route
+                    path="/qa/admin"
+                    element={
+                        <AdminRoute>
+                            <QAAdmin />
+                        </AdminRoute>
                     }
                 />
 

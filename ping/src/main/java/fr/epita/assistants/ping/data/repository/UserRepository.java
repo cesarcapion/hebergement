@@ -80,7 +80,7 @@ public class UserRepository  implements PanacheRepository<UserModel> {
         newUser.setRole(role);
         newUser.setCreatedOn(LocalDateTime.now());
         persist(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(),formatDate(newUser.getCreatedOn()));
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(),formatDate(newUser.getCreatedOn()),role.getName());
 
     }
 

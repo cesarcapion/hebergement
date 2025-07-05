@@ -112,7 +112,7 @@ export default function AnswerTicket() {
                     </Link>
                     <Link to="/my-tickets">
                         <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">
-                            Inbox
+                            My tickets
                         </button>
                     </Link>
                 </div>

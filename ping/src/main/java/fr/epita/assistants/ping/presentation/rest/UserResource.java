@@ -9,6 +9,7 @@ import fr.epita.assistants.ping.api.response.ResetResponse;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import fr.epita.assistants.ping.domain.service.EmailService;
 import fr.epita.assistants.ping.domain.service.UserService;
@@ -140,8 +141,9 @@ public class UserResource {
     public Response requestReset(ResetRequest input) {
             logger.logInfo("User request a reset link");
             ResetResponse response = userService.resetRequest(input.mail);
+            Dotenv dotenv = Dotenv.load();
             if (response != null && response.token != null)
-                emailService.dispatchResetLink(input.mail,"http://localhost:5173/set-new-password?token=" + response.token);
+                emailService.dispatchResetLink(input.mail,dotenv.get("VITE_BASE_URL") + "set-new-password?token=" + response.token);
             logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
     }

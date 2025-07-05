@@ -24,7 +24,6 @@ public class FAQRepository implements PanacheRepository<FAQModel> {
         if (existing != null ) {
             existing.setQuestion(updatedData.getQuestion());
             existing.setAnswer(updatedData.getAnswer());
-            existing.setCategory(updatedData.getCategory());
         }
         else throw new EntityNotFoundException(FAQModel.class.getName());
     }

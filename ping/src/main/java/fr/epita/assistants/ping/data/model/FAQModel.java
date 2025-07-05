@@ -19,6 +19,6 @@ public class FAQModel {
 
     private String answer;
 
-    @ManyToOne
-    private CategoryModel category;
+   // @ManyToOne
+   // private CategoryModel category;
 }

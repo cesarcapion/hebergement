@@ -40,7 +40,7 @@ const Home = () => {
         </div>
 
         <div className="button-group">
-            <Link to="/qa">
+            <Link to="/qa_faqs">
                 <button className="btn">Q&amp;A</button>
             </Link>
             <Link to="/my-tickets">
