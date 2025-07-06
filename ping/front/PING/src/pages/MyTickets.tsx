@@ -43,7 +43,7 @@ export default function MyTickets() {
             <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
                 <Link to="/">
                     <div className="flex items-center gap-3">
-                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-auto"/>
                     </div></Link>
                 <div className="flex gap-6">
                     <Link to="/qa">
