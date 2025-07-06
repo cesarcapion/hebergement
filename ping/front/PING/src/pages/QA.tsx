@@ -16,7 +16,7 @@ interface FAQResponse {
   answer: string
 }
 
-const FAQ_STORAGE_KEY = "qa_faqs"
+const FAQ_STORAGE_KEY = "qa"
 
 const defaultFaqs: FAQ[] = []
 

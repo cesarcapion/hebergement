@@ -72,7 +72,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/qa_faqs"
+                    path="/qa"
                     element={
                         <PrivateRoute>
                             <QA />
