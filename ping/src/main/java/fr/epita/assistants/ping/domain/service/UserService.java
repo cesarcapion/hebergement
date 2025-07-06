@@ -57,6 +57,10 @@ public class UserService {
     {
         return repository.isUser(mail);
     }
+    public boolean isRoleUsed(long roleId) {
+    List<UserModel> users = repository.getUsersByRole(roleId);
+    return users != null && !users.isEmpty();
+}
     private boolean checkLogin(String mail) {
         return mail.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
@@ -71,6 +75,11 @@ public class UserService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 algorithm not available", e);
         }
+    }
+
+    public void updateUserRole(String mail, long roleId )
+    {
+        repository.updateUserRole(repository.findByLogin(mail).getId(), roleId);
     }
 
     public boolean mailExist(String mail)

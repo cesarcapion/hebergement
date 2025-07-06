@@ -63,7 +63,7 @@ export default function ProfileAdmin() {
     const handleManage = () => {
         // Logique pour gérer le compte
         console.log("Manage account")
-        // navigate("/manage-account")
+        navigate("/manage")
     }
 
     const handleStats = () => {

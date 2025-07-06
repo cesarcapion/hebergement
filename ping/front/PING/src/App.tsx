@@ -21,6 +21,7 @@ import Profile from "./pages/Profile.tsx"
 import ProfileAdmin from "./pages/ProfileAdmin.tsx"
 import HomeAdmin from "./pages/HomeAdmin.tsx";
 import QAAdmin from "./pages/QAAdmin.tsx";
+import ManagePage from "./pages/Manage.tsx";
 function App() {
     return (
         <BrowserRouter>
@@ -131,6 +132,14 @@ function App() {
                     element={
                         <AdminRoute>
                             <HomeAdmin />
+                        </AdminRoute>
+                    }
+                />
+                <Route
+                    path="/manage"
+                    element={
+                        <AdminRoute>
+                            <ManagePage />
                         </AdminRoute>
                     }
                 />
