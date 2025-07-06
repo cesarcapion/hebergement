@@ -227,7 +227,7 @@ public class TicketResource {
             logger.logError("Error 404: Project not found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
-        if (userStatus == UserStatus.NOT_A_MEMBER && !Objects.equals(currentUser.getRole().getName(), "admin")) {
+        if (userStatus == UserStatus.NOT_A_MEMBER && Objects.equals(currentUser.getRole().getName(), "user")) {
             logger.logError("Error 403: Not a member of the ticket nor an admin, cannot add a user to this ticket");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not a member of the ticket nor an admin, cannot add a user to this ticket")).build();
         }
