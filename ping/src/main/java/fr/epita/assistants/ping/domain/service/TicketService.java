@@ -198,10 +198,22 @@ public class TicketService {
                 .withTopic(topicModelToTopicInfoConverter.convert(topic));
     }
 
-    public ArrayList<TicketResponse> buildGetAllTicketsResponse() {
+    public ArrayList<TicketResponse> buildGetAllTicketsResponse(boolean descending, TicketStatus filter, TicketSortingStrategy sortingStrategy) {
         List<TicketModel> tickets = ticketRepository.getAllTickets();
         ArrayList<TicketResponse> responses = new ArrayList<>();
-        fillResponses(responses, tickets, TicketStatus.NONE);
+        fillResponses(responses, tickets, filter);
+        if (sortingStrategy == TicketSortingStrategy.STATUS)
+        {
+            responses.sort(Comparator.comparing(TicketResponse::getStatus));
+        }
+        else if (sortingStrategy == TicketSortingStrategy.LAST_MODIFIED)
+        {
+            responses.sort(Comparator.comparing(TicketResponse::getLastModified).reversed());
+        }
+        if (descending)
+        {
+            Collections.reverse(responses);
+        }
         return responses;
     }
 

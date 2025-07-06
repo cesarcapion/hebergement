@@ -92,10 +92,12 @@ public class TicketResource {
     @Path("/all")
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllTickets() {
+    public Response getAllTickets( @DefaultValue("false") @QueryParam("descending") boolean descending,
+                                   @DefaultValue("NONE") @QueryParam("filter") TicketStatus filter,
+                                   @DefaultValue("NONE") @QueryParam("sorting") TicketSortingStrategy sortingStrategy) {
         logger.logInfo(identity.getPrincipal().getName() + " requested to get all tickets");
         logger.logSuccess("The operation was successful");
-        return Response.status(200).entity(ticketService.buildGetAllTicketsResponse()).build();
+        return Response.status(200).entity(ticketService.buildGetAllTicketsResponse(descending, filter, sortingStrategy)).build();
     }
 
     @PUT

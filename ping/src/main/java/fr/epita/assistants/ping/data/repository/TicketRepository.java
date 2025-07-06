@@ -105,24 +105,30 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
     public TicketModel updateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus, TopicModel newTopic)
     {
         TicketModel ticketModel = find("id", ticketUUID).firstResult();
-
+        boolean changed = false;
         if (newOwner != null && !newOwner.getId().equals(ticketModel.getOwner().getId()))
         {
+            changed = true;
             ticketModel.setOwner(newOwner);
         }
         if (newSubject != null && !newSubject.equals(ticketModel.getSubject()))
         {
+            changed = true;
             ticketModel.setSubject(newSubject);
         }
         if (newTicketStatus != null && !newTicketStatus.equals(ticketModel.getTicketStatus()))
         {
+            changed = true;
             ticketModel.setTicketStatus(newTicketStatus);
         }
         if (newTopic != null && !newTopic.getId().equals(ticketModel.getTopic().getId()))
         {
+            changed = true;
             ticketModel.setTopic(newTopic);
         }
-
+        if (changed)
+        {
+        }
         return ticketModel;
     }
 
