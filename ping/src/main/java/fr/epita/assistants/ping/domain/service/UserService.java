@@ -281,7 +281,7 @@ public class UserService {
         if (repository.findById(userToUpdateId) == null)
             throw new UserException("utilisateur introuvable"); // 404
 
-        if (!Objects.equals(repository.findById(userId).getRole().getName(), "admin") && !Objects.equals(repository.findById(userId).getMail(), repository.findById(userToUpdateId).getMail()))
+        if (Objects.equals(repository.findById(userId).getRole().getName(), "user") && !Objects.equals(repository.findById(userId).getMail(), repository.findById(userToUpdateId).getMail()))
             throw new NotAuthorizedException("l'utilisateur n'a pas les droits"); // 403
 
         UserModel user = repository.findById(userToUpdateId);
@@ -293,7 +293,7 @@ public class UserService {
         if (repository.findById(userToRemoveid) == null)
             throw new UserException("utilisateur introuvable"); // 404
 //        if (!ticketService.buildGetTicketsResponse(userToRemoveid.toString(),true).isEmpty() || !Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
-        if (ticketService.ownsProjects(userToRemoveid) || !Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
+        if (ticketService.ownsProjects(userToRemoveid) || Objects.equals(repository.findById(userRemoverID).getRole().getName(), "admin") )
             throw new NotAuthorizedException("L'utilisateur a un/des projets"); //403
         ticketService.deleteFromAllProjects(userToRemoveid);
         repository.deleteUser(repository.findById(userToRemoveid));

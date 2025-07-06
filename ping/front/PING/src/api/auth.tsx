@@ -16,7 +16,6 @@ async function fetchWithToken(endpoint: string, token: string, options: FetchOpt
 
 export async function authedAPIRequest(endpoint: string, options: FetchOptions = {}): Promise<Response | null> {
     const token = localStorage.getItem("token");
-
     if (!token) {
         console.warn("Token manquant.");
         redirectToLogin();

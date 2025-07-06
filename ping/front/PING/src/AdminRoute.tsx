@@ -20,7 +20,7 @@ export const AdminRoute = ({ children }: { children: JSX.Element }) => {
     const group = getUserGroupFromToken();
     if (!token) return <Navigate to="/login" replace />;
     console.log("LE GROUPE EST \'" + group + "\'");
-    if (group === null || group.toString() !== "admin") {
+    if (group === null || group.toString() === "user") {
         console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
         return <Navigate to="/" replace/>;
     }

@@ -120,7 +120,7 @@ public class TicketResource {
                 + " new ticket status: " + updateTicketRequest.ticketStatus);
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
         UserStatus userStatus = ticketService.getUserStatus(currentUser, ticketId, Objects.equals(currentUser.getRole().getName(), "admin"));
-        if (userStatus == UserStatus.NOT_A_MEMBER && !Objects.equals(currentUser.getRole().getName(), "admin")) {
+        if (userStatus == UserStatus.NOT_A_MEMBER && Objects.equals(currentUser.getRole().getName(), "user")) {
             logger.logError("Error 403: Not allowed to update this ticket as you are not member of it");
             return Response.status(Response.Status.FORBIDDEN)
                     .entity(new ErrorInfo("Not allowed to update this ticket as you are not member of it"))
@@ -163,7 +163,7 @@ public class TicketResource {
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
 
         UserStatus userStatus = ticketService.getUserStatus(currentUser, ticketId, identity.getRoles().contains("admin"));
-        if (userStatus == UserStatus.NOT_A_MEMBER && !identity.getRoles().contains("admin")) {
+        if (userStatus == UserStatus.NOT_A_MEMBER && identity.getRoles().contains("user")) {
             logger.logError("Error 403: The new owner is not a member of this ticket");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to get this ticket as you are not member")).build();
         }
@@ -264,11 +264,11 @@ public class TicketResource {
             logger.logError("Error 404: Project not found");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Project not found")).build();
         }
-        if (userStatus == UserStatus.NOT_A_MEMBER && !Objects.equals(currentUser.getRole().getName(), "admin")) {
+        if (userStatus == UserStatus.NOT_A_MEMBER && Objects.equals(currentUser.getRole().getName(), "user")) {
             logger.logError("Error 403: Not allowed to remove this user from the ticket as you are not member");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to remove this user from the ticket as you are not member")).build();
         }
-        if (userStatus == UserStatus.MEMBER && !Objects.equals(currentUser.getRole().getName(), "admin")) {
+        if (userStatus == UserStatus.MEMBER && Objects.equals(currentUser.getRole().getName(), "user")) {
             logger.logError("Error 403: Not allowed to remove this user as you are only a member, not an admin nor the owner");
             return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not allowed to remove this user as you are only a member, not an admin nor the owner")).build();
         }
