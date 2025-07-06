@@ -329,6 +329,7 @@ public class TicketResource {
     @Path("/{id}/leave")
     @Authenticated
     public Response leaveProject(@PathParam("id") UUID ticketId) {
+        logger.logInfo(identity.getPrincipal().getName() + " requested to leave the project " + ticketId);
         UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
         UserStatus userStatus = ticketService.getUserStatus(currentUser, ticketId, false);
         if (userStatus == UserStatus.ERROR) {
