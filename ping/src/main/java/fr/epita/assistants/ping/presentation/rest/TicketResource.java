@@ -13,6 +13,7 @@ import fr.epita.assistants.ping.api.request.UserTicketRequest;
 import fr.epita.assistants.ping.api.response.TicketResponse;
 
 import fr.epita.assistants.ping.data.model.TicketModel;
+import fr.epita.assistants.ping.data.model.TopicModel;
 import fr.epita.assistants.ping.data.model.UserModel;
 
 import fr.epita.assistants.ping.domain.service.TicketService;
@@ -132,14 +133,19 @@ public class TicketResource {
                     .entity(new ErrorInfo("Not allowed to update this ticket since you are only member, not owner or admin"))
                     .build();
         }
-
         if (userStatus == UserStatus.ERROR) {
             logger.logError("Error 404: The ticket does not exist");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The ticket does not exist")).build();
         }
+        if (updateTicketRequest.newTopicId != null && !topicService.topicExists(updateTicketRequest.newTopicId))
+        {
+            logger.logError("Error 404: The topic does not exist");
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Topic does not exist")).build();
+        }
+        TopicModel newTopic = updateTicketRequest.newTopicId != null ? topicService.getTopicById(updateTicketRequest.newTopicId) : null;
         UserModel newOwner = updateTicketRequest.newOwnerId != null ? userService.get(UUID.fromString(updateTicketRequest.newOwnerId)) : null;
         TicketModel updatedProject = ticketService.UpdateTicket(ticketId, newOwner,
-                updateTicketRequest.subject, updateTicketRequest.ticketStatus);
+                updateTicketRequest.subject, updateTicketRequest.ticketStatus, newTopic);
         if (updatedProject == null) {
             logger.logError("Error 404: The new owner is not a member of this ticket, or the new owner does not exist");
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("The new owner is not a member of this ticket, or the new owner does not exist")).build();
@@ -318,4 +324,28 @@ public class TicketResource {
         logger.logSuccess("The operation was successful");
         return Response.status(Response.Status.NO_CONTENT).build();
     }
+
+    @GET
+    @Path("/{id}/leave")
+    @Authenticated
+    public Response leaveProject(@PathParam("id") UUID ticketId) {
+        UserModel currentUser = userService.get(UUID.fromString(identity.getPrincipal().getName()));
+        UserStatus userStatus = ticketService.getUserStatus(currentUser, ticketId, false);
+        if (userStatus == UserStatus.ERROR) {
+            logger.logError("Error 404: ticket not found");
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo("Ticket not found")).build();
+        }
+        if (userStatus == UserStatus.NOT_A_MEMBER) {
+            logger.logError("Error 404: Not member of this ticket, cannot leave");
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Not member of this ticket, cannot leave")).build();
+        }
+        if (userStatus == UserStatus.OWNER) {
+            logger.logError("Error 404: Owner of this ticket, cannot leave");
+            return Response.status(Response.Status.FORBIDDEN).entity(new ErrorInfo("Owner of this ticket, cannot leave")).build();
+        }
+        logger.logSuccess("The operation was successful");
+        ticketService.deleteUserFromTicket(ticketId, currentUser);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 }

@@ -102,7 +102,7 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
     }
 
     @Transactional
-    public TicketModel updateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus)
+    public TicketModel updateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus, TopicModel newTopic)
     {
         TicketModel ticketModel = find("id", ticketUUID).firstResult();
 
@@ -118,6 +118,11 @@ public class TicketRepository implements PanacheRepository<TicketModel> {
         {
             ticketModel.setTicketStatus(newTicketStatus);
         }
+        if (newTopic != null && !newTopic.getId().equals(ticketModel.getTopic().getId()))
+        {
+            ticketModel.setTopic(newTopic);
+        }
+
         return ticketModel;
     }
 

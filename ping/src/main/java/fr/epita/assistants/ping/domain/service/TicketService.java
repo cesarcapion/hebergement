@@ -210,12 +210,12 @@ public class TicketService {
     }
 
     /// returns the updated project if the new owner is member of the project and updates it, null otherwise
-    public TicketModel UpdateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus) {
+    public TicketModel UpdateTicket(UUID ticketUUID, UserModel newOwner, String newSubject, TicketStatus newTicketStatus, TopicModel newTopic) {
         if (newOwner != null && getUserStatus(newOwner, ticketUUID, false) == UserStatus.NOT_A_MEMBER)
         {
             return null;
         }
-        return ticketRepository.updateTicket(ticketUUID, newOwner, newSubject, newTicketStatus);
+        return ticketRepository.updateTicket(ticketUUID, newOwner, newSubject, newTicketStatus, newTopic);
     }
 
     public TicketResponse buildGetTicketResponseWithId(UUID ticketUUID) {
