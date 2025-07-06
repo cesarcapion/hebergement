@@ -9,6 +9,7 @@ import fr.epita.assistants.ping.api.response.ResetResponse;
 import fr.epita.assistants.ping.api.response.UserResponse;
 import fr.epita.assistants.ping.api.response.LoginResponse;
 import fr.epita.assistants.ping.data.model.UserModel;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import fr.epita.assistants.ping.domain.service.EmailService;
 import fr.epita.assistants.ping.domain.service.UserService;
@@ -28,8 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/api/user")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+
 public class UserResource {
     @Inject
     UserService userService;
@@ -39,6 +39,8 @@ public class UserResource {
     @Inject EmailService emailService;
     @POST
     @RolesAllowed("admin")
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(CreateUserRequest user) {
 
         logger.logInfo("User with ID " + identity.getPrincipal().getName() + " is trying to create the user: mail: " + user.mail + " ,password: " + user.password + " admin: " + user.isAdmin);
@@ -61,6 +63,8 @@ public class UserResource {
 
     @POST
     @Path("/new-account")
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response newAccount(CreateUserRequest user) {
 
         logger.logInfo("Someone is trying to create the user: mail: " + user.mail + " ,password: " + user.password + " admin: " + user.isAdmin);
@@ -83,6 +87,8 @@ public class UserResource {
     @GET
     @Path("/all")
     @RolesAllowed("admin")
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response listUsers() {
         logger.logInfo(identity.getPrincipal().getName() + " is trying to get all users");
         UserResponse[] response = userService.getAllUsers();
@@ -94,6 +100,8 @@ public class UserResource {
     //mail a user
     @POST
     @Path("/login")
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response loginUser(LoginRequest request) {
 
         try
@@ -120,6 +128,8 @@ public class UserResource {
     @GET
     @Path("/refresh")
     @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response refreshToken() {
         try
         {
@@ -137,16 +147,21 @@ public class UserResource {
 
     @POST
     @Path("/request-reset")
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response requestReset(ResetRequest input) {
             logger.logInfo("User request a reset link");
             ResetResponse response = userService.resetRequest(input.mail);
+            Dotenv dotenv = Dotenv.load();
             if (response != null && response.token != null)
-                emailService.dispatchResetLink(input.mail,"http://localhost:5173/set-new-password?token=" + response.token);
+                emailService.dispatchResetLink(input.mail,dotenv.get("VITE_BASE_URL") + "set-new-password?token=" + response.token);
             logger.logSuccess("The operation was successful");
             return Response.ok(response, MediaType.APPLICATION_JSON).build(); // 200
     }
     @POST
     @Path("/update-password")
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response updatePassword(PasswordRequest input) {
         try {
             System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
@@ -167,6 +182,8 @@ public class UserResource {
     @PUT
     @Path("/{id}")
     @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response updateUser(UserUpdateRequest user,@PathParam("id") UUID id) {
         try
         {
@@ -187,9 +204,22 @@ public class UserResource {
         }
     }
 
+    @PUT
+    @Path("/role")
+    @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateUserRole(UpdateUserRole role) {
+            userService.updateUserRole(role.mail, role.id);
+            logger.logSuccess("The operation was successful");
+            return Response.ok().build(); // 200
+    }
+
     @GET
     @Path("/{id}")
     @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("id") UUID id) {
         try
         {
@@ -213,6 +243,8 @@ public class UserResource {
     @DELETE
     @Path("/{id}")
     @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("id") UUID id) {
         try
         {

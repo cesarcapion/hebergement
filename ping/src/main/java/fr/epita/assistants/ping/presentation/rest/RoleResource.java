@@ -16,11 +16,15 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import fr.epita.assistants.ping.domain.service.UserService;
+import java.util.UUID;
 
 @Path("/api/roles")
 public class RoleResource {
     @Inject
     RoleService roleService;
+    @Inject
+    UserService userService;
     @Inject
     Logger logger;
     @Inject
@@ -105,7 +109,9 @@ public class RoleResource {
         logger.logSuccess("the operation was successful");
         return Response.status(Response.Status.NO_CONTENT).build();
     }
-
+    public static UUID longToUuid(long value) {
+        return new UUID(value, 0L);
+    }
     @DELETE
     @Path("/{id}")
     @RolesAllowed("admin")
@@ -122,6 +128,11 @@ public class RoleResource {
             logger.logError("Error 404: role is read only, you cannot change it");
             return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ErrorInfo("Role is read only")).build();
         }
+        if (userService.isRoleUsed(id))
+        {
+            logger.logError("Error 404: role is used by users");
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(new ErrorInfo("The role is used by users")).build();
+        }
         roleService.deleteRoleById(id);
         logger.logSuccess("the operation was successful");
         return Response.status(Response.Status.NO_CONTENT).build();
@@ -133,7 +144,7 @@ public class RoleResource {
     public Response addTopic(@PathParam("id") Long id, TopicRoleRequest topicRoleRequest) {
         if (RequestVerifyer.isInvalid(topicRoleRequest))
         {
-            logger.logError("Error 400: The TopicRoleRequest was null, or topicId was invalid or null");
+            logger.logError("Error 400: The TopicRoleRequest was null, or topicId was invalid or null, id : " + topicRoleRequest.topicId );
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo("The TopicRoleRequest was null, or topicId was invalid or null")).build();
         }
         logger.logInfo(identity.getPrincipal().getName() + " requested to add topic " + topicRoleRequest.topicId + " to role " + id);

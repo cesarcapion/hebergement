@@ -3,7 +3,6 @@ package fr.epita.assistants.ping.domain.service;
 import fr.epita.assistants.ping.api.request.FAQRequest;
 import fr.epita.assistants.ping.api.response.FAQResponse;
 import fr.epita.assistants.ping.data.model.FAQModel;
-import fr.epita.assistants.ping.data.repository.CategoryRepository;
 import fr.epita.assistants.ping.data.repository.FAQRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -16,14 +15,13 @@ import java.util.List;
 public class FAQService {
     @Inject
     FAQRepository repository;
-    @Inject
-    CategoryRepository categoryRepository;
+
     public FAQResponse[] getAll()
     {
         List<FAQModel> list = repository.listAll();
         List<FAQResponse> response = new ArrayList<>();
         for (FAQModel model : list) {
-            FAQResponse element = new FAQResponse(model.getId(),model.getQuestion(),model.getAnswer(), model.getCategory().getId());
+            FAQResponse element = new FAQResponse(model.getId(),model.getQuestion(),model.getAnswer());
             response.add(element);
         }
         return response.toArray(new FAQResponse[0]); // 200
@@ -34,12 +32,9 @@ public class FAQService {
         FAQModel model = new FAQModel();
         model.setQuestion(request.question);
         model.setAnswer(request.response);
-        if (categoryRepository.getById(request.categoryId) == null)
-            throw new NotFoundException("Non trouvé: " + request.categoryId);
-
-        model.setCategory(categoryRepository.getById(request.categoryId));
+      
         repository.addFAQ(model);
-        return new FAQResponse(model.getId(),model.getQuestion(),model.getAnswer(),model.getCategory().getId());
+        return new FAQResponse(model.getId(),model.getQuestion(),model.getAnswer());
     }
 
     public FAQResponse updateQuestion(FAQRequest request) {
@@ -50,15 +45,9 @@ public class FAQService {
 
         if (request.question != null) model.setQuestion(request.question);
         if (request.response != null) model.setAnswer(request.response);
-        if (request.categoryId != null) {
-            if (categoryRepository.getById(request.categoryId) == null) {
-                throw new NotFoundException("Non trouvé: " + request.categoryId);
-            }
-            model.setCategory(categoryRepository.getById(request.categoryId));
-        }
 
         repository.updateFAQ(model.getId(),model);
-        return new FAQResponse(model.getId(), model.getQuestion(), model.getAnswer(), model.getCategory().getId());
+        return new FAQResponse(model.getId(), model.getQuestion(), model.getAnswer());
     }
 
     public boolean deleteFAQ(Long id) {

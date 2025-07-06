@@ -80,7 +80,7 @@ public class UserRepository  implements PanacheRepository<UserModel> {
         newUser.setRole(role);
         newUser.setCreatedOn(LocalDateTime.now());
         persist(newUser);
-        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(),formatDate(newUser.getCreatedOn()));
+        return new UserResponse(newUser.getId(),newUser.getMail(),newUser.getDisplayName(), Objects.equals(newUser.getRole().getName(), "admin"),newUser.getAvatar(), newUser.getRole().getId(),formatDate(newUser.getCreatedOn()),role.getName());
 
     }
 
@@ -116,11 +116,29 @@ public class UserRepository  implements PanacheRepository<UserModel> {
                 .createQuery("SELECT u.mail FROM UserModel u WHERE u.role.name <> 'user'", String.class)
                 .getResultList();
     }
+    @Transactional
+public boolean updateUserRole(UUID userId, Long newRoleId) {
+    UserModel user = findById(userId);
+    if (user == null) {
+        return false;
+    }
+
+    RoleModel newRole = roleRepository.getRoleById(newRoleId);
+    if (newRole == null) {
+        return false;
+    }
+
+    user.setRole(newRole);
+    return true;
+}
+
 
     public UserModel findById(UUID id) {
         return find("id", id).firstResult();
     }
-
+public List<UserModel> getUsersByRole(long roleId) {
+    return find("role.id", roleId).list();
+}
     public RoleModel findRoleById(UUID id) {
         return find("id", id).firstResult().getRole();
     }

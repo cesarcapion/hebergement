@@ -1,218 +1,203 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+"use client"
 
-const isAdmin = false
-let categories = [
-  {
-    id: 1,
-    name: "Category 1"
-  },
-  {
-    id: 2,
-    name: "Category 2"
-  },
-  {
-    id: 3,
-    name: "Category 3"
-  }
-]
-let initialFAQs = [
-  {
-    question: 'How do I create an account?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  },
-  {
-    question: 'I forgot my password, what should I do?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  },
-  {
-    question: 'How can I purchase tickets?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  },
-  {
-    question: 'Can I get a refund for my ticket?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  },
-];
+import { useState, useMemo, useEffect } from "react"
+import { Link } from "react-router-dom"
+import {authedAPIRequest} from "../api/auth.tsx";
 
+interface FAQ {
+  id: number
+  question: string
+  answer: string
+}
+
+interface FAQResponse {
+  id: number
+  question: string
+  answer: string
+}
+
+const FAQ_STORAGE_KEY = "qa_faqs"
+
+const defaultFaqs: FAQ[] = []
 
 const QA = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [editIndex, setEditedIndex ] = useState<number | null>(null);
-  const [faqs, setFaqs] = useState(initialFAQs)
-  const [editedQuestion, setEditedQuestion] = useState<string>('')
-  const [editedAnswer, setEditedAnswer] = useState<string>('')
-  const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null)
+  const [faqs, setFaqs] = useState<FAQ[]>(defaultFaqs)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const filteredFaqs = useMemo(() => {
+    if (!searchQuery.trim()) return faqs
+
+    return faqs.filter(
+        (faq) =>
+            faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            faq.answer.toLowerCase().includes(searchQuery.toLowerCase()),
+    )
+  }, [faqs, searchQuery])
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const response = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/FAQ`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const faqData: FAQResponse[] = await response.json();
+
+          // Transformer les données de l'API en format FAQ si nécessaire
+          const transformedFaqs: FAQ[] = faqData.map(item => ({
+            id: item.id,
+            question: item.question,
+            answer: item.response
+          }));
+
+          setFaqs(transformedFaqs);
+        } else {
+          // En cas d'erreur, garder les FAQs par défaut
+          console.error('Erreur lors du chargement des FAQs:', response.status);
+          setError('Impossible de charger les FAQs depuis le serveur');
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement des FAQs:', err);
+        setError('Erreur de connexion au serveur');
+        // Garder les FAQs par défaut en cas d'erreur
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFAQs();
+  }, [])
+
   const toggle = (idx: number) => {
-    setOpenIndex(openIndex === idx ? null : idx);
-  };
+    setOpenIndex(openIndex === idx ? null : idx)
+  }
 
   return (
-    <div className="w-screen min-h-screen bg-[#384454] flex flex-col">
-      {/* Navbar */}
-      <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-        <Link to="/">
-          <div className="flex items-center gap-3">
-            <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
-          </div></Link>
-        <div className="flex gap-6">
-          <Link to="/qa">
-            <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
-              Q&amp;A
-            </button>
+      <div className="w-screen min-h-screen bg-[#384454] flex flex-col">
+        <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
+          <Link to="/">
+            <div className="flex items-center gap-3">
+              <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
+            </div>
           </Link>
-          <Link to="/my-tickets">
-            <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">My tickets</button>
-          </Link>
-        </div>
-        <Link to="/profile">
-          <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
-            <span role="img" aria-label="profile">👤</span>
-          </div>
-        </Link>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-start pt-12">
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">Q&amp;A</h1>
-
-        {isAdmin && 
-        (<div>
-          <button className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-6 ${editIndex !== null ? 'text-gray-400 cursor-not-allowed' : ''}`}
-          onClick={() =>
-            {
-              initialFAQs.unshift({question: "", answer: ""})
-              setFaqs(initialFAQs)
-              setEditedIndex(0)
-              setEditedAnswer(faqs[0].answer)
-              setEditedQuestion(faqs[0].question)
-              setOpenIndex(0)
-            }}
-          >
-            ➕ Add Question
-          </button>
-        </div>)
-        }
-        <div className="w-full max-w-2xl flex flex-col gap-4 px-4">
-          {faqs.length === 0 && 
-          (  <div className="text-3xl text-center text-white font-semibold mt-10">
-               No questions yet!
-            </div>)
-          }
-          {
-            faqs.map((faq, idx) => (
-              
-            <div key={idx} className="rounded-lg overflow-hidden">
-            <div key={idx} className="w-full text-left font-semibold bg-white text-[#384454] shadow focus:outline-none">
-              <button
-                type="button"
-                onClick={() => {
-                  if (editIndex === null)
-                  {
-                    toggle(idx)
-                  }
-                }}
-                className="w-full text-left px-6 py-4 font-semibold flex justify-between items-center bg-white text-[#384454] shadow focus:outline-none">
-                {isAdmin && <button id="edit_button"
-                  onClick={(e) => {
-                    if (openIndex === idx)
-                    {
-                      e.stopPropagation()
-                    }
-                    setEditedIndex(idx)
-                    setEditedAnswer(faqs[idx].answer)
-                    setEditedQuestion(faqs[idx].question)
-                  }}
-                  disabled={editIndex !== null && editIndex !== idx}
-                  className={`font-medium whitespace-nowrap ${editIndex !== null && editIndex !== idx ? 'text-gray-400 cursor-not-allowed' : ''}`}
-                  >
-                  <span>edit ✏️</span>
-                </button>}
-                <div className='flex items-center justify-between w-full'>
-                  {editIndex !== idx ? 
-                  <span>{faq.question}</span> : 
-                  <input placeholder='Type the question...' value={editedQuestion}
-                   onChange={(e) => setEditedQuestion(e.target.value)} 
-                  className="w-full text-[#384454] bg-transparent border-b border-gray-300 focus:outline-none"/>
-                   }
-                  
-                  {editIndex === idx && (
-                  <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    // FIXME handle the case where updated question or updated answer is empty
-                    faqs[idx].answer = editedAnswer
-                    faqs[idx].question = editedQuestion
-                    setEditedIndex(null)
-                    setEditedAnswer('')
-                    setEditedQuestion('')
-                    }
-                  }
-                  className="ml-4 whitespace-nowrap">
-                    <span>Save 💾</span>
-                  </button>
-                )}
-                </div>
-                <span className={`text-[#EA508E] transition-transform ${openIndex === idx ? 'rotate-180' : ''}`}>▼</span>
+          <div className="flex gap-4">
+            <Link to="/qa">
+              <button className="btn">
+                Q&A
               </button>
-              {openIndex === idx && (
-                <div className="px-6 py-4 bg-white text-[#384454] border-t">
-                  {editIndex !== idx ?
-                   <p>{faq.answer}</p> : 
-                  (
-                    <textarea value={editedAnswer} placeholder='Type the answer...'
-                    className="w-full min-h-[80px] text-[#384454] bg-transparent border-b border-gray-300 focus:outline-none resize-none"
-                    onChange={(e) => {
-                      setEditedAnswer(e.target.value)
-                    }}/>
-                  )}
-                </div>
-              )}
-              {isAdmin && editIndex == null && (
-                confirmDeleteIndex !== idx ? 
-                (
-                <button className="ml-4 bg-red-500 text-white font-bold px-4 py-2 rounded hover:bg-red-700 focus:outline-none"
-                onClick={() => {setConfirmDeleteIndex(idx)}}>Delete</button>
-                ) :
-                (
-                <div className="mt-2 flex gap-2">
-                  <button
-                    className="bg-red-500 text-white font-bold px-3 py-1 rounded hover:bg-red-700"
-                    onClick={() => {
-                      // your actual delete logic here
-                      faqs.splice(idx, 1)
-                      setConfirmDeleteIndex(null)
-                    }}
-                  >
-                    Confirm ❌
-                  </button>
-                  <button
-                    className="bg-gray-300 text-black font-bold px-3 py-1 rounded hover:bg-gray-400"
-                    onClick={() => setConfirmDeleteIndex(null)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-                )
-              )}
+            </Link>
+            <Link to="/my-tickets">
+              <button className="btn">
+                My tickets
+              </button>
+            </Link>
+          </div>
+
+          <Link to="/profile">
+            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#EA508E] text-white rounded-full shadow-lg">
+            <span role="img" aria-label="profile" className="text-2xl">
+              👤
+            </span>
             </div>
-            </div>
-          ))
-          }
-        {/* FIXME no buttons in buttons, find another way to do this*/}
-        </div>
-        {!isAdmin && 
-        <div className="text-center mt-8 text-sm text-gray-200 mb-10">
-          You didn't find your answer?{' '}
-          <Link to="/create-ticket" className="text-[#EA508E] hover:underline">
-            Create a ticket
           </Link>
         </div>
-        }
+
+        <div className="flex-1 flex flex-col items-center pt-8">
+          <div className="w-full flex items-center justify-between mb-8 px-4">
+            <div className="flex-1"></div>
+            <h1 className="text-4xl font-bold text-white text-center flex-1">Q&A</h1>
+            <div className="flex-1 flex justify-end">
+              <div className="relative w-80">
+                <input
+                    type="text"
+                    placeholder="Search questions..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-4 pr-12 py-3 rounded-full bg-gray-200 border-0 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#EA508E] focus:outline-none"
+                />
+                <svg
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                  <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Affichage du loading */}
+          {loading && (
+              <div className="text-center py-8">
+                <p className="text-gray-300 text-lg">Chargement des FAQs...</p>
+              </div>
+          )}
+
+          {/* Affichage des erreurs */}
+          {error && (
+              <div className="text-center py-4 px-4 mb-4 bg-red-600/20 border border-red-600 rounded-lg">
+                <p className="text-red-300 text-sm">{error}</p>
+              </div>
+          )}
+
+          <div className="w-full flex flex-col">
+            {!loading && filteredFaqs.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-300 text-lg">
+                    {searchQuery ? `Aucune question trouvée pour "${searchQuery}"` : "No FAQs available"}
+                  </p>
+                </div>
+            ) : (
+                filteredFaqs.map((faq, idx) => (
+                    <div key={faq.id} className="border-b border-gray-600">
+                      <button
+                          type="button"
+                          onClick={() => toggle(idx)}
+                          className="w-full text-left px-6 py-6 font-semibold flex justify-between items-center text-white hover:bg-gray-600/20 transition-colors duration-200"
+                      >
+                        <span className="text-3xl">{faq.question}</span>
+                        <span
+                            className={`text-[#EA508E] transition-transform duration-200 ${openIndex === idx ? "rotate-180" : ""}`}
+                        >
+                    {openIndex === idx ? "▲" : "▼"}
+                  </span>
+                      </button>
+                      {openIndex === idx && (
+                          <div className="px-6 pb-6 text-gray-300 leading-relaxed">
+                            <p>{faq.answer}</p>
+                          </div>
+                      )}
+                    </div>
+                ))
+            )}
+          </div>
+
+          <div className="text-center mt-12 mb-8 text-sm text-gray-300 px-4">
+            {"You didn't find your answer? "}
+            <Link to="/create-ticket" className="text-[#EA508E] hover:underline font-semibold">
+              Create a ticket
+            </Link>
+          </div>
+        </div>
       </div>
-    </div>
-  );
-};
+  )
+}
 
-export default QA;
-
+export default QA
