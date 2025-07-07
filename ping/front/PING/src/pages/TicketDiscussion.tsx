@@ -330,6 +330,10 @@ export default function TicketDiscussionAdmin() {
                             )}
                         </div>
                     ))}
+                    {ticketStatus === "RESOLVED" && 
+                     <div className="mt-10 text-center text-gray-300 text-lg bg-[#2e3743] px-6 py-8 rounded-xl shadow">
+                    🎫 This ticket has been closed
+                    </div>}
                 </div>
             </div>
         </div>
