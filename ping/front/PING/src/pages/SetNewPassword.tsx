@@ -11,6 +11,7 @@ const SetNewPassword = () => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
+  const [showHelp, setShowHelp] = useState(false)
 
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get('token');
@@ -67,7 +68,7 @@ const SetNewPassword = () => {
               required
               minLength={6}
               placeholder="New password"
-              className="bg-[#d3d4dc] w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-4 bg-[#d3d4dc] text-gray-800 placeholder-white rounded-full border-none focus:outline-none focus:ring-0"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
@@ -86,7 +87,7 @@ const SetNewPassword = () => {
               required
               minLength={6}
               placeholder="Confirm password"
-              className="bg-[#d3d4dc] w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-4 bg-[#d3d4dc] text-gray-800 placeholder-white rounded-full border-none focus:outline-none focus:ring-0"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
             />
@@ -103,12 +104,36 @@ const SetNewPassword = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#E1A624] text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+            className="w-full bg-gradient-to-b from-[#E1A624] to-[#7B5B14] text-white font-bold py-4 rounded-full hover:from-[#D4991F] hover:to-[#A6851A] focus:outline-none transition-all duration-200 shadow-lg">
             Reset password
           </button>
         </form>
       </div>
+
+      {/* Help Modal */}
+      {showHelp && (
+          <div className="fixed bottom-20 right-6 bg-white rounded-lg shadow-xl p-4 w-80 border border-gray-200">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="text-lg font-bold text-gray-800">Set New Password Help</h3>
+              <button onClick={() => setShowHelp(false)} className="text-gray-500 hover:text-gray-700 text-xl font-bold">
+                ×
+              </button>
+            </div>
+            <div className="text-sm text-gray-600 space-y-2">
+              <p>
+                <strong>How to set your new password:</strong>
+              </p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>Enter your new password in the field above</li>
+                <li>Confirm it</li>
+                <li>Click the on the button to set it</li>
+              </ol>
+            </div>
+          </div>
+      )}
+
+      {/* Overlay to close help when clicking outside */}
+      {showHelp && <div className="fixed inset-0 z-[-1]" onClick={() => setShowHelp(false)} />}
     </div>
   );
 };

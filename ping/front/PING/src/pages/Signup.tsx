@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signUp } from '../api/signUp.tsx';
 
@@ -127,21 +127,20 @@ const Signup = () => {
       {showHelp && (
           <div className="fixed bottom-20 right-6 bg-white rounded-lg shadow-xl p-4 w-80 border border-gray-200">
             <div className="flex justify-between items-start mb-3">
-              <h3 className="text-lg font-bold text-gray-800">Password Reset Help</h3>
+              <h3 className="text-lg font-bold text-gray-800">Sign-up Help</h3>
               <button onClick={() => setShowHelp(false)} className="text-gray-500 hover:text-gray-700 text-xl font-bold">
                 ×
               </button>
             </div>
             <div className="text-sm text-gray-600 space-y-2">
               <p>
-                <strong>How to reset your password:</strong>
+                <strong>How to sign up:</strong>
               </p>
               <ol className="list-decimal list-inside space-y-1 ml-2">
                 <li>Enter your email address in the field above</li>
-                <li>Click "Reset Password" button</li>
-                <li>Check your email inbox (and spam folder)</li>
-                <li>Click the reset link in the email</li>
-                <li>Create a new password</li>
+                <li>Enter your password in the field above</li>
+                <li>Confirm your password in the field above</li>
+                <li>If you already have an account : click on "Log-in"</li>
               </ol>
             </div>
           </div>

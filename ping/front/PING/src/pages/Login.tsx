@@ -166,7 +166,7 @@ const Login = () => {
               <button
                   type="button"
                   onClick={generateCaptcha}
-                  className="px-3 py-2 bg-[#EA508E] text-white rounded-lg hover:bg-pink-600 focus:outline-none"
+                  className="px-3 py-2 bg-gradient-to-r from-[#F89BEB] to-[#EA508E]  rounded-lg hover:bg-pink-600 focus:outline-none"
                   title="Generate new CAPTCHA"
               >
                 🔄
@@ -225,21 +225,21 @@ const Login = () => {
         {showHelp && (
             <div className="fixed bottom-20 right-6 bg-white rounded-lg shadow-xl p-4 w-80 border border-gray-200">
               <div className="flex justify-between items-start mb-3">
-                <h3 className="text-lg font-bold text-gray-800">Password Reset Help</h3>
+                <h3 className="text-lg font-bold text-gray-800">Log in Help</h3>
                 <button onClick={() => setShowHelp(false)} className="text-gray-500 hover:text-gray-700 text-xl font-bold">
                   ×
                 </button>
               </div>
               <div className="text-sm text-gray-600 space-y-2">
                 <p>
-                  <strong>How to reset your password:</strong>
+                  <strong>How to log-in:</strong>
                 </p>
                 <ol className="list-decimal list-inside space-y-1 ml-2">
                   <li>Enter your email address in the field above</li>
-                  <li>Click "Reset Password" button</li>
-                  <li>Check your email inbox (and spam folder)</li>
-                  <li>Click the reset link in the email</li>
-                  <li>Create a new password</li>
+                  <li>Enter your password in the field above</li>
+                  <li>Write the code in the field above</li>
+                  <li>If you forgot your password : click on "forgot your password"</li>
+                  <li>If you don't have an account : click on "create one"</li>
                 </ol>
               </div>
             </div>

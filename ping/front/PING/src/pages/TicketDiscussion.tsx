@@ -203,24 +203,30 @@ export default function TicketDiscussionAdmin() {
     return (
         <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER identique à la liste */}
-            <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
+            <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
                 <Link to="/">
                     <div className="flex items-center gap-3">
-                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
-                    </div></Link>
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-auto"/>
+                    </div>
+                </Link>
                 <div className="flex gap-6">
-                    <Link to="/qa/">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
+                    <Link to="/qa">
+                        <button
+                            className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Q&amp;A
                         </button>
                     </Link>
-                    <Link to="/my-tickets/">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">My Tickets</button>
+                    <Link to="/my-tickets">
+                        <button
+                            className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">My
+                            tickets
+                        </button>
                     </Link>
                 </div>
-                <Link to="/profile/">
-                    <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
-                        <span role="img" aria-label="profile">👤</span>
+                <Link to="/profile">
+                    <div
+                        className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#842D50] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                        <span role="img" aria-label="profile" className="text-2xl">👤</span>
                     </div>
                 </Link>
             </div>
@@ -234,34 +240,33 @@ export default function TicketDiscussionAdmin() {
                     <h2 className="text-2xl font-bold text-white mx-auto">Ticket {id}</h2>
                 </div>
                 <div className="space-y-4">
-                    {ticketHistory.length === 0 && 
-                        <div className="mt-10 text-center text-gray-300 text-lg bg-[#2e3743] px-6 py-8 rounded-xl shadow">
+                    {ticketHistory.length === 0 &&
+                        <div
+                            className="mt-10 text-center text-gray-300 text-lg bg-[#2e3743] px-6 py-8 rounded-xl shadow">
                             {loaded ? "🎫 Ticket {id} has no history at the moment." : "Loading..."}
                         </div>
                     }
                     {loaded && ticketHistory.map((hist, i) => (
                         <div key={i} className="flex items-start">
                             <div className="flex items-center space-x-2 mb-1">
-                            <div className="w-20 text-white font-semibold">
-                                {loaded ? (hist.interactedBy === decoded.sub ? "You" : ticketInteractors[i]) : "Loading..."}
-                            </div>
-                            <div className="w-36 text-xs text-gray-200 truncate whitespace-nowrap">
-                                {loaded ? formatDate(hist.interactedOn) : "Loading..."}
-                            </div>
-                            <div className="flex-1 text-sm text-gray-100 bg-[#434F5E] p-2 rounded ml-2">
-                                {loaded ? discussions[i] : "Loading..."}
-                            </div>
+                                <div className="w-20 text-white font-semibold">
+                                    {loaded ? (hist.interactedBy === decoded.sub ? "You" : ticketInteractors[i]) : "Loading..."}
+                                </div>
+                                <div className="w-36 text-xs text-gray-200 truncate whitespace-nowrap">
+                                    {loaded ? formatDate(hist.interactedOn) : "Loading..."}
+                                </div>
+                                <div className="flex-1 text-sm text-gray-100 bg-[#434F5E] p-2 rounded ml-2">
+                                    {loaded ? discussions[i] : "Loading..."}
+                                </div>
                             </div>
                             {hist.resourcePath != null && (
                                 <div className="mt-2">
-                                    <button onClick={() => 
-                                        {
-                                            if (hist.resourcePath != null)
-                                            {
-                                                handleDownload(id, hist.resourcePath)
-                                            }
-                                        }}
-                                    className="inline-block bg-pink-400 text-white text-xs font-semibold px-3 py-1 rounded hover:bg-pink-500">
+                                    <button onClick={() => {
+                                        if (hist.resourcePath != null) {
+                                            handleDownload(id, hist.resourcePath)
+                                        }
+                                    }}
+                                            className="inline-block bg-pink-400 text-white text-xs font-semibold px-3 py-1 rounded hover:bg-pink-500">
                                         Download File
                                     </button>
                                     {/* <a
@@ -276,7 +281,9 @@ export default function TicketDiscussionAdmin() {
                             )}
                             {i === ticketHistory.length - 1 && decoded.sub !== hist.interactedBy && ticketStatus !== "RESOLVED" && (
                                 <Link to={`/answer/${id}/${ticketHistory.length}`}>
-                                    <button className="ml-4 px-6 py-1 rounded bg-[#F89BEB] text-white text-sm font-bold">answer</button>
+                                    <button
+                                        className="ml-4 px-6 py-1 rounded bg-[#F89BEB] text-white text-sm font-bold">answer
+                                    </button>
                                 </Link>
                             )}
                             {showTopics && (
@@ -330,10 +337,11 @@ export default function TicketDiscussionAdmin() {
                             )}
                         </div>
                     ))}
-                    {ticketStatus === "RESOLVED" && 
-                     <div className="mt-10 text-center text-gray-300 text-lg bg-[#2e3743] px-6 py-8 rounded-xl shadow">
-                    🎫 This ticket has been closed
-                    </div>}
+                    {ticketStatus === "RESOLVED" &&
+                        <div
+                            className="mt-10 text-center text-gray-300 text-lg bg-[#2e3743] px-6 py-8 rounded-xl shadow">
+                            🎫 This ticket has been closed
+                        </div>}
                 </div>
             </div>
         </div>

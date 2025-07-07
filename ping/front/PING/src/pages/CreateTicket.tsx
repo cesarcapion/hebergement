@@ -134,30 +134,32 @@ export default function CreateTicket() {
     return (
         <div className="w-screen min-h-screen bg-[#384454]">
             {/* HEADER */}
-            <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
-                <Link to ="/">
+            <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
+                <Link to="/">
                     <div className="flex items-center gap-3">
-                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-auto"/>
                     </div>
                 </Link>
                 <div className="flex gap-6">
                     <Link to="/qa">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
+                        <button
+                            className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Q&amp;A
                         </button>
                     </Link>
                     <Link to="/my-tickets">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">
-                            My tickets
+                        <button
+                            className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">My
+                            tickets
                         </button>
                     </Link>
                 </div>
-                <Link to="profile">
-                    <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
-                        <span role="img" aria-label="profile">👤</span>
+                <Link to="/profile">
+                    <div
+                        className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#842D50] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                        <span role="img" aria-label="profile" className="text-2xl">👤</span>
                     </div>
                 </Link>
-
             </div>
 
             <div className="max-w-2xl mx-auto pt-4 pb-2 px-2">
@@ -179,17 +181,17 @@ export default function CreateTicket() {
                         value={topicId}
                         name={topics.length === 0 ? "Topics not available" : "Topic"}
                         disabled={topics.length === 0}
-                        onChange={e =>
-                            {
-                                setTopicId(parseInt(e.target.value));
-                                // const selected = topics.find(t => t.name === e.target.value)
-                                // if (selected !== undefined)
-                                // {
-                                //     setTopic(selected.id);
-                                // }
-                            }
+                        onChange={e => {
+                            setTopicId(parseInt(e.target.value));
+                            // const selected = topics.find(t => t.name === e.target.value)
+                            // if (selected !== undefined)
+                            // {
+                            //     setTopic(selected.id);
+                            // }
+                        }
                         }>
-                        <option value="none" hidden>{topics.length === 0 ? "Topics not available" : "Select Topic"}</option>
+                        <option value="none"
+                                hidden>{topics.length === 0 ? "Topics not available" : "Select Topic"}</option>
                         {topics.map(t => (
                             <option value={t.id} key={t.id}>{t.name}</option>
                         ))}
@@ -205,7 +207,8 @@ export default function CreateTicket() {
 
                 <div className="flex items-center gap-2 mb-4">
                     <label className="flex-1">
-                        <div className="text-xs text-gray-700 bg-white rounded-l px-3 py-2 border border-gray-300 flex items-center">
+                        <div
+                            className="text-xs text-gray-700 bg-white rounded-l px-3 py-2 border border-gray-300 flex items-center">
                             Join document (png, jpeg, pdf) max size : 5 mo
                         </div>
                         <input
@@ -213,32 +216,30 @@ export default function CreateTicket() {
                             type="file"
                             className="hidden"
                             accept=".png,.jpeg,.jpg,.pdf"
-                            onChange={(e) =>
-                                {
-                                    handleFileChange(e);
-                                }
+                            onChange={(e) => {
+                                handleFileChange(e);
+                            }
                             }
                         />
                     </label>
                     {resourceFile && (
-                            <div className="flex items-center gap-2 text-xs text-gray-200">
-                                <span className="text-gray-200">{resourceFile.name}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (fileInput.current != null)
-                                        {
-                                            fileInput.current.value=""
-                                        }
-                                        setFile(null)
-                                    }}
-                                    className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
-                                    title="Retirer le fichier"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2 text-xs text-gray-200">
+                            <span className="text-gray-200">{resourceFile.name}</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (fileInput.current != null) {
+                                        fileInput.current.value = ""
+                                    }
+                                    setFile(null)
+                                }}
+                                className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
+                                title="Retirer le fichier"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    )}
                     <button
                         type="button"
                         onClick={() => fileInput.current?.click()}
@@ -257,29 +258,25 @@ export default function CreateTicket() {
                 <div className="flex justify-end">
                     <button
                         className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold shadow transition hover:opacity-90"
-                        onClick={() =>
-                            {
-                                if (object === "")
-                                {
-                                    setError("The object is empty")
-                                    setTimeout(() => setError(""), 5000)
-                                    return
-                                }
-                                if (topicId === -1)
-                                {
-                                    setError("No topic selected")
-                                    setTimeout(() => setError(""), 5000)
-                                    return
-                                }
-                                if (text === "")
-                                {
-                                    setError("No text written")
-                                    setTimeout(() => setError(""), 5000)
-                                    return
-                                }
-                                submitTicket()
-                                navigate(`/my-tickets`)
+                        onClick={() => {
+                            if (object === "") {
+                                setError("The object is empty")
+                                setTimeout(() => setError(""), 5000)
+                                return
                             }
+                            if (topicId === -1) {
+                                setError("No topic selected")
+                                setTimeout(() => setError(""), 5000)
+                                return
+                            }
+                            if (text === "") {
+                                setError("No text written")
+                                setTimeout(() => setError(""), 5000)
+                                return
+                            }
+                            submitTicket()
+                            navigate(`/my-tickets`)
+                        }
                         }
                     >
                         Send

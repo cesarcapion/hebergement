@@ -96,27 +96,30 @@ export default function AnswerTicket() {
     return (
         <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER */}
-            <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
+            <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
                 <Link to="/">
                     <div className="flex items-center gap-3">
-                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10" />
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-auto"/>
                     </div>
                 </Link>
                 <div className="flex gap-6">
                     <Link to="/qa">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
+                        <button
+                            className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Q&amp;A
                         </button>
                     </Link>
                     <Link to="/my-tickets">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">
-                            My tickets
+                        <button
+                            className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">My
+                            tickets
                         </button>
                     </Link>
                 </div>
                 <Link to="/profile">
-                    <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
-                        <span role="img" aria-label="profile">👤</span>
+                    <div
+                        className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#842D50] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                        <span role="img" aria-label="profile" className="text-2xl">👤</span>
                     </div>
                 </Link>
             </div>
@@ -152,7 +155,8 @@ export default function AnswerTicket() {
 
                 <div className="flex items-center gap-2 mb-4">
                     <label className="flex-1">
-                        <div className="text-xs text-gray-700 bg-white rounded-l px-3 py-2 border border-gray-300 flex items-center">
+                        <div
+                            className="text-xs text-gray-700 bg-white rounded-l px-3 py-2 border border-gray-300 flex items-center">
                             Join document (png, jpeg, pdf) max size : 5 mo
                         </div>
                         <input
@@ -168,14 +172,12 @@ export default function AnswerTicket() {
                             <span className="text-gray-200">{file.name}</span>
                             <button
                                 type="button"
-                                onClick={() =>                                         
-                                    {
-                                        if (fileInput.current != null)
-                                        {
-                                            fileInput.current.value=""
-                                        }
-                                        setFile(null)
+                                onClick={() => {
+                                    if (fileInput.current != null) {
+                                        fileInput.current.value = ""
                                     }
+                                    setFile(null)
+                                }
                                 }
                                 className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
                                 title="Retirer le fichier"
@@ -184,7 +186,7 @@ export default function AnswerTicket() {
                             </button>
                         </div>
                     )}
-                    
+
                     <button
                         type="button"
                         onClick={() => fileInput.current?.click()}
@@ -203,8 +205,7 @@ export default function AnswerTicket() {
                         className={`bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold ${answering || !ticketAttributesLoaded ? 'cursor-not-allowed' : ''}`}
                         disabled={answering || !ticketAttributesLoaded}
                         onClick={() => {
-                            if (text === "")
-                            {
+                            if (text === "") {
                                 setError("No text written")
                                 setTimeout(() => setError(""), 5000)
                                 return

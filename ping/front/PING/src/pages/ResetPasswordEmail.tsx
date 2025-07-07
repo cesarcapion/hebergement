@@ -42,7 +42,7 @@ const ResetPasswordEmail = () => {
           <button
             type="submit"
             className="w-full bg-gradient-to-b from-[#E1A624] to-[#7B5B14] text-white font-bold py-4 rounded-full hover:from-[#D4991F] hover:to-[#A6851A] focus:outline-none transition-all duration-200 shadow-lg">
-            Reset Password
+            Send E-mail
           </button>
         </form>
 
@@ -78,7 +78,7 @@ const ResetPasswordEmail = () => {
               </p>
               <ol className="list-decimal list-inside space-y-1 ml-2">
                 <li>Enter your email address in the field above</li>
-                <li>Click "Reset Password" button</li>
+                <li>Click "Send E-mail" button</li>
                 <li>Check your email inbox (and spam folder)</li>
                 <li>Click the reset link in the email</li>
                 <li>Create a new password</li>
