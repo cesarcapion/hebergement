@@ -128,7 +128,7 @@ export default function TicketDiscussionAdmin() {
     }
 
     const getAllUserIds = async () => {
-        const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/6d38b8e8-c1e6-4779-9e28-3824e1143992`, {
+        const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ export default function TicketDiscussionAdmin() {
     const removeAllUsers = async (ticketId: string | undefined, userIds: string[]) => {
         const token = localStorage.getItem("token");
         for (const userId of userIds) {
-            const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/6d38b8e8-c1e6-4779-9e28-3824e1143992/remove-user`, {
+            const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}/remove-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -319,7 +319,7 @@ export default function TicketDiscussionAdmin() {
 
                                             const token = localStorage.getItem("token");
                                             console.log("topic:", selectedTopic);
-                                            await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/6d38b8e8-c1e6-4779-9e28-3824e1143992`, {
+                                            await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`, {
                                                 method: 'PUT',
                                                 headers: {
                                                     'Content-Type': 'application/json',

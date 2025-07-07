@@ -62,37 +62,6 @@ export default function AnswerTicket() {
         }
     };
 
-
-    /*const handleSubmit = async () => {
-        if (!text) {
-            alert("Le message ne peut pas être vide.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("text", text);
-        if (file) {
-            formData.append("file", file);
-        }
-
-        try {
-            const res = await fetch(`https://TON_BACKEND_URL/api/tickets/${id}/answer`, {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!res.ok) throw new Error("Échec de l'envoi");
-
-            alert("Réponse envoyée !");
-            setText("");
-            setFile(null);
-            if (fileInput.current) fileInput.current.value = "";
-        } catch (err) {
-            alert("Erreur lors de l'envoi de la réponse.");
-            console.error(err);
-        }
-    };*/
-
     return (
         <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER */}

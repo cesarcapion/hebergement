@@ -1,17 +1,21 @@
 import { useParams, Link } from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import { authedAPIRequest } from "../api/auth";
+import { addTicketAnswer } from "../utils/Ticket";
 
 const MAX_FILE_SIZE_MB = 5;
 
 
 export default function AnswerTicket() {
     const { id } = useParams<{ id: string }>();
+    const { count } = useParams<{count: string}>();
     const [ticket, setTicket] = useState<any>(null);
     const [text, setText] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [error, setError] = useState("");
     const fileInput = useRef<HTMLInputElement>(null);
+    const [answering, setAnswering] = useState(false);
+    const [ticketAttributesLoaded, setTicketAttributesLoaded] = useState(false);
 
     const fetchTicket = async () => {
         console.log("Fetching ticket with id:", id);
@@ -32,6 +36,7 @@ export default function AnswerTicket() {
         } else {
             console.error("Erreur HTTP", response?.status);
         }
+        setTicketAttributesLoaded(true);
     };
 
     useEffect(() => {
@@ -193,10 +198,10 @@ export default function AnswerTicket() {
                     </button>
                     {error !== "" && <span className="text-red-500 mt-1 text-sm">{error}</span>}
                 </div>
-
                 <div className="flex justify-end">
                     <button
-                        className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold"
+                        className={`bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold ${answering || !ticketAttributesLoaded ? 'cursor-not-allowed' : ''}`}
+                        disabled={answering || !ticketAttributesLoaded}
                         onClick={() => {
                             if (text === "")
                             {
@@ -204,11 +209,16 @@ export default function AnswerTicket() {
                                 setTimeout(() => setError(""), 5000)
                                 return
                             }
+                            setAnswering(true);
+                            addTicketAnswer(id, count, file, text);
+                            setAnswering(false);
+                            window.history.back();
                         }}
                     >
-                        Send Answer
+                        {answering ? "Posting..." : "Send Answer"}
                     </button>
                 </div>
+
             </div>
         </div>
     );
