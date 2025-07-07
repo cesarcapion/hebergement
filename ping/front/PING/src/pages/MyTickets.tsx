@@ -40,9 +40,9 @@ export default function MyTickets() {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState("");
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [descending, setDescending] = useState(false);
-    const [byStatus, setByStatus] = useState<ticketStatus>("NONE");
+    // const [loading, setLoading] = useState(true);
+    const [descending, /*setDescending*/] = useState(false);
+    //const [byStatus, setByStatus] = useState<ticketStatus>("NONE");
     // use a button on off to tell reversed or not
 
     useEffect(() => {
@@ -62,12 +62,12 @@ export default function MyTickets() {
         return topicsRes;
     }
 
-    const filteredTickets = () => {
+    /*const filteredTickets = () => {
         const realFilter : ticketStatus = getFilterbyString(filter);
         return realFilter !== "NONE"
                 ? tickets.filter((t) => t.status === filter)
                 : tickets;
-    }
+    }*/
 
     return (
         <div className="min-h-screen w-screen bg-[#384454]">

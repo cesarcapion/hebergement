@@ -6,7 +6,7 @@ import {jwtDecode} from "jwt-decode";
 import { getUserGroupFromToken } from "../AdminRoute.tsx";
 
 
-const dummyMessages = [
+/*const dummyMessages = [
     {
         sender: "You",
         date: "2025-06-22 05:03:07 pm",
@@ -25,7 +25,7 @@ const dummyMessages = [
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...",
         filePath: "../src/pages/TicketDiscussionAdmin.tsx",
     },
-];
+];*/
 type tokenPayload = 
 {
     sub: string,
@@ -184,7 +184,7 @@ export default function TicketDiscussionAdmin() {
     const removeAllUsers = async (ticketId: string | undefined, userIds: string[]) => {
         const token = localStorage.getItem("token");
         for (const userId of userIds) {
-            const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}/remove-user`, {
+            const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketId}/remove-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

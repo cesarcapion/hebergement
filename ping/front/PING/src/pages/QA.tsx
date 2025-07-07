@@ -11,12 +11,13 @@ interface FAQ {
 }
 
 interface FAQResponse {
+  response: string;
   id: number
   question: string
   answer: string
 }
 
-const FAQ_STORAGE_KEY = "qa"
+//const FAQ_STORAGE_KEY = "qa"
 
 const defaultFaqs: FAQ[] = []
 
@@ -50,7 +51,7 @@ const QA = () => {
           },
         });
 
-        if (response.ok) {
+        if (response?.ok) {
           const faqData: FAQResponse[] = await response.json();
 
           // Transformer les données de l'API en format FAQ si nécessaire
@@ -63,7 +64,7 @@ const QA = () => {
           setFaqs(transformedFaqs);
         } else {
           // En cas d'erreur, garder les FAQs par défaut
-          console.error('Erreur lors du chargement des FAQs:', response.status);
+          console.error('Erreur lors du chargement des FAQs:', response?.status);
           setError('Impossible de charger les FAQs depuis le serveur');
         }
       } catch (err) {

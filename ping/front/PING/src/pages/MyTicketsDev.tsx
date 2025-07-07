@@ -39,7 +39,7 @@ try {
   console.error("Invalid token", e);
 }
 
-const statusOrder = ["in progress", "pending", "resolved"];
+//const statusOrder = ["in progress", "pending", "resolved"];
 
 
 function getSortingStrategyByString(name: string) : sortingStrategy
@@ -70,7 +70,7 @@ export default function DevTickets() {
     const [danglingTickets, setDanglingTickets] = useState<ticket[]>([]);
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState("");
-    const [descending, setDescending] = useState(false);
+    const [descending, /*setDescending*/] = useState(false);
     const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null)
     const navigate = useNavigate();
 
@@ -97,7 +97,10 @@ export default function DevTickets() {
 
     const handleStatusChange = async (id: string, newStatus: ticketStatus) => {
         setUpdatingStatusId(id);
-        const updateTicketStatusCall: Response | null = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`,
+        if (updatingStatusId != null)
+        {
+        }
+        /*const updateTicketStatusCall: Response | null =*/ await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`,
             {
                 method: 'PUT',
                 headers: {
@@ -109,12 +112,12 @@ export default function DevTickets() {
         setUpdatingStatusId(null);
     };
 
-    const filteredTickets = () => {
+    /*const filteredTickets = () => {
         const realFilter : ticketStatus = getFilterbyString(filter);
         return realFilter !== "NONE"
             ? myTickets.filter((t) => t.status === filter)
             : myTickets;
-    }
+    }*/
 
     const loadAllTickets = async(roleId: string) =>
     {

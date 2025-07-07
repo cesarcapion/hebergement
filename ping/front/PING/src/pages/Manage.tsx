@@ -35,7 +35,7 @@ const ManagePage: React.FC = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            if (!response.ok) throw new Error("Failed to fetch roles");
+            if (!response?.ok) throw new Error("Failed to fetch roles");
             const data = await response.json();
             setRoles(data);
         } catch (err) {
@@ -51,7 +51,7 @@ const ManagePage: React.FC = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            if (!response.ok) throw new Error("Failed to fetch topics");
+            if (!response?.ok) throw new Error("Failed to fetch topics");
             const data = await response.json();
             setTopics(data);
         } catch (err) {
@@ -65,7 +65,7 @@ const ManagePage: React.FC = () => {
             setError('Please fill in role name');
             return;
         }
-        const roleID = roleName.trim();
+        /*const roleID =*/ roleName.trim();
         try {
             const token = localStorage.getItem('token');
             const response = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/roles`, {
@@ -77,12 +77,12 @@ const ManagePage: React.FC = () => {
                 body: JSON.stringify({ name: roleName }),
             });
 
-            if (response.status === 409) {
+            if (response?.status === 409) {
                 setError('This role already exists');
                 return;
             }
 
-            if (!response.ok) {
+            if (!response?.ok) {
                 throw new Error('Failed to add role');
             }
 
@@ -105,7 +105,7 @@ const ManagePage: React.FC = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            if (!response.ok) throw new Error("Failed to fetch roles");
+            if (!response?.ok) throw new Error("Failed to fetch roles");
             const data = await response.json();
             setRoles(data);
         } catch (err) {
@@ -152,19 +152,19 @@ const ManagePage: React.FC = () => {
                 }
             );
 
-            if (response.status === 404) {
+            if (response?.status === 404) {
                 setError('Role or Topic not found');
                 return;
             }
-            if (response.status === 405) {
+            if (response?.status === 405) {
                 setError('Role is read-only, cannot remove topic');
                 return;
             }
-            if (response.status === 409) {
+            if (response?.status === 409) {
                 setError('Topic is not assigned to this role');
                 return;
             }
-            if (!response.ok) {
+            if (!response?.ok) {
                 throw new Error('Failed to remove topic');
             }
 
@@ -210,9 +210,9 @@ const ManagePage: React.FC = () => {
                 body: JSON.stringify({ name: roleTopic }),
             });
 
-            if (createTopicRes.status === 409) {
+            if (createTopicRes?.status === 409) {
                 // Topic already exists, continue
-            } else if (!createTopicRes.ok) {
+            } else if (!createTopicRes?.ok) {
                 throw new Error('Failed to create topic');
             }
 
@@ -226,7 +226,7 @@ const ManagePage: React.FC = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                if (!response.ok) throw new Error("Failed to fetch topics");
+                if (!response?.ok) throw new Error("Failed to fetch topics");
                 updatedTopics = await response.json();
                 setTopics(updatedTopics);
             } catch (err) {
@@ -236,7 +236,7 @@ const ManagePage: React.FC = () => {
             }
 
             // 3. Find the topic in the updated list
-            const existingTopic = updatedTopics.find((topic) => topic.name.toLowerCase() === roleTopic.trim().toLowerCase());
+            const existingTopic = updatedTopics.find((topic: { name: string; }) => topic.name.toLowerCase() === roleTopic.trim().toLowerCase());
 
             if (!existingTopic) {
                 setError("Topic not found after creation");
@@ -256,7 +256,7 @@ const ManagePage: React.FC = () => {
                 }
             );
 
-            if (!assignRes.ok) {
+            if (!assignRes?.ok) {
                 throw new Error('Failed to assign topic to role');
             }
 
@@ -303,8 +303,8 @@ const ManagePage: React.FC = () => {
                 }
             );
 
-            if (!response.ok) {
-                if (response.status === 404) {
+            if (!response?.ok) {
+                if (response?.status === 404) {
                     setError("User not found");
                 } else {
                     setError("Failed to assign role to employee");
@@ -322,7 +322,7 @@ const ManagePage: React.FC = () => {
     };
 
 
-    const handleRemoveEmployee = async () => {
+    /*const handleRemoveEmployee = async () => {
         if (!employeeEmail.trim() || !employeeRole.trim()) {
             setError('Please fill in both email and role');
             return;
@@ -337,7 +337,7 @@ const ManagePage: React.FC = () => {
             console.error(err);
             setError("Error removing employee");
         }
-    };
+    };*/
 
     const handleRemoveRole = async () => {
         console.log(removeRole);
@@ -367,18 +367,18 @@ const ManagePage: React.FC = () => {
                 }
             );
 
-            if (response.status === 404) {
+            if (response?.status === 404) {
                 setError('Role not found');
                 return;
             }
 
-            if (response.status === 405) {
+            if (response?.status === 405) {
                 const data = await response.json();
                 setError(data?.message || 'Role cannot be deleted (read-only or used by users)');
                 return;
             }
 
-            if (!response.ok) {
+            if (!response?.ok) {
                 throw new Error('Failed to delete role');
             }
 

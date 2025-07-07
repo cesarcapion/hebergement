@@ -80,7 +80,7 @@ const QAAdmin = () => {
                 },
             });
 
-            if (response.ok) {
+            if (response?.ok) {
                 const faqData: FAQResponse[] = await response.json();
 
                 const transformedFaqs: FAQ[] = faqData.map(item => ({
@@ -91,7 +91,7 @@ const QAAdmin = () => {
 
                 setFaqs(transformedFaqs);
             } else {
-                console.error('Erreur lors du chargement des FAQs:', response.status);
+                console.error('Erreur lors du chargement des FAQs:', response?.status);
                 setError('Impossible de charger les FAQs depuis le serveur');
             }
         } catch (err) {
@@ -132,7 +132,7 @@ const QAAdmin = () => {
                 body: JSON.stringify(requestData)
             });
 
-            if (response.ok) {
+            if (response?.ok) {
                 const newFaq: FAQResponse = await response.json();
                 const transformedFaq: FAQ = {
                     id: newFaq.id,
@@ -145,7 +145,7 @@ const QAAdmin = () => {
                 setFormData({ question: "", answer: "" });
                 alert('FAQ ajoutée avec succès');
             } else {
-                const errorData = await response.json();
+                const errorData = await response?.json();
                 alert(`Erreur lors de l'ajout: ${errorData.message || 'Erreur inconnue'}`);
             }
         } catch (err) {
@@ -188,7 +188,7 @@ const QAAdmin = () => {
                 body: JSON.stringify(requestData)
             });
 
-            if (response.ok) {
+            if (response?.ok) {
                 const updatedFaq: FAQResponse = await response.json();
                 const transformedFaq: FAQ = {
                     id: updatedFaq.id,
@@ -201,7 +201,7 @@ const QAAdmin = () => {
                 setFormData({ question: "", answer: "" });
                 alert('FAQ modifiée avec succès');
             } else {
-                const errorData = await response.json();
+                const errorData = await response?.json();
                 alert(`Erreur lors de la modification: ${errorData.message || 'Erreur inconnue'}`);
             }
         } catch (err) {
@@ -227,11 +227,11 @@ const QAAdmin = () => {
                 },
             });
 
-            if (response.ok || response.status === 204) {
+            if (response?.ok || response?.status === 204) {
                 setFaqs(faqs.filter(faq => faq.id !== id));
                 alert('FAQ supprimée avec succès');
             } else {
-                const errorData = await response.json();
+                const errorData = await response?.json();
                 alert(`Erreur lors de la suppression: ${errorData.message || 'Erreur inconnue'}`);
             }
         } catch (err) {

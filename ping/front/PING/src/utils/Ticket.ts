@@ -85,7 +85,7 @@ const renameResourceFile = (filePath: string, count: string | undefined) => {
             // console.log(`filepath: ${filePath} ends with ${ext}? -> ${filePath.endsWith(ext)}`)
             if (filePath.endsWith(ext))
             {
-                const splitted = filePath.split(ext);
+                //const splitted = filePath.split(ext);
                 return `r${count}${ext}`;
             }
         }
@@ -116,7 +116,7 @@ export const addTicketAnswer = async(id: string | undefined, count: string | und
         addToHistory["resourcePath"] = resourcePath; 
         console.log(`response info: ${JSON.stringify(resPostedResource)}`);
     }
-    const postHistory = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/${id}`, {
+    /*const postHistory =*/ await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/${id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(addToHistory)

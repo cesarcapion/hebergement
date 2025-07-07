@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useEffect, /*useImperativeHandle,*/ useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authedAPIRequest } from "../api/auth";
 
@@ -24,7 +24,7 @@ const MAX_FILE_SIZE_MB = 5;
 export default function CreateTicket() {
     const [object, setObject] = useState("");
     const [topicId, setTopicId] = useState(-1);
-    const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+    // const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [text, setText] = useState("");
     const [resourceFile, setFile] = useState<File | null>(null);
     const [topics, setTopics] = useState<Topic[]>([]);
@@ -56,7 +56,7 @@ export default function CreateTicket() {
             // console.log(`filepath: ${filePath} ends with ${ext}? -> ${filePath.endsWith(ext)}`)
             if (filePath.endsWith(ext))
             {
-                const splitted = filePath.split(ext);
+                /*const splitted =*/ filePath.split(ext);
                 return `r0${ext}`;
             }
         }
@@ -110,7 +110,7 @@ export default function CreateTicket() {
             addToHistory["resourcePath"] = resourcePath; 
             console.log(`response info: ${JSON.stringify(resPostedResource)}`);
         }
-        const postHistory = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/${ticketResponse.id}`, {
+        /*const postHistory =*/ await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/${ticketResponse.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(addToHistory)

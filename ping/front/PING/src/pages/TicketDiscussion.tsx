@@ -5,7 +5,7 @@ import {formatDate, getTicketStatus, handleDownload, loadFileFromTicket, loadTic
 import {jwtDecode} from "jwt-decode";
 
 
-const dummyMessages = [
+/*const dummyMessages = [
     {
         sender: "You",
         date: "2025-06-22 05:03:07 pm",
@@ -24,7 +24,7 @@ const dummyMessages = [
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...",
         filePath: "../src/pages/TicketDiscussionAdmin.tsx",
     },
-];
+];*/
 type tokenPayload = 
 {
     sub: string,
@@ -113,12 +113,12 @@ export default function TicketDiscussionAdmin() {
     };
 
 
-    const handleRedirectClick = async () => {
+    /*const handleRedirectClick = async () => {
         if (!showTopics) {
             await fetchTopics();
         }
         setShowTopics(!showTopics);
-    };
+    };*/
 
 
     const handleTopicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -182,7 +182,7 @@ export default function TicketDiscussionAdmin() {
     const removeAllUsers = async (ticketId: string | undefined, userIds: string[]) => {
         const token = localStorage.getItem("token");
         for (const userId of userIds) {
-            const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/6d38b8e8-c1e6-4779-9e28-3824e1143992/remove-user`, {
+            const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketId}/remove-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
