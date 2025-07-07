@@ -44,7 +44,7 @@ const Home = () => {
             {/* Bottom Buttons */}
             <div className="pb-20 flex justify-center">
                 <div className="flex gap-8">
-                    <Link to="/qa_faqs">
+                    <Link to="/qa">
                         <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white font-bold text-2xl px-16 py-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Q&A
                         </button>

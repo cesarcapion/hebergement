@@ -1,8 +1,11 @@
 "use client"
 
 import { Link } from "react-router-dom"
+import {getUserGroupFromToken} from "../AdminRoute.tsx";
 
 const Home = () => {
+    const group = getUserGroupFromToken();
+
     return (
         <div className="w-screen min-h-screen bg-gradient-to-b from-[#E1A624] to-[#D4D3DC] flex flex-col relative">
             {/* Profile Button */}
@@ -49,11 +52,16 @@ const Home = () => {
                             Q&A
                         </button>
                     </Link>
-                    <Link to="/my-tickets/admin">
+                    {group?.toString() === "admin" && (<Link to="/my-tickets/admin">
                         <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white font-bold text-2xl px-16 py-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Inbox
                         </button>
-                    </Link>
+                    </Link>)}
+                    {group?.toString() !== "admin" && (<Link to="/my-tickets/dev">
+                        <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white font-bold text-2xl px-16 py-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
+                            Inbox
+                        </button>
+                    </Link>)}
                 </div>
             </div>
         </div>

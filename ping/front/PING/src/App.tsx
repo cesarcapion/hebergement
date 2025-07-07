@@ -11,7 +11,7 @@ import TicketDiscussion from "./pages/TicketDiscussion.tsx";
 import TicketDiscussionAdmin from "./pages/TicketDiscussionAdmin.tsx";
 import CreateTicket from "./pages/CreateTicket.tsx";
 import AnswerTicketAdmin from './pages/AnswerTicketAdmin.tsx';
-
+import MyTicketsDev from "./pages/MyTicketsDev.tsx";
 
 import PrivateRoute from './PrivateRoute';
 import AdminRoute from './AdminRoute.tsx';
@@ -52,6 +52,14 @@ function App() {
                     element={
                         <PrivateRoute>
                             <MyTicketsAdmin />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-tickets/dev"
+                    element={
+                        <PrivateRoute>
+                            <MyTicketsDev />
                         </PrivateRoute>
                     }
                 />
