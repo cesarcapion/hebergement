@@ -128,7 +128,11 @@ function App() {
                     }
                 />
                 <Route
+<<<<<<< Updated upstream
                     path="/profile/admin"
+=======
+                    path="/profile"
+>>>>>>> Stashed changes
                     element={
                         <AdminRoute>
                             <ProfileAdmin />
