@@ -58,7 +58,7 @@ try {
 
 export default function TicketDiscussionAdmin() {
     const { id } = useParams();
-    const [topics, setTopics] = useState<Topic[]>([]);
+    const [topics, /*setTopics*/] = useState<Topic[]>([]);
     const [showTopics, setShowTopics] = useState(false);
     const [selectedTopic, setSelectedTopic] = useState("");
     const [ticketHistory, setTicketHistory] = useState<history[]>([]);
