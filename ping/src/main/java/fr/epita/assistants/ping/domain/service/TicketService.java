@@ -92,12 +92,12 @@ public class TicketService {
 
         if (onlyOwned) {
             List<TicketModel> ownedTickets = ticketRepository.getOwnedTickets(userService.get(UUID.fromString(userUUID)));
-            fillResponses(responses, ownedTickets, filter);
+            fillResponses(responses, ownedTickets, filter, 0L);
         }
         else
         {
             List<TicketModel> memberTickets = ticketRepository.getMemberTickets(userUUID);
-            fillResponses(responses, memberTickets, filter);
+            fillResponses(responses, memberTickets, filter, 0L);
         }
 
         if (sortingStrategy == TicketSortingStrategy.STATUS)
@@ -124,13 +124,18 @@ public class TicketService {
         return members;
     }
 
-    private void fillResponses(ArrayList<TicketResponse> responses, List<TicketModel> tickets, TicketStatus filter) {
+    private boolean hasRole(TicketModel ticket, Long roleId)
+    {
+        return ticket.getTopic().getRoles().stream().filter(role -> role.getId().equals(roleId)).count() > 0;
+    }
+
+    private void fillResponses(ArrayList<TicketResponse> responses, List<TicketModel> tickets, TicketStatus filter, Long roleId) {
         for (TicketModel ticket : tickets) {
             UserModel owner = ticket.getOwner();
             UserInfoResponse ownerInfo = userModelToUserInfoConverter.convert(owner);
 
             ArrayList<UserInfoResponse> members = getMembersInfo(ticket);
-            if (filter == TicketStatus.NONE) {
+            if (filter == TicketStatus.NONE && (roleId == 0 || (hasRole(ticket, roleId)))) {
                 responses.add(
                         new TicketResponse()
                                 .withId(ticket.getId().toString())
@@ -142,7 +147,7 @@ public class TicketService {
                                 .withTopic(topicModelToTopicInfoConverter.convert(ticket.getTopic()))
                 );
             }
-            else if (ticket.getTicketStatus() == filter)
+            else if (ticket.getTicketStatus() == filter && (roleId == 0 || (hasRole(ticket, roleId))))
             {
                 responses.add(
                         new TicketResponse()
@@ -198,10 +203,10 @@ public class TicketService {
                 .withTopic(topicModelToTopicInfoConverter.convert(topic));
     }
 
-    public ArrayList<TicketResponse> buildGetAllTicketsResponse(boolean descending, TicketStatus filter, TicketSortingStrategy sortingStrategy) {
+    public ArrayList<TicketResponse> buildGetAllTicketsResponse(boolean descending, TicketStatus filter, TicketSortingStrategy sortingStrategy, Long roleId) {
         List<TicketModel> tickets = ticketRepository.getAllTickets();
         ArrayList<TicketResponse> responses = new ArrayList<>();
-        fillResponses(responses, tickets, filter);
+        fillResponses(responses, tickets, filter, roleId);
         if (sortingStrategy == TicketSortingStrategy.STATUS)
         {
             responses.sort(Comparator.comparing(TicketResponse::getStatus));

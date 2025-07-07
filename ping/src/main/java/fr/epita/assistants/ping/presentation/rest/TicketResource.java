@@ -89,15 +89,16 @@ public class TicketResource {
 
 
     @GET
-    @Path("/all")
+    @Path("/all/{roleId}")
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllTickets( @DefaultValue("false") @QueryParam("descending") boolean descending,
+    public Response getAllTickets(@PathParam("roleId") @DefaultValue("0") Long roleId, @DefaultValue("false") @QueryParam("descending") boolean descending,
                                    @DefaultValue("NONE") @QueryParam("filter") TicketStatus filter,
-                                   @DefaultValue("NONE") @QueryParam("sorting") TicketSortingStrategy sortingStrategy) {
+                                   @DefaultValue("NONE") @QueryParam("sorting") TicketSortingStrategy sortingStrategy
+                                   ) {
         logger.logInfo(identity.getPrincipal().getName() + " requested to get all tickets");
         logger.logSuccess("The operation was successful");
-        return Response.status(200).entity(ticketService.buildGetAllTicketsResponse(descending, filter, sortingStrategy)).build();
+        return Response.status(200).entity(ticketService.buildGetAllTicketsResponse(descending, filter, sortingStrategy, roleId)).build();
     }
 
     @PUT
@@ -350,5 +351,4 @@ public class TicketResource {
         ticketService.deleteUserFromTicket(ticketId, currentUser);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
-
 }
