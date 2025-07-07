@@ -45,7 +45,7 @@ public class FileService {
         if (isInvalidPath(projectID, path) || path.isBlank())
             throw new PathException("Chemin invalide"); // 400
 
-        if ((!isAdmin && !ticketService.isMember(userId, projectID)) || isPathTraversal(path, projectID))
+        if (/*(!isAdmin && !ticketService.isMember(userId, projectID)) ||*/ isPathTraversal(path, projectID))
             throw new UserException("L'utilisateur n'a pas les droits ou path traversal détecté"); // 403
 
         Path basePath = Paths.get(defaultPath, projectID.toString());

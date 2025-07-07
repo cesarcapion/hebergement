@@ -90,7 +90,7 @@ public class TicketResource {
 
     @GET
     @Path("/all/{roleId}")
-    @RolesAllowed("admin")
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTickets(@PathParam("roleId") @DefaultValue("0") Long roleId, @DefaultValue("false") @QueryParam("descending") boolean descending,
                                    @DefaultValue("NONE") @QueryParam("filter") TicketStatus filter,
