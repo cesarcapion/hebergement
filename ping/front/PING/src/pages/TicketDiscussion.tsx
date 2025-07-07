@@ -100,7 +100,7 @@ export default function TicketDiscussionAdmin() {
         return () => clearInterval(interval);
         }, []);
 
-    const fetchTopics = async () => {
+    /*const fetchTopics = async () => {
         const res = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/topics/all`, {
             method: 'GET',
             headers: {
@@ -110,7 +110,7 @@ export default function TicketDiscussionAdmin() {
         console.log("Topics:", res);
         const data = await res?.json();
         setTopics(data || []);
-    };
+    };*/
 
 
     /*const handleRedirectClick = async () => {
@@ -313,7 +313,7 @@ export default function TicketDiscussionAdmin() {
 
                                             const token = localStorage.getItem("token");
                                             console.log("topic:", selectedTopic);
-                                            await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/6d38b8e8-c1e6-4779-9e28-3824e1143992`, {
+                                            await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`, {
                                                 method: 'PUT',
                                                 headers: {
                                                     'Content-Type': 'application/json',
