@@ -179,7 +179,7 @@ export default function ProfileAdmin() {
                                 Q&A
                             </button>
                         </Link>
-                        <Link to="/my-tickets/admin">
+                        <Link to="/my-tickets/dev">
                             <button className="btn">
                                 Inbox
                             </button>

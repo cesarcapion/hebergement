@@ -70,7 +70,7 @@ export default function MyTickets() {
     }
 
     return (
-        <div className="w-screen h-screen bg-[#384454]">
+        <div className="min-h-screen w-screen bg-[#384454]">
             {/* HEADER */}
             <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
                 <Link to="/">

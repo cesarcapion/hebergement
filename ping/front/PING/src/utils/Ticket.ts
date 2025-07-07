@@ -68,6 +68,15 @@ export type history = {
     ticketStatus: ticketStatus
 }
 
+export const joinProject = async (userId: string, ticketId: string | undefined) =>
+{
+    await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketId}/add-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({userId: userId})
+    })
+}
+
 const renameResourceFile = (filePath: string, count: string | undefined) => {
         const handledExtensions = [".pdf", ".png", ".jpeg", ".jpg"]
         // console.log(`filepath: ${filePath}`)
@@ -171,6 +180,17 @@ export const handleDownload = async (id: string | undefined, path: string) => {
     a.click();
     URL.revokeObjectURL(url);
 };
+
+export const getUserRoleId = async(id: string) => {
+    const getUserCall = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/user/${id}`, 
+        {
+            method: 'GET'
+        }
+    );
+
+    const getUserRes = await getUserCall?.json();
+    return getUserRes.roleId;
+}
 
 export function formatDate(raw: string): string {
     const date = new Date(raw);

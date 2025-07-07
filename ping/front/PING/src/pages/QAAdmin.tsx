@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import {authedAPIRequest} from "../api/auth.tsx";
+import { getUserGroupFromToken } from "../AdminRoute.tsx";
 
 interface FAQ {
     id: number
@@ -52,6 +53,7 @@ const defaultFaqs: FAQ[] = [
 ]
 
 const QAAdmin = () => {
+    const group = getUserGroupFromToken();
     const [faqs, setFaqs] = useState<FAQ[]>(defaultFaqs)
     const [openIndex, setOpenIndex] = useState<number | null>(null)
     const [isEditMode, setIsEditMode] = useState(false)
@@ -256,11 +258,16 @@ const QAAdmin = () => {
                             Q&A
                         </button>
                     </Link>
-                    <Link to="/my-tickets/admin">
-                        <button className="bg-gradient-to-r from-[#F89BEB] to-[#EA508E] text-white font-bold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                    {group?.toString() === "admin" && (<Link to="/my-tickets/admin">
+                        <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white font-bold text-2xl px-16 py-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Inbox
                         </button>
-                    </Link>
+                    </Link>)}
+                    {group?.toString() !== "admin" && (<Link to="/my-tickets/dev">
+                        <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white font-bold text-2xl px-16 py-6 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
+                            Inbox
+                        </button>
+                    </Link>)}
                 </div>
 
                 <Link to="/profile/admin">

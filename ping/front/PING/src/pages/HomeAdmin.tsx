@@ -5,6 +5,7 @@ import {getUserGroupFromToken} from "../AdminRoute.tsx";
 
 const Home = () => {
     const group = getUserGroupFromToken();
+    console.log(`c quoi ce groupe de con ${group}`)
 
     return (
         <div className="w-screen min-h-screen bg-gradient-to-b from-[#E1A624] to-[#D4D3DC] flex flex-col relative">

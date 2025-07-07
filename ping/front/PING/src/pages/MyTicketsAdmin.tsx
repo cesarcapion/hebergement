@@ -68,7 +68,7 @@ export default function AdminTickets() {
 
     const loadAllTickets = async() =>
     {
-        const getMyTicketsCall: Response | null = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/all?descending=${descending}&filter=${getFilterbyString(filter)}&sorting=${getSortingStrategyByString(sort)}`
+        const getMyTicketsCall: Response | null = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/all/0?descending=${descending}&filter=${getFilterbyString(filter)}&sorting=${getSortingStrategyByString(sort)}`
             ,// ?descending=${descending}&filter=${getFilterbyString(filter)}`,
             {
                 method: 'GET',
@@ -82,7 +82,7 @@ export default function AdminTickets() {
 
 
     return (
-        <div className="w-screen h-screen bg-[#384454]">
+        <div className="min-h-screen w-screen bg-[#384454]">
             {/* HEADER */}
             <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
                 <Link to="/admin">

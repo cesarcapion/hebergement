@@ -1,13 +1,34 @@
 import { useParams, Link } from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import { authedAPIRequest } from "../api/auth";
-import { addTicketAnswer } from "../utils/Ticket";
+import { addTicketAnswer, joinProject } from "../utils/Ticket";
+import { getUserGroupFromToken } from "../AdminRoute";
+import { jwtDecode } from "jwt-decode";
 
 const MAX_FILE_SIZE_MB = 5;
 
+type tokenPayload = 
+{
+    sub: string,
+    groups: string[],
+    iss: string,
+    iat: Date,
+    exp: Date,
+    jti: string,
+}
+
+const token = localStorage.getItem("token");
+let decoded: tokenPayload;
+try {
+  decoded = jwtDecode<tokenPayload>(token == null ? "" : token);
+//   console.log(decoded.sub, decoded.exp);
+} catch (e) {
+  console.error("Invalid token", e);
+}
 
 export default function AnswerTicket() {
     const { id } = useParams<{ id: string }>();
+    const group = getUserGroupFromToken();
     const { count } = useParams<{count: string}>();
     const [ticket, setTicket] = useState<any>(null);
     const [text, setText] = useState("");
@@ -181,6 +202,10 @@ export default function AnswerTicket() {
                             }
                             setAnswering(true);
                             addTicketAnswer(id, count, file, text);
+                            if (group?.toString() !== "admin" && group?.toString() !== "user")
+                            {
+                                joinProject(decoded.sub, id);
+                            }
                             setAnswering(false);
                             window.history.back();
                         }}

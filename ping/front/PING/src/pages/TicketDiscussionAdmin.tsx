@@ -3,6 +3,7 @@ import {authedAPIRequest} from "../api/auth.tsx";
 import {useEffect, useState} from "react";
 import {formatDate, getTicketStatus, handleDownload, loadFileFromTicket, loadTicketHistory, loadUserFromId, type history, type ticketStatus} from "../utils/Ticket.ts"
 import {jwtDecode} from "jwt-decode";
+import { getUserGroupFromToken } from "../AdminRoute.tsx";
 
 
 const dummyMessages = [
@@ -57,6 +58,7 @@ try {
 }
 
 export default function TicketDiscussionAdmin() {
+    const group = getUserGroupFromToken();
     const { id } = useParams();
     const [topics, setTopics] = useState<Topic[]>([]);
     const [showTopics, setShowTopics] = useState(false);
@@ -227,10 +229,15 @@ export default function TicketDiscussionAdmin() {
 
             {/* TICKET HEADER */}
             <div className="max-w-3xl mx-auto py-6">
+
                 <div className="flex items-center gap-4 mb-4">
-                    <Link to="/my-tickets/admin">
+                {group?.toString() === "admin" && (<Link to="/my-tickets/admin">
                         <button className="text-white text-2xl">&larr;</button>
-                    </Link>
+
+                    </Link>)}
+                {group?.toString() !== "admin" && (<Link to="/my-tickets/dev">
+                        <button className="text-white text-2xl">&larr;</button>
+                    </Link>)}
                     <h2 className="text-2xl font-bold text-white mx-auto">Ticket {id}</h2>
                 </div>
                 <div className="space-y-4">
