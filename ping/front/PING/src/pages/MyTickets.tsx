@@ -72,24 +72,24 @@ export default function MyTickets() {
     return (
         <div className="w-screen h-screen bg-[#384454]">
             {/* HEADER */}
-            <div className="bg-[#E1A624] px-4 py-3 flex items-center justify-between">
+            <div className="bg-[#FFD068] px-4 py-3 flex items-center justify-between">
                 <Link to="/">
                     <div className="flex items-center gap-3">
-                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-10"/>
+                        <img src="/White-Logo-without-bg.png" alt="logo" className="w-10 h-auto"/>
                     </div></Link>
                 <div className="flex gap-6">
                     <Link to="/qa">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
+                        <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">
                             Q&amp;A
                         </button>
                     </Link>
                     <Link to="/my-tickets">
-                        <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl">My tickets</button>
+                        <button className="bg-gradient-to-b from-[#F89BEB] to-[#842D50] text-white text-2xl px-8 py-2 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 min-w-[200px]">My tickets</button>
                     </Link>
                 </div>
                 <Link to="/profile">
-                    <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
-                        <span role="img" aria-label="profile">👤</span>
+                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#F89BEB] to-[#842D50] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                        <span role="img" aria-label="profile" className="text-2xl">👤</span>
                     </div>
                 </Link>
             </div>
@@ -97,7 +97,7 @@ export default function MyTickets() {
             {/* FILTRES */}
             <div className="flex items-center justify-between max-w-3xl mx-auto pt-4 pb-2">
                 <select
-                    className="bg-white rounded p-2 text-gray-700"
+                    className="bg-white rounded p-2 text-gray-700 filter"
                     value={filter}
                     onChange={(e) => {
                         const v = e.target.value
