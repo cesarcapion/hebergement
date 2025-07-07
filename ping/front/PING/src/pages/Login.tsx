@@ -6,6 +6,17 @@ import { Link } from "react-router-dom"
 import { login } from "../api/login.tsx"
 
 const Login = () => {
+  useEffect(() => {
+    init().then(() => setIsinitiated(true));
+  }, []);
+
+
+  const init = async() => {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/init`, {
+      method: 'GET',
+    });
+  };
+  const [isinitiated, setIsinitiated] = useState(false);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -101,7 +112,7 @@ const Login = () => {
     }
   }
 
-  return (
+  return ( isinitiated &&
       <div className="w-screen min-h-screen bg-[#384454] flex flex-col items-center justify-center px-4 relative">
         {/* Logo */}
         <img src="/White-Logo-without-bg.png" alt="Logo" className="mx-auto mb-6 w-36 h-auto" />
