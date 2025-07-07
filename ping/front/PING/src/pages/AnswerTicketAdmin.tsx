@@ -1,15 +1,53 @@
-import { /*useParams,*/ Link } from "react-router-dom";
-import { /*useEffect,*/ useRef, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import { authedAPIRequest } from "../api/auth";
+import { addTicketAnswer } from "../utils/Ticket";
 
 const MAX_FILE_SIZE_MB = 5;
 
 
 export default function AnswerTicket() {
-    //const { id } = useParams<{ id: string }>();
-    //const [ticket, setTicket] = useState<any>(null);
+    const { id } = useParams<{ id: string }>();
+    const { count } = useParams<{count: string}>();
+    const [ticket, setTicket] = useState<any>(null);
     const [text, setText] = useState("");
     const [file, setFile] = useState<File | null>(null);
+    const [error, setError] = useState("");
     const fileInput = useRef<HTMLInputElement>(null);
+    const [answering, setAnswering] = useState(false);
+    const [ticketAttributesLoaded, setTicketAttributesLoaded] = useState(false);
+
+    const fetchTicket = async () => {
+        console.log("Fetching ticket with id:", id);
+        const response = await authedAPIRequest(
+            `${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (response?.ok) {
+            const data = await response.json();
+            console.log("Fetched ticket:", data);
+            setTicket(data);
+        } else {
+            console.error("Erreur HTTP", response?.status);
+        }
+        setTicketAttributesLoaded(true);
+    };
+
+    useEffect(() => {
+        fetchTicket();
+    }, [id]);
+
+    console.log("Ticket avant set:", ticket);
+    useEffect(() => {
+        console.log("Ticket après set:", ticket);
+    }, [ticket]);
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -23,6 +61,7 @@ export default function AnswerTicket() {
             setFile(selectedFile);
         }
     };
+
 
     /*const handleSubmit = async () => {
         if (!text) {
@@ -52,11 +91,7 @@ export default function AnswerTicket() {
             alert("Erreur lors de l'envoi de la réponse.");
             console.error(err);
         }
-    };
-
-    if (!ticket) {
-        return <div className="text-white text-center mt-10">Chargement...</div>;
-    }*/
+    };*/
 
     return (
         <div className="w-screen h-screen bg-[#384454]">
@@ -68,7 +103,7 @@ export default function AnswerTicket() {
                     </div>
                 </Link>
                 <div className="flex gap-6">
-                    <Link to="/qa">
+                    <Link to="/qa/admin">
                         <button className="bg-[#F89BEB] text-white font-bold px-8 py-2 rounded-xl mr-2">
                             Q&amp;A
                         </button>
@@ -79,7 +114,7 @@ export default function AnswerTicket() {
                         </button>
                     </Link>
                 </div>
-                <Link to="/profile">
+                <Link to="/profile/admin">
                     <div className="flex items-center justify-center w-8 h-8 bg-white text-[#EA508E] rounded-full shadow-lg text-xl">
                         <span role="img" aria-label="profile">👤</span>
                     </div>
@@ -91,18 +126,18 @@ export default function AnswerTicket() {
                 <button className="text-white text-xl mb-2 mt-4" onClick={() => window.history.back()}>
                     <span className="text-2xl mr-2">&#8592;</span>
                 </button>
-                <h1 className="text-white text-3xl font-bold text-center mb-6">Reply to Ticket (replace by ticket name)</h1>
+                <h1 className="text-white text-3xl font-bold text-center mb-6">Reply to Ticket</h1>
 
                 <div className="flex gap-2 mb-2">
                     <input
                         type="text"
-                        value="replace by ticket name"
+                        value={ticket?.name || ""}
                         disabled
                         className="w-1/2 px-3 py-2 rounded bg-gray-300 text-gray-600 font-semibold"
                     />
                     <input
                         type="text"
-                        value="replace by ticket topic"
+                        value={ticket?.topic.name || ""}
                         disabled
                         className="w-1/2 px-3 py-2 rounded bg-gray-300 text-gray-600 font-semibold"
                     />
@@ -127,20 +162,29 @@ export default function AnswerTicket() {
                             accept=".png,.jpeg,.jpg,.pdf"
                             onChange={handleFileChange}
                         />
-                        {file && (
-                            <div className="flex items-center gap-2 text-xs text-gray-200">
-                                <span className="text-gray-200">{file.name}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => setFile(null)}
-                                    className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
-                                    title="Retirer le fichier"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        )}
                     </label>
+                    {file && (
+                        <div className="flex items-center gap-2 text-xs text-gray-200">
+                            <span className="text-gray-200">{file.name}</span>
+                            <button
+                                type="button"
+                                onClick={() =>                                         
+                                    {
+                                        if (fileInput.current != null)
+                                        {
+                                            fileInput.current.value=""
+                                        }
+                                        setFile(null)
+                                    }
+                                }
+                                className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
+                                title="Retirer le fichier"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    )}
+                    
                     <button
                         type="button"
                         onClick={() => fileInput.current?.click()}
@@ -152,14 +196,27 @@ export default function AnswerTicket() {
                             <rect width="20" height="2" y="19" x="2" fill="#434F5E" rx="1"/>
                         </svg>
                     </button>
+                    {error !== "" && <span className="text-red-500 mt-1 text-sm">{error}</span>}
                 </div>
 
                 <div className="flex justify-end">
                     <button
-                        className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold"
-                        onClick={() => alert("Ticket sent (simulé)")}
+                        className={`bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold ${answering || !ticketAttributesLoaded ? 'cursor-not-allowed' : ''}`}
+                        disabled={answering || !ticketAttributesLoaded}
+                        onClick={() => {
+                            if (text === "")
+                            {
+                                setError("No text written")
+                                setTimeout(() => setError(""), 5000)
+                                return
+                            }
+                            setAnswering(true);
+                            addTicketAnswer(id, count, file, text);
+                            setAnswering(false);
+                            window.history.back();
+                        }}
                     >
-                        Send Answer
+                        {answering ? "Posting..." : "Send Answer"}
                     </button>
                 </div>
             </div>

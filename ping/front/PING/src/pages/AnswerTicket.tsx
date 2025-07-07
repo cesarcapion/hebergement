@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
+import { authedAPIRequest } from "../api/auth";
 
 const MAX_FILE_SIZE_MB = 5;
 
@@ -9,39 +10,31 @@ export default function AnswerTicket() {
     const [ticket, setTicket] = useState<any>(null);
     const [text, setText] = useState("");
     const [file, setFile] = useState<File | null>(null);
+    const [error, setError] = useState("");
     const fileInput = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        const fetchTicket = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) return;
-
-            console.log("Fetching ticket with id:", id);
-
-            try {
-                const response = await fetch(
-                    `${import.meta.env.VITE_SERVER_URL}/api/tickets/7f5e3a75-fe60-430f-9dd6-61025621743e`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Fetched ticket:", data);
-                    setTicket(data);
-                } else {
-                    console.error("Erreur HTTP", response.status);
-                }
-            } catch (err) {
-                console.error("Erreur réseau", err);
+    const fetchTicket = async () => {
+        console.log("Fetching ticket with id:", id);
+        const response = await authedAPIRequest(
+            `${import.meta.env.VITE_SERVER_URL}/api/tickets/${id}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             }
-        };
+        );
 
+        if (response?.ok) {
+            const data = await response.json();
+            console.log("Fetched ticket:", data);
+            setTicket(data);
+        } else {
+            console.error("Erreur HTTP", response?.status);
+        }
+    };
+
+    useEffect(() => {
         fetchTicket();
     }, [id]);
 
@@ -164,20 +157,29 @@ export default function AnswerTicket() {
                             accept=".png,.jpeg,.jpg,.pdf"
                             onChange={handleFileChange}
                         />
-                        {file && (
-                            <div className="flex items-center gap-2 text-xs text-gray-200">
-                                <span className="text-gray-200">{file.name}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => setFile(null)}
-                                    className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
-                                    title="Retirer le fichier"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        )}
                     </label>
+                    {file && (
+                        <div className="flex items-center gap-2 text-xs text-gray-200">
+                            <span className="text-gray-200">{file.name}</span>
+                            <button
+                                type="button"
+                                onClick={() =>                                         
+                                    {
+                                        if (fileInput.current != null)
+                                        {
+                                            fileInput.current.value=""
+                                        }
+                                        setFile(null)
+                                    }
+                                }
+                                className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
+                                title="Retirer le fichier"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    )}
+                    
                     <button
                         type="button"
                         onClick={() => fileInput.current?.click()}
@@ -189,12 +191,20 @@ export default function AnswerTicket() {
                             <rect width="20" height="2" y="19" x="2" fill="#434F5E" rx="1"/>
                         </svg>
                     </button>
+                    {error !== "" && <span className="text-red-500 mt-1 text-sm">{error}</span>}
                 </div>
 
                 <div className="flex justify-end">
                     <button
                         className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold"
-                        onClick={() => alert("Ticket sent (simulé)")}
+                        onClick={() => {
+                            if (text === "")
+                            {
+                                setError("No text written")
+                                setTimeout(() => setError(""), 5000)
+                                return
+                            }
+                        }}
                     >
                         Send Answer
                     </button>

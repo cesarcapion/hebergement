@@ -1,25 +1,122 @@
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authedAPIRequest } from "../api/auth";
 
-const topics = [
-    "Support",
-    "Payment",
-    "Technical issue",
-    "Account",
-    "Other"
-];
+type Topic = {
+    id: number,
+    name: string
+}
+type addHistoryObj = {
+    contentPath: string,
+    resourcePath: string | null
+}
+// const topics: Topic[] = [
+    // "Support",
+    // "Payment",
+    // "Technical issue",
+    // "Account",
+    // "Other"
+// ];
 const MAX_FILE_SIZE_MB = 5;
+
+
 
 export default function CreateTicket() {
     const [object, setObject] = useState("");
-    const [topic, setTopic] = useState("");
+    const [topicId, setTopicId] = useState(-1);
+    const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [text, setText] = useState("");
-    const [file, setFile] = useState<File | null>(null);
+    const [resourceFile, setFile] = useState<File | null>(null);
+    const [topics, setTopics] = useState<Topic[]>([]);
+    const [error, setError] = useState("");
     const fileInput = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = async () => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        loadTopics().then((topics: Topic[]) => {setTopics(topics)})
+    })
+
+    const loadTopics = async() =>
+    {
+        const topicCall: Response | null = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/topics/all`,
+            {
+                method: 'GET',
+            }
+        );
+        console.log(topicCall?.status);
+        const topicsRes: Topic[] = await topicCall?.json();
+        return topicsRes;
+    }
+
+    const rename = (filePath: string) => {
+        const handledExtensions = [".pdf", ".png", ".jpeg", ".jpg"]
+        // console.log(`filepath: ${filePath}`)
+        for (const ext of handledExtensions)
+        {
+            // console.log(`filepath: ${filePath} ends with ${ext}? -> ${filePath.endsWith(ext)}`)
+            if (filePath.endsWith(ext))
+            {
+                const splitted = filePath.split(ext);
+                return `r0${ext}`;
+            }
+        }
+        return "should not be reached";
+    }
+    // function renameFile(file: File): File {
+    //     return new File([file], rename(file.name), {
+    //         type: file.type,
+    //         lastModified: file.lastModified,
+    //     });
+    // }
+
+
+    const submitTicket = async () => {
+        const resourcesFolder = "resources"
+        const answersFolder = "answers"
         // TODO
-    };
+        const createTicket = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({subject: object, topicId: topicId})
+        })
+        const ticketResponse = await createTicket?.json();
+        await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketResponse.id}/folders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({relativePath: `${answersFolder}`})
+        })
+        await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketResponse.id}/folders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({relativePath: `${resourcesFolder}`})
+        })
+        await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketResponse.id}/files`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({relativePath: `${answersFolder}/a0.txt`, content: text})
+        })
+        const addToHistory: addHistoryObj = {contentPath: `${answersFolder}/a0.txt`, resourcePath: null}
+        if (resourceFile != null)
+        {
+            // const renamedFile = renameFile(resourceFile);
+            const resourcePath = `${resourcesFolder}/${rename(resourceFile.name)}`
+            const postResource = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/tickets/${ticketResponse.id}/files/upload?path=${resourcePath}`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/octet-stream' },
+                body: resourceFile
+            })
+            console.log(`posted resource got ${postResource?.status}`);
+            const resPostedResource = await postResource?.json();
+            addToHistory["resourcePath"] = resourcePath; 
+            console.log(`response info: ${JSON.stringify(resPostedResource)}`);
+        }
+        const postHistory = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/ticket-history/${ticketResponse.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(addToHistory)
+        })
+        // const contentFile = await authedAPIRequest(`${import.meta.env.VITE_SERVER_URL}/api/${ticketResponse.id}/`)
+    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -78,13 +175,23 @@ export default function CreateTicket() {
                         onChange={e => setObject(e.target.value)}
                     />
                     <select
-                        className="w-1/2 px-3 py-2 rounded bg-[#d3d4dc] text-gray-800 font-medium focus:outline-none"
-                        value={topic}
-                        onChange={e => setTopic(e.target.value)}
-                    >
-                        <option value="">Topic</option>
+                        className={`w-1/2 px-3 py-2 rounded bg-[#d3d4dc] text-gray-800 font-medium focus:outline-none ${topics.length === 0 ? 'cursor-not-allowed' : ''}`}
+                        value={topicId}
+                        name={topics.length === 0 ? "Topics not available" : "Topic"}
+                        disabled={topics.length === 0}
+                        onChange={e =>
+                            {
+                                setTopicId(parseInt(e.target.value));
+                                // const selected = topics.find(t => t.name === e.target.value)
+                                // if (selected !== undefined)
+                                // {
+                                //     setTopic(selected.id);
+                                // }
+                            }
+                        }>
+                        <option value="none" hidden>{topics.length === 0 ? "Topics not available" : "Select Topic"}</option>
                         {topics.map(t => (
-                            <option value={t} key={t}>{t}</option>
+                            <option value={t.id} key={t.id}>{t.name}</option>
                         ))}
                     </select>
                 </div>
@@ -106,14 +213,25 @@ export default function CreateTicket() {
                             type="file"
                             className="hidden"
                             accept=".png,.jpeg,.jpg,.pdf"
-                            onChange={handleFileChange}
+                            onChange={(e) =>
+                                {
+                                    handleFileChange(e);
+                                }
+                            }
                         />
-                        {file && (
+                    </label>
+                    {resourceFile && (
                             <div className="flex items-center gap-2 text-xs text-gray-200">
-                                <span className="text-gray-200">{file.name}</span>
+                                <span className="text-gray-200">{resourceFile.name}</span>
                                 <button
                                     type="button"
-                                    onClick={() => setFile(null)}
+                                    onClick={() => {
+                                        if (fileInput.current != null)
+                                        {
+                                            fileInput.current.value=""
+                                        }
+                                        setFile(null)
+                                    }}
                                     className="ml-1 px-1 rounded bg-[#EA508E] text-white hover:bg-pink-600"
                                     title="Retirer le fichier"
                                 >
@@ -121,7 +239,6 @@ export default function CreateTicket() {
                                 </button>
                             </div>
                         )}
-                    </label>
                     <button
                         type="button"
                         onClick={() => fileInput.current?.click()}
@@ -133,13 +250,37 @@ export default function CreateTicket() {
                             <rect width="20" height="2" y="19" x="2" fill="#434F5E" rx="1"/>
                         </svg>
                     </button>
+                    {error !== "" && <span className="text-red-500 mt-1 text-sm">{error}</span>}
                 </div>
 
 
                 <div className="flex justify-end">
                     <button
                         className="bg-gradient-to-r from-[#EA508E] to-[#F89BEB] text-white px-6 py-2 rounded-xl font-bold shadow transition hover:opacity-90"
-                        onClick={handleSubmit}
+                        onClick={() =>
+                            {
+                                if (object === "")
+                                {
+                                    setError("The object is empty")
+                                    setTimeout(() => setError(""), 5000)
+                                    return
+                                }
+                                if (topicId === -1)
+                                {
+                                    setError("No topic selected")
+                                    setTimeout(() => setError(""), 5000)
+                                    return
+                                }
+                                if (text === "")
+                                {
+                                    setError("No text written")
+                                    setTimeout(() => setError(""), 5000)
+                                    return
+                                }
+                                submitTicket()
+                                navigate(`/my-tickets`)
+                            }
+                        }
                     >
                         Send
                     </button>

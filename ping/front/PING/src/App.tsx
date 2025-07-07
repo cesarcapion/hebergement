@@ -10,13 +10,13 @@ import MyTicketsAdmin from "./pages/MyTicketsAdmin.tsx";
 import TicketDiscussion from "./pages/TicketDiscussion.tsx";
 import TicketDiscussionAdmin from "./pages/TicketDiscussionAdmin.tsx";
 import CreateTicket from "./pages/CreateTicket.tsx";
+import AnswerTicketAdmin from './pages/AnswerTicketAdmin.tsx';
+
 
 import PrivateRoute from './PrivateRoute';
 import AdminRoute from './AdminRoute.tsx';
-
 import StatsPage from "./pages/Stats.tsx";
 import AnswerTicket from "./pages/AnswerTicket.tsx";
-import AnswerTicketAdmin from "./pages/AnswerTicketAdmin.tsx";
 import Profile from "./pages/Profile.tsx"
 import ProfileAdmin from "./pages/ProfileAdmin.tsx"
 import HomeAdmin from "./pages/HomeAdmin.tsx";
@@ -96,7 +96,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/answer/:id"
+                    path="/answer/:id/:count"
                     element={
                     <PrivateRoute>
                         <AnswerTicket />
@@ -104,11 +104,11 @@ function App() {
                     }
                 />
                 <Route
-                    path="/answer/admin/:id"
+                    path="/answer/admin/:id/:count"
                     element={
-                        <PrivateRoute>
-                            <AnswerTicketAdmin />
-                        </PrivateRoute>
+                    <PrivateRoute>
+                        <AnswerTicketAdmin />
+                    </PrivateRoute>
                     }
                 />
                 <Route
